@@ -1,3 +1,4 @@
 # ImageProcessing
 This is a project for practicing programming image processing algorithms.
-test update!!
+
+My e-mail:laevatain103@gmail.com
