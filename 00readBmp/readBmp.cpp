@@ -56,12 +56,18 @@ class SimpleImage {
   uint32_t width;
   uint32_t height;
   uint8_t *image;
-  SimpleImage() {}
+  SimpleImage() {};
+  ~SimpleImage() {
+    delete[] image;
+    image = nullptr;
+  };
   SimpleImage(uint32_t w, uint32_t h) {
     bmpheaderINIT();
     width = w;
     height = h;
-    image = (uint8_t *)malloc((size_t)width * height * 3 * sizeof(uint8_t));
+    image = new uint8_t[width * height * 3 *
+                        sizeof(uint8_t)];  //(uint8_t *)malloc((size_t)width *
+                                           // height * 3 * sizeof(uint8_t));
   }
   /*
    for (int i = 0; i < height; i++) {
@@ -74,6 +80,7 @@ class SimpleImage {
   */
   bool Load(const char *fname_s) {
     FILE *fp_s = NULL;  // source file handler
+    int Mod4;
 
     fp_s = fopen(fname_s, "rb");
     if (fp_s == NULL) {
@@ -85,8 +92,15 @@ class SimpleImage {
 
     width = bmpf_h.F_Info.width;
     height = bmpf_h.F_Info.height;
+    Mod4 = width % 4;
+
+    if (Mod4 != 0) {
+      width = (((int)((width - Mod4) / 4)) + 1) * 4;
+    }
     fseek(fp_s, bmpf_h.F_H.data_offset, SEEK_SET);
-    image = (uint8_t *)malloc((size_t)width * height * 3 * sizeof(uint8_t));
+    image = new uint8_t[width * height * 3 *
+                        sizeof(uint8_t)];  //(uint8_t *)malloc((size_t)width *
+                                           // height * 3 * sizeof(uint8_t));
 
     fread(image, sizeof(uint8_t),
           (size_t)(width * height * 3 * sizeof(uint8_t)), fp_s);
@@ -115,12 +129,18 @@ class SimpleImage {
   }
   bool Save(const char *fname_s) {
     FILE *fp_s = NULL;  // source file handler
+    int Mod4;
 
     fp_s = fopen(fname_s, "wb");
 
     if (fp_s == NULL) {
       printf("fopen fname_t error\n");
       return false;
+    }
+    Mod4 = width % 4;
+
+    if (Mod4 != 0) {
+      width = (((int)((width - Mod4) / 4)) + 1) * 4;
     }
     uint32_t rgb_raw_data_offset = bmpf_h.F_H.data_offset;
     uint32_t file_size = width * height * 3 + rgb_raw_data_offset;
@@ -146,6 +166,7 @@ void testRWbmp() {
   SimpleImage *img = new SimpleImage();
   bool res = img->Load("Lenna.bmp");
   img->Save("test05.bmp");
+  delete img;
   // cout << "res:" << res << endl;
 }
 

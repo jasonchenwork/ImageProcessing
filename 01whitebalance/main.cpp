@@ -56,12 +56,18 @@ class SimpleImage {
   uint32_t width;
   uint32_t height;
   uint8_t *image;
-  SimpleImage() {}
+  SimpleImage() {};
+  ~SimpleImage() {
+    delete[] image;
+    image = nullptr;
+  };
   SimpleImage(uint32_t w, uint32_t h) {
     bmpheaderINIT();
     width = w;
     height = h;
-    image = (uint8_t *)malloc((size_t)width * height * 3 * sizeof(uint8_t));
+    image = new uint8_t[width * height * 3 *
+                        sizeof(uint8_t)];  //(uint8_t *)malloc((size_t)width *
+                                           // height * 3 * sizeof(uint8_t));
   }
   /*
    for (int i = 0; i < height; i++) {
@@ -92,7 +98,9 @@ class SimpleImage {
       width = (((int)((width - Mod4) / 4)) + 1) * 4;
     }
     fseek(fp_s, bmpf_h.F_H.data_offset, SEEK_SET);
-    image = (uint8_t *)malloc((size_t)width * height * 3 * sizeof(uint8_t));
+    image = new uint8_t[width * height * 3 *
+                        sizeof(uint8_t)];  //(uint8_t *)malloc((size_t)width *
+                                           // height * 3 * sizeof(uint8_t));
 
     fread(image, sizeof(uint8_t),
           (size_t)(width * height * 3 * sizeof(uint8_t)), fp_s);
@@ -306,6 +314,8 @@ void testWhiteBalance() {
   whitebalance2005Lam(srcimg->image, dstimg->image, srcimg->width,
                       srcimg->height);
   dstimg->Save("InputImage01After2005Lam.bmp");
+  delete srcimg;
+  delete dstimg;
 }
 int main() {
   // testRWbmp();
