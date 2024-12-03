@@ -439,8 +439,8 @@ void NLmeans(const uint8_t *imageSource, uint8_t *imageTarget, uint16_t width,
       double curB = *(imageSource + 3 * (width * (y) + x) + 0);
 
       pR += curR * maxweightR;
-      pG += curR * maxweightG;
-      pB += curR * maxweightB;
+      pG += curG * maxweightG;
+      pB += curB * maxweightB;
 
       sumwR += maxweightR;
       sumwG += maxweightG;
