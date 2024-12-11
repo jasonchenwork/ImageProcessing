@@ -360,6 +360,16 @@ void CompareImage(const uint8_t *in1, const uint8_t *in2, uint8_t *out,
 double GetSumFromIntegralImg(double *imageTarget, uint16_t width,
                              uint16_t height, int16_t x1, int16_t y1,
                              int16_t x2, int16_t y2) {
+  if (x2 >= width) x2 = width - 1;
+  if (y2 >= height) y2 = height - 1;
+  if (x2 < 0) x2 = 0;
+  if (y2 < 0) y2 = 0;
+
+  if (x1 >= width) x1 = width - 1;
+  if (y1 >= height) y1 = height - 1;
+  if (x1 < 0) x1 = 0;
+  if (y1 < 0) y1 = 0;
+
   double sum = imageTarget[y2 * width + x2];
 
   if (x1 >= 1) {
@@ -488,7 +498,7 @@ void NLmeanswithIntegralImage(const uint8_t *imageSource, uint8_t *imageTarget,
           double distR = 0, distG = 0, distB = 0;
 
 #if 0
- double distR0 = 0, distG0 = 0, distB0 = 0;
+          double distR0 = 0, distG0 = 0, distB0 = 0;
           for (int kx = -halfkernelsize; kx <= halfkernelsize; kx++) {
             for (int ky = -halfkernelsize; ky <= halfkernelsize; ky++) {
               int nx = x + kx, ny = y + ky;
@@ -501,13 +511,13 @@ void NLmeanswithIntegralImage(const uint8_t *imageSource, uint8_t *imageTarget,
               int curIndex = 3 * (width * ny + nx);
               int targetIndex = 3 * (width * nwy + nwx);
 
-              int curR = *(imageSource + curIndex + 2);
-              int curG = *(imageSource + curIndex + 1);
-              int curB = *(imageSource + curIndex + 0);
+              double curR = *(imageSource + curIndex + 2);
+              double curG = *(imageSource + curIndex + 1);
+              double curB = *(imageSource + curIndex + 0);
 
-              int targetR = *(imageSource + targetIndex + 2);
-              int targetG = *(imageSource + targetIndex + 1);
-              int targetB = *(imageSource + targetIndex + 0);
+              double targetR = *(imageSource + targetIndex + 2);
+              double targetG = *(imageSource + targetIndex + 1);
+              double targetB = *(imageSource + targetIndex + 0);
 
               distR0 += (curR - targetR) * (curR - targetR);
               distG0 += (curG - targetG) * (curG - targetG);
@@ -515,7 +525,6 @@ void NLmeanswithIntegralImage(const uint8_t *imageSource, uint8_t *imageTarget,
             }
           }
 #else
-
           distR = GetSumFromIntegralImg(integralR, width, height,
                                         (int16_t)x - (int16_t)halfkernelsize,
                                         (int16_t)y - (int16_t)halfkernelsize,
@@ -643,7 +652,8 @@ void testDeNoise() {
   double elapsedTime;
   SimpleImage *srcimg = new SimpleImage();
 
-  bool res = srcimg->Load("InputImage01AfterGnoise.bmp");
+  bool res = srcimg->Load(
+      "InputImage01AfterGnoise.bmp");  // pattern InputImage01AfterGnoise
 
   SimpleImage *dstimg = new SimpleImage(srcimg->width, srcimg->height);
   clock_gettime(CLOCK_REALTIME, &t_start);
