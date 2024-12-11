@@ -17,7 +17,11 @@ pseudo code
     {
         loop (search windows)
         {
-                loop (kernel mask)
+                loop (search kernel mask)
+                {
+                    do Mean-Squared Error
+                }
+            colloect weight
         }
        image[x,y] =weight * image[x,y] 
     }
@@ -29,14 +33,14 @@ pseudo code
     loop (search windows)
     {
         Compute differ array between origin image and shifted image
-       Compute integral image from differ array
+        Compute integral image from differ array
 
         loop (image pixels)
         {
                Compute the weight of each pixel
         }
     }
-     loop (image pixels)
+    loop (image pixels)
     {
          image[x,y] =w[x,y] * image[x,y] 
     }
