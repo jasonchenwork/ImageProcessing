@@ -26,7 +26,7 @@ pseudo code
 pseudo code
 
     declare array w
-     loop (search windows)
+    loop (search windows)
     {
         Compute differ array between origin image and shifted image
        Compute integral image from differ array
@@ -36,7 +36,7 @@ pseudo code
                Compute the weight of each pixel
         }
     }
-     loop (search windows)
+     loop (image pixels)
     {
          image[x,y] =w[x,y] * image[x,y] 
     }
