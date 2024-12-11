@@ -17,27 +17,27 @@ pseudo code
     {
         loop (search windows)
         {
-    	    loop (kernel mask)
-    	}
-    	image[x,y] =weight * image[x,y] 
+                loop (kernel mask)
+        }
+       image[x,y] =weight * image[x,y] 
     }
 
 2.use integral image method:
 pseudo code
 
-    array w
+    declare array w
      loop (search windows)
     {
-    	Compute differ array between origin image and shifted image
-    	Compute integral image from differ array
-    	
+        Compute differ array between origin image and shifted image
+       Compute integral image from differ array
+
         loop (image pixels)
         {
-    	    Compute the weight of each pixel
-    	}
+               Compute the weight of each pixel
+        }
     }
      loop (search windows)
     {
-    	image[x,y] =w[x,y] * image[x,y] 
+         image[x,y] =w[x,y] * image[x,y] 
     }
 
