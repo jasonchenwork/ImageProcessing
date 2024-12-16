@@ -1,47 +1,66 @@
-# The non-locate mean algorithm using integral image skill improves speed.
 
+# The non-locate mean algorithm using thread improves speed
 
-Using the integral image can achieve more than 3x the speed of the original method.
+Using the thread can achieve more than 3x the speed of the original method.
 
-|  |origin  |using integral image  |
+| |origin |using thread  |
+
 |--|--|--|
-|  time| 23.044s |7.454s |
 
+| time| 23.044s |6.950s |
 
- 
+1.origin non-locate mean algorithm
 
-1.origin non-locate mean algorithm 
 pseudo code
 
-    loop (image pixels)
-    {
-        loop (search windows)
-        {
-                loop (search kernel mask)
-                {
-                    do Mean-Squared Error
-                }
-            colloect weight
-        }
-       image[x,y] =weight * image[x,y] 
-    }
+loop (image pixels)
 
-2.use integral image method:
+{
+
+loop (search windows)
+
+{
+
+loop (search kernel mask)
+
+{
+
+do Mean-Squared Error
+
+}
+
+colloect weight
+
+}
+
+image[x,y] =weight * image[x,y]
+
+}
+
+2.use thread method:
+
 pseudo code
 
-    declare array w
-    loop (search windows)
-    {
-        Compute differ array between origin image and shifted image
-        Compute integral image from differ array
+loop (image pixels) Divide into 8 parts and assign them to threads for execution.
 
-        loop (image pixels)
-        {
-               Compute the weight of each pixel
-        }
-    }
-    loop (image pixels)
-    {
-         image[x,y] =w[x,y] * image[x,y] 
-    }
+{
 
+loop (search windows)
+
+{
+
+loop (search kernel mask)
+
+{
+
+do Mean-Squared Error
+
+}
+
+   colloect weight
+
+   }
+
+    image[x,y] =weight * image[x,y]
+    
+    }
