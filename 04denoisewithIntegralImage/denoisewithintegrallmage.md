@@ -5,7 +5,7 @@ To improve non-locate mean algorithm, I use integral image to solve speed issue.
 I discovered that the non-local means algorithm involves many repeated calculations of the mean squared error (MSE). Therefore, I think I can use the integral image to optimize and improve its efficiency.
 ![repeated calculating](https://github.com/jasonchenwork/ImageProcessing/blob/main/04denoisewithIntegralImage/repeatedcalculating.PNG)
 
-**Why is integral image?**
+**What is integral image?**
 An integral image is also known as a summed-area table.
 You can find more details in this reference:
 <https://en.wikipedia.org/wiki/Summed-area_table>
