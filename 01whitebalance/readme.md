@@ -38,7 +38,7 @@ $$
 $$
 
 $$
-\sum_{x=1}^M \sum_{y=1}^N \hat{I}_R(x,y) = \sum_{x=1}^M \sum_{y=1}^N \hat{I}_B(x,y)
+ \sum_{x=1}^M \sum_{y=1}^N \hat{I}_R(x,y) = \sum_{x=1}^M \sum_{y=1}^N \hat{I}_B(x,y)
 $$
 
 $$
