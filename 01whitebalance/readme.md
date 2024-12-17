@@ -1,3 +1,4 @@
+
 # Introduction
 
 Write a c/c++ program to practice the automatic white balance process, which generates appropriate transferring functions to map the colors of the input image to the expected colors when captured under the Standard Illuminant D65.
@@ -25,9 +26,7 @@ $$
 
 # 2005 Lam Algorithm
 
-Lam (2005) proposed an algorithm that combines the above two methods, referred to as the **Lam algorithm** in this article [2]. Lam introduced a quadratic equation for automatic white balance processing, as shown in equations (7) and (8). Here, R^I\hat{R}_IR^I​, G^I\hat{G}_IG^I​, and B^I\hat{B}_IB^I​ represent the processed red, green, and blue pixel values, while RIR_IRI​, GIG_IGI​, and BIB_IBI​ are the red, green, and blue values before processing. The red channel coefficients are solved as shown in equations (9–12), and the blue channel can be calculated similarly based on equation (8).
-
-Since the formula involves squaring the pixel values during processing, the resulting image has the characteristic of enhanced contrast. Similar to the Perfect Reflector Assumption (PRA) and the Gray World Assumption (GWA), the green pixel values remain unchanged, while only the red and blue values are adjusted.
+Lam (2005) proposed an algorithm that combines the above two methods, referred to as the **Lam algorithm** in this article.  enhanced contrast. Similar to the Perfect Reflector Assumption (PRA) and the Gray World Assumption (GWA), the green pixel values remain unchanged, while only the red and blue values are adjusted.
 
 $$
 \hat{I}_R(x,y) = u_R \cdot I_R^2(x,y) + v_R I_R(x,y)
