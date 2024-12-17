@@ -1,7 +1,7 @@
 # The non-locate mean algorithm using thread improves speed
 
 Using the thread can achieve more than 3x the speed of the original method.
-
+![enter image description here](https://github.com/jasonchenwork/ImageProcessing/blob/main/05denoisewiththread/thread.PNG?raw=true)
 |  |origin   |thread  |
 |--|--|--|
 | time |23.044s   |6.950s|
@@ -39,3 +39,4 @@ pseudo code
         }
        image[x,y] =weight * image[x,y] 
     }
+
