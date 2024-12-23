@@ -1,0 +1,21 @@
+{
+    "configurations": [
+        {
+            "name": "C++ Launch1",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/main",
+            "args": [],
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "environment": [
+                {
+                    "name": "config",
+                    "value": "Debug"
+                }
+            ],
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "build" // 确保这里指定任务名称
+        }
+    ]
+}
