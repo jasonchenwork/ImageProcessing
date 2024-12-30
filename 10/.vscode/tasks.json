@@ -1,0 +1,27 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "clean", // 清理任务
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "clean"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            }
+        },
+        {
+            "type": "shell",
+            "label": "build",
+            "command": "make",
+            "args": [],
+            "group": "build",
+            "problemMatcher": [],
+            "dependsOn": "clean", // 构建之前执行 clean
+            "detail": "build"
+        }
+    ]
+}
