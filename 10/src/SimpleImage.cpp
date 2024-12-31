@@ -29,6 +29,7 @@ void SimpleImage::bmpheaderINIT() {
 bool SimpleImage::Load(const char *fname_s) {
   FILE *fp_s = NULL;  // source file handler
   int Mod4;
+  uint8_t padding[3 * 3] = {0};
 
   fp_s = fopen(fname_s, "rb");
   if (fp_s == NULL) {
@@ -42,16 +43,20 @@ bool SimpleImage::Load(const char *fname_s) {
   height = bmpf_h.F_Info.height;
   Mod4 = width % 4;
 
-  if (Mod4 != 0) {
-    width = (((int)((width - Mod4) / 4)) + 1) * 4;
-  }
   fseek(fp_s, bmpf_h.F_H.data_offset, SEEK_SET);
   image = new uint8_t[width * height * 3 *
                       sizeof(uint8_t)];  //(uint8_t *)malloc((size_t)width *
                                          // height * 3 * sizeof(uint8_t));
 
-  fread(image, sizeof(uint8_t), (size_t)(width * height * 3 * sizeof(uint8_t)),
-        fp_s);
+  for (uint32_t row = 0; row < height; row++) {
+    uint32_t findrow = height - 1 - row;
+    fread(image + (findrow * 3 * width), sizeof(uint8_t),
+          (size_t)(width * 3 * sizeof(uint8_t)), fp_s);
+    if (Mod4 != 0) {
+      fread(padding, sizeof(uint8_t), (size_t)(4 - Mod4) * 3, fp_s);
+    }
+  }
+
 #if 0
     // debug
     printf("Label: %c %c \n", bmpf_h.B_H.identity[0], bmpf_h.B_H.identity[1]);
@@ -79,6 +84,8 @@ bool SimpleImage::Load(const char *fname_s) {
 bool SimpleImage::Save(const char *fname_s) {
   FILE *fp_s = NULL;  // source file handler
   int Mod4;
+  int savewidth;
+  uint8_t padding[3 * 3] = {0};
 
   fp_s = fopen(fname_s, "wb");
 
@@ -86,25 +93,35 @@ bool SimpleImage::Save(const char *fname_s) {
     printf("fopen fname_t error\n");
     return false;
   }
+
   Mod4 = width % 4;
 
   if (Mod4 != 0) {
-    width = (((int)((width - Mod4) / 4)) + 1) * 4;
+    savewidth = (((int)((width - Mod4) / 4)) + 1) * 4;
+  } else {
+    savewidth = width;
   }
+  savewidth = width;
   uint32_t rgb_raw_data_offset = bmpf_h.F_H.data_offset;
-  uint32_t file_size = width * height * 3 + rgb_raw_data_offset;
+  uint32_t file_size = savewidth * height * 3 + rgb_raw_data_offset;
   bmpf_h.F_H.file_size = file_size;
   bmpf_h.F_Info.width = width;
   bmpf_h.F_Info.height = height;
-  bmpf_h.F_Info.data_size = width * height * 3;
+  bmpf_h.F_Info.data_size = savewidth * height * 3;
   // write header
 #if 0
     cout << "rgb_raw_data_offset:" << rgb_raw_data_offset << endl;
     cout << "bmpf_h:" << sizeof(bmpf_h) << endl;
 #endif
   fwrite(&bmpf_h, sizeof(bmpf_h), 1, fp_s);
-
-  fwrite(image, sizeof(uint8_t), (size_t)(width * height * 3), fp_s);
+  for (uint32_t row = 0; row < height; row++) {
+    uint32_t findrow = height - 1 - row;
+    fwrite(image + (findrow * 3 * width), sizeof(uint8_t), (size_t)(width * 3),
+           fp_s);
+    if (Mod4 != 0) {
+      fwrite(padding, sizeof(uint8_t), (size_t)(4 - Mod4) * 3, fp_s);
+    }
+  }
 
   fclose(fp_s);
   return true;
