@@ -1,14 +1,14 @@
 #include <bits/stdc++.h>
 #include <omp.h>
 
+#include "../include/Morphology.hpp"
 #include "../include/NonLocalMeans.hpp"
 #include "../include/SimpleImage.hpp"
 #include "../include/Utility.hpp"
 #include "../include/WhiteBalance.hpp"
-
 void testRWbmp() {
   SimpleImage *img = new SimpleImage();
-  bool res = img->Load("img/InputImage01.bmp");
+  bool res = img->Load("img/pattern.bmp");
   if (!res) {
     cout << "load file fail" << endl;
   }
@@ -315,17 +315,79 @@ void testDeNoisewithIntegralImageopenmp() {
   delete srcimg;
   delete dstimg;
 }
+void genpaatern() {
+  int width = 255;
+  int height = 255;
+  SimpleImage *dstimg = new SimpleImage(width, height);
+
+  uint8_t *buf = new uint8_t[width * height];
+  for (int x = 0; x < width; x++) {
+    for (int y = 0; y < height; y++) {
+      buf[(width * (y) + x)] = (x) % 255;
+    }
+  }
+#if 0
+  // left top -> left bottom
+  for (int x = 0; x < width; x++) {
+    for (int y = 0; y < height; y++) {
+      dstimg->image[3 * (width * (y) + x) + 2] =
+          buf[(width * (height - y) + (x))];
+      dstimg->image[3 * (width * (y) + x) + 1] =
+          buf[(width * (height - y) + (x))];
+      dstimg->image[3 * (width * (y) + x) + 0] =
+          buf[(width * (height - y) + (x))];
+    }
+  }
+#else
+  for (int x = 0; x < width; x++) {
+    for (int y = 0; y < height; y++) {
+      dstimg->image[3 * (width * (y) + x) + 2] = buf[(width * (y) + (x))];
+      dstimg->image[3 * (width * (y) + x) + 1] = buf[(width * (y) + (x))];
+      dstimg->image[3 * (width * (y) + x) + 0] = buf[(width * (y) + (x))];
+    }
+  }
+#endif
+
+  dstimg->Save("img/pattern.bmp");
+}
+void testmorphology() {
+  struct timespec t_start, t_end;
+  double elapsedTime;
+  SimpleImage *srcimg = new SimpleImage();
+  uint16_t filtersize = 9;
+
+  bool res = srcimg->Load("img/testMorphology.bmp");
+  if (!res) {
+    cout << "load file fail" << endl;
+  }
+  SimpleImage *dstimg = new SimpleImage(srcimg->width, srcimg->height);
+  uint8_t *grayimage = new uint8_t[srcimg->width * srcimg->height];
+  uint8_t *outimage = new uint8_t[srcimg->width * srcimg->height];
+  clock_gettime(CLOCK_REALTIME, &t_start);
+  colorimage2grayimage(srcimg->image, grayimage, srcimg->width, srcimg->height);
+  TopHat(grayimage, outimage, srcimg->width, srcimg->height, filtersize);
+  grayimage2colorimage(outimage, dstimg->image, srcimg->width, srcimg->height);
+  clock_gettime(CLOCK_REALTIME, &t_end);
+  elapsedTime = (t_end.tv_sec - t_start.tv_sec) * 1000.0;
+  elapsedTime += (t_end.tv_nsec - t_start.tv_nsec) / 1000000.0;
+  printf("elapsedTime: %lf ms\n", elapsedTime);
+  delete grayimage;
+  delete outimage;
+  dstimg->Save("img/testMorphologyafterTopHat.bmp");
+}
 int main() {
   cout << "start" << endl;
-  // testgaussianfilter();
-  testmediafilter();
+  testmorphology();
+  // genpaatern();
+  //  testgaussianfilter();
+  //  testmediafilter();
   // testDeNoisewithopenmp();               // 6498.930026 ms
   // testDeNoisewithIntegralImageopenmp();  // 2790.592246 ms
   // testNLmeanswiththread();               // 8965.213364 ms
   // testNLmeanswithintegralimagethread();  // 3427.264040 ms
-  //   testresize();
-  //   testedgedection();
-  //   testRWbmp();
+  //    testresize();
+  //    testedgedection();
+  // testRWbmp();
   //   testWhiteBalance();
   // testDeNoise();
   // testDeNoisewithIntegralImage();
