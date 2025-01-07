@@ -375,22 +375,38 @@ void testmorphology() {
   delete outimage;
   dstimg->Save("img/testMorphologyafterTopHat.bmp");
 }
+void testhistogramequalization() {
+  SimpleImage *srcimg = new SimpleImage();
+
+  bool res = srcimg->Load("img/InputImage01.bmp");
+  if (!res) {
+    cout << "load file fail" << endl;
+  }
+  SimpleImage *dstimg = new SimpleImage(srcimg->width, srcimg->height);
+  HistogramEqualization(srcimg->image, dstimg->image, srcimg->width,
+                        srcimg->height);
+  dstimg->Save("img/InputImage01Afteristogramequalization.bmp");
+  delete srcimg;
+  delete dstimg;
+}
 int main() {
   cout << "start" << endl;
-  testmorphology();
-  // genpaatern();
-  //  testgaussianfilter();
-  //  testmediafilter();
-  // testDeNoisewithopenmp();               // 6498.930026 ms
-  // testDeNoisewithIntegralImageopenmp();  // 2790.592246 ms
-  // testNLmeanswiththread();               // 8965.213364 ms
-  // testNLmeanswithintegralimagethread();  // 3427.264040 ms
-  //    testresize();
-  //    testedgedection();
-  // testRWbmp();
-  //   testWhiteBalance();
-  // testDeNoise();
-  // testDeNoisewithIntegralImage();
+
+  // testhistogramequalization();
+  //  testmorphology();
+  //   genpaatern();
+  //    testgaussianfilter();
+  //    testmediafilter();
+  //   testDeNoisewithopenmp();               // 6498.930026 ms
+  //   testDeNoisewithIntegralImageopenmp();  // 2790.592246 ms
+  //   testNLmeanswiththread();               // 8965.213364 ms
+  //   testNLmeanswithintegralimagethread();  // 3427.264040 ms
+  //      testresize();
+  //      testedgedection();
+  //   testRWbmp();
+  //     testWhiteBalance();
+  //   testDeNoise();
+  //   testDeNoisewithIntegralImage();
 
   // testcomparedimage();
   //  testDeNoise();
