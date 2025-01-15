@@ -1,9 +1,11 @@
 #include <bits/stdc++.h>
 #include <omp.h>
 
+#include "../include/HarrisCornerDetection.hpp"
 #include "../include/Morphology.hpp"
 #include "../include/NonLocalMeans.hpp"
 #include "../include/SimpleImage.hpp"
+#include "../include/SimpleMat.hpp"
 #include "../include/Utility.hpp"
 #include "../include/WhiteBalance.hpp"
 void testRWbmp() {
@@ -389,24 +391,58 @@ void testhistogramequalization() {
   delete srcimg;
   delete dstimg;
 }
+void testharriscornerdetection() {
+  SimpleImage *srcimg = new SimpleImage();
+  struct timespec t_start, t_end;
+  double elapsedTime;
+
+  bool res = srcimg->Load("img/chess.bmp");
+  if (!res) {
+    cout << "load file fail" << endl;
+  }
+  SimpleImage *dstimg = new SimpleImage(srcimg->width, srcimg->height);
+  memcpy(dstimg->image, srcimg->image,
+         (int)dstimg->width * (int)dstimg->height * (int)sizeof(uint8_t) * 3);
+  clock_gettime(CLOCK_REALTIME, &t_start);
+  list<cornerpoint> corners;
+  HarrisCornerArg harrisarg;
+  harrisarg.alpha = 0.05;
+  harrisarg.threshold = 100000;
+  HarrisCornerDetection(srcimg->image, srcimg->width, srcimg->height, corners,
+                        harrisarg);
+  clock_gettime(CLOCK_REALTIME, &t_end);
+  elapsedTime = (t_end.tv_sec - t_start.tv_sec) * 1000.0;
+  elapsedTime += (t_end.tv_nsec - t_start.tv_nsec) / 1000000.0;
+  printf("elapsedTime: %lf ms\n", elapsedTime);
+
+  cout << "corners nums:" << corners.size() << endl;
+
+  for (cornerpoint c : corners) {
+    drawCircle(dstimg->image, dstimg->width, dstimg->height, c.x, c.y, 25);
+  }
+  dstimg->Save("img/chessAfterCornerPoint.bmp");
+  delete srcimg;
+  delete dstimg;
+}
 int main() {
   cout << "start" << endl;
-
-  // testhistogramequalization();
-  //  testmorphology();
-  //   genpaatern();
-  //    testgaussianfilter();
-  //    testmediafilter();
-  //   testDeNoisewithopenmp();               // 6498.930026 ms
-  //   testDeNoisewithIntegralImageopenmp();  // 2790.592246 ms
-  //   testNLmeanswiththread();               // 8965.213364 ms
-  //   testNLmeanswithintegralimagethread();  // 3427.264040 ms
-  //      testresize();
-  //      testedgedection();
-  //   testRWbmp();
-  //     testWhiteBalance();
-  //   testDeNoise();
-  //   testDeNoisewithIntegralImage();
+  testharriscornerdetection();
+  // testsift();
+  //  testhistogramequalization();
+  //   testmorphology();
+  //    genpaatern();
+  //     testgaussianfilter();
+  //     testmediafilter();
+  //    testDeNoisewithopenmp();               // 6498.930026 ms
+  //    testDeNoisewithIntegralImageopenmp();  // 2790.592246 ms
+  //    testNLmeanswiththread();               // 8965.213364 ms
+  //    testNLmeanswithintegralimagethread();  // 3427.264040 ms
+  //       testresize();
+  //       testedgedection();
+  //    testRWbmp();
+  //      testWhiteBalance();
+  //    testDeNoise();
+  //    testDeNoisewithIntegralImage();
 
   // testcomparedimage();
   //  testDeNoise();

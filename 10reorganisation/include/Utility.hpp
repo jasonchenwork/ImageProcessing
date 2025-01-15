@@ -37,4 +37,12 @@ void MedianFilter(uint8_t *imageSource, uint8_t *imageTarget, uint16_t width,
 template <typename T1, typename T2>
 void conv2D(T1 *imageSource, T1 *imageTarget, uint16_t width, uint16_t height,
             T2 *filter, uint16_t filtersize, uint8_t dim);
+template <typename T1, typename T2>
+void conv2D(vector<T1> &imageSource, vector<T1> &imageTarget, uint16_t width,
+            uint16_t height, T2 *filter, uint16_t filtersize, uint8_t dim);
+
+void uint8Tofloat(uint8_t *src, float *dst, uint16_t width, uint16_t height);
+void floatTouint8(float *src, uint8_t *dst, uint16_t width, uint16_t height);
+
+void drawCircle(uint8_t *dst, uint16_t w, uint16_t h, int y, int x, int radius);
 #endif

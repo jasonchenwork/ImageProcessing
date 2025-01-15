@@ -226,11 +226,18 @@ void imagescale(const unsigned char *imageSource, unsigned char *imageTarget,
 }
 void GaussianFilter(double *gaussianfilter, uint16_t size, double std) {
   int windowbase = (int)size / 2;
+  double sum = 0.0;
   for (int x = -windowbase; x <= windowbase; x++) {
     for (int y = -windowbase; y <= windowbase; y++) {
       gaussianfilter[(x + windowbase) * size + (y + windowbase)] =
           (1.0 / (2.0 * PI * std * std)) *
           exp(-1.0 * ((x) * (x) + (y) * (y)) / (2.0 * std * std));
+      sum += gaussianfilter[(x + windowbase) * size + (y + windowbase)];
+    }
+  }
+  for (int x = -windowbase; x <= windowbase; x++) {
+    for (int y = -windowbase; y <= windowbase; y++) {
+      gaussianfilter[(x + windowbase) * size + (y + windowbase)] /= sum;
     }
   }
 }
@@ -287,7 +294,7 @@ void conv2D(T1 *imageSource, T1 *imageTarget, uint16_t width, uint16_t height,
         if (my < 0 || my >= height) continue;
         for (int mx = x - halfkernelsize; mx <= x + halfkernelsize; ++mx) {
           if (mx < 0 || mx >= width) continue;
-          double coef = filter[(my - y + halfkernelsize) * halfkernelsize +
+          double coef = filter[(my - y + halfkernelsize) * filtersize +
                                (mx - x + halfkernelsize)];
 
           for (int i = 0; i < dim; i++) {
@@ -304,8 +311,110 @@ void conv2D(T1 *imageSource, T1 *imageTarget, uint16_t width, uint16_t height,
     }
   }
 }
+template <typename T1, typename T2>
+void conv2D(vector<T1> &imageSource, vector<T1> &imageTarget, uint16_t width,
+            uint16_t height, T2 *filter, uint16_t filtersize, uint8_t dim) {
+  int halfkernelsize = filtersize / 2;
+
+  if (halfkernelsize < 1) {
+    return;  // do nothing
+  }
+
+  for (int x = 1; x < width - 1; ++x) {
+    for (int y = 1; y < height - 1; ++y) {
+      double filtersum[dim] = {0};
+
+      for (int my = y - halfkernelsize; my <= y + halfkernelsize; ++my) {
+        if (my < 0 || my >= height) continue;
+        for (int mx = x - halfkernelsize; mx <= x + halfkernelsize; ++mx) {
+          if (mx < 0 || mx >= width) continue;
+          double coef = filter[(my - y + halfkernelsize) * filtersize +
+                               (mx - x + halfkernelsize)];
+
+          for (int i = 0; i < dim; i++) {
+            filtersum[i] +=
+                coef *
+                static_cast<double>(imageSource[dim * (width * my + mx) + i]);
+          }
+        }
+      }
+      for (int i = 0; i < dim; i++) {
+        if (filtersum[i] < 0) filtersum[i] = 0;
+        if (filtersum[i] > 255) filtersum[i] = 255;
+        imageTarget[dim * (width * y + x) + i] = static_cast<T1>(filtersum[i]);
+      }
+    }
+  }
+}
 // Explicit Instantiation
+template void conv2D<float, double>(float *imageSource, float *imageTarget,
+                                    uint16_t width, uint16_t height,
+                                    double *filter, uint16_t filtersize,
+                                    uint8_t dim);
 template void conv2D<uint8_t, double>(uint8_t *imageSource,
                                       uint8_t *imageTarget, uint16_t width,
                                       uint16_t height, double *filter,
                                       uint16_t filtersize, uint8_t dim);
+template void conv2D<float, double>(vector<float> &imageSource,
+                                    vector<float> &imageTarget, uint16_t width,
+                                    uint16_t height, double *filter,
+                                    uint16_t filtersize, uint8_t dim);
+void uint8Tofloat(uint8_t *src, float *dst, uint16_t width, uint16_t height) {
+  for (int x = 0; x < width; ++x) {
+    for (int y = 0; y < height; ++y) {
+      dst[width * y + x] = (float)src[width * y + x];
+    }
+  }
+}
+void floatTouint8(float *src, uint8_t *dst, uint16_t width, uint16_t height) {
+  for (int x = 0; x < width; ++x) {
+    for (int y = 0; y < height; ++y) {
+      dst[width * y + x] = (uint8_t)src[width * y + x];
+    }
+  }
+}
+void setPixelColor(uint8_t *dst, uint16_t w, uint16_t h, int x, int y) {
+  if ((y >= 0) && (y < h) && (x >= 0) && (x < w)) {
+    dst[3 * (w * y + x) + 2] = 255;
+    dst[3 * (w * y + x) + 1] = 0;
+    dst[3 * (w * y + x) + 0] = 0;
+  }
+}
+// http://en.wikipedia.org/wiki/Midpoint_circle_algorithm
+void drawCircle(uint8_t *dst, uint16_t w, uint16_t h, int x, int y,
+                int radius) {
+  int f = 1 - radius;
+  int ddF_x = 1;
+  int ddF_y = -2 * radius;
+  int xx = 0;
+  int yy = radius;
+
+  int x0 = x;
+  int y0 = y;
+  // setPixelColor(dst, w, h, x0, y0);
+  setPixelColor(dst, w, h, x0, y0 + radius);
+  setPixelColor(dst, w, h, x0, y0 - radius);
+  setPixelColor(dst, w, h, x0 + radius, y0);
+  setPixelColor(dst, w, h, x0 - radius, y0);
+  while (xx < yy) {
+    // ddF_x == 2 * x + 1;
+    // ddF_y == -2 * y;
+    // f == x*x + y*y - radius*radius + 2*x - y + 1;
+    if (f >= 0) {
+      yy--;
+      ddF_y += 2;
+      f += ddF_y;
+    }
+    xx++;
+    ddF_x += 2;
+    f += ddF_x;
+    setPixelColor(dst, w, h, x0 + xx, y0 + yy);
+    setPixelColor(dst, w, h, x0 - xx, y0 + yy);
+    setPixelColor(dst, w, h, x0 + xx, y0 - yy);
+    setPixelColor(dst, w, h, x0 - xx, y0 - yy);
+    setPixelColor(dst, w, h, x0 + yy, y0 + xx);
+    setPixelColor(dst, w, h, x0 - yy, y0 + xx);
+    setPixelColor(dst, w, h, x0 + yy, y0 - xx);
+    setPixelColor(dst, w, h, x0 - yy, y0 - xx);
+  }
+}

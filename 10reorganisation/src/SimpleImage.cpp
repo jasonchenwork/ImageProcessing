@@ -97,15 +97,16 @@ bool SimpleImage::Save(const char *fname_s) {
   Mod4 = width % 4;
 
   if (Mod4 != 0) {
-    savewidth = (((int)((width - Mod4) / 4)) + 1) * 4;
+    savewidth =
+        (((int)((width - Mod4) / 4)) + 1) * 4;  // width + (4 - Mod4);  //
   } else {
     savewidth = width;
   }
-  savewidth = width;
+  // savewidth = width;
   uint32_t rgb_raw_data_offset = bmpf_h.F_H.data_offset;
   uint32_t file_size = savewidth * height * 3 + rgb_raw_data_offset;
   bmpf_h.F_H.file_size = file_size;
-  bmpf_h.F_Info.width = width;
+  bmpf_h.F_Info.width = savewidth;  // width;
   bmpf_h.F_Info.height = height;
   bmpf_h.F_Info.data_size = savewidth * height * 3;
   // write header
