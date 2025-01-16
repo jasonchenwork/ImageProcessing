@@ -3,7 +3,9 @@
 Its reference can be found at this link:[WIKI](https://en.wikipedia.org/wiki/Harris_corner_detector)
 
 The following are the results presented by my program.
-![Origin image](https://github.com/jasonchenwork/ImageProcessing/blob/main/10reorganisation/img/chess.bmp)![Harris Corner ](https://github.com/jasonchenwork/ImageProcessing/blob/main/10reorganisation/img/chessAfterCornerPoint.bmp)
+![Origin image](https://github.com/jasonchenwork/ImageProcessing/blob/main/10reorganisation/img/chess.bmp)  
+![Harris Corner ](https://github.com/jasonchenwork/ImageProcessing/blob/main/10reorganisation/img/chessAfterCornerPoint.bmp)  
+
 Pseudo code
 
     //calculate differial X,Y with Sobel
