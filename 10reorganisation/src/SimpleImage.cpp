@@ -41,7 +41,7 @@ bool SimpleImage::Load(const char *fname_s) {
 
   width = bmpf_h.F_Info.width;
   height = bmpf_h.F_Info.height;
-  Mod4 = width % 4;
+  Mod4 = (width * 3) % 4;
 
   fseek(fp_s, bmpf_h.F_H.data_offset, SEEK_SET);
   image = new uint8_t[width * height * 3 *
@@ -53,7 +53,7 @@ bool SimpleImage::Load(const char *fname_s) {
     fread(image + (findrow * 3 * width), sizeof(uint8_t),
           (size_t)(width * 3 * sizeof(uint8_t)), fp_s);
     if (Mod4 != 0) {
-      fread(padding, sizeof(uint8_t), (size_t)(4 - Mod4) * 3, fp_s);
+      fread(padding, sizeof(uint8_t), (size_t)(4 - Mod4), fp_s);
     }
   }
 
@@ -94,7 +94,7 @@ bool SimpleImage::Save(const char *fname_s) {
     return false;
   }
 
-  Mod4 = width % 4;
+  Mod4 = (width * 3) % 4;
 
   if (Mod4 != 0) {
     savewidth =
@@ -102,7 +102,7 @@ bool SimpleImage::Save(const char *fname_s) {
   } else {
     savewidth = width;
   }
-  // savewidth = width;
+  savewidth = width;
   uint32_t rgb_raw_data_offset = bmpf_h.F_H.data_offset;
   uint32_t file_size = savewidth * height * 3 + rgb_raw_data_offset;
   bmpf_h.F_H.file_size = file_size;
@@ -120,7 +120,7 @@ bool SimpleImage::Save(const char *fname_s) {
     fwrite(image + (findrow * 3 * width), sizeof(uint8_t), (size_t)(width * 3),
            fp_s);
     if (Mod4 != 0) {
-      fwrite(padding, sizeof(uint8_t), (size_t)(4 - Mod4) * 3, fp_s);
+      fwrite(padding, sizeof(uint8_t), (size_t)(4 - Mod4), fp_s);
     }
   }
 

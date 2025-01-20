@@ -3,6 +3,7 @@
 #include "../include/Utility.hpp"
 
 bool isLocalMax(float *Q, uint16_t width, uint16_t height, int x, int y) {
+  if (y >= height || y < 0 || x >= width || x < 0) return false;
   return (Q[width * y + x] >= Q[width * (y - 1) + (x - 1)] &&
           Q[width * y + x] >= Q[width * (y - 1) + (x)] &&
           Q[width * y + x] >= Q[width * (y - 1) + (x + 1)] &&
@@ -28,11 +29,11 @@ void HarrisCornerDetection(const uint8_t *imageSource, uint16_t width,
   uint8Tofloat(grayimage, grayimagef, width, height);
 
   uint16_t windowsize = 3;
-  double PrewittGx[9] = {-1, 0, 1, -1, 0, 1, -1, 0, 1};
-  double PrewittGy[9] = {1, 1, 1, 0, 0, 0, -1, -1, -1};
-  conv2D(grayimagef, Dx, width, height, PrewittGx, (uint16_t)windowsize,
+  double SobelGx[9] = {-1, 0, 1, -2, 0, 2, -1, 0, 1};
+  double SobelGy[9] = {1, 2, 1, 0, 0, 0, -1, -2, -1};
+  conv2D(grayimagef, Dx, width, height, SobelGx, (uint16_t)windowsize,
          conv2D_gray);
-  conv2D(grayimagef, Dy, width, height, PrewittGy, (uint16_t)windowsize,
+  conv2D(grayimagef, Dy, width, height, SobelGy, (uint16_t)windowsize,
          conv2D_gray);
   int gwindowsize = 5;  // 5
   double std = 1.0;
