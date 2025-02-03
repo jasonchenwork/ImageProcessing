@@ -1,5 +1,6 @@
 #include "../include/Utility.hpp"
-
+vector<vector<uint8_t>> COLORBAGS = {
+    {0, 0, 255}, {0, 255, 0}, {255, 0, 0}, {255, 255, 255}};
 int AddGaussianNoise(const uint8_t *imageSource, uint8_t *imageTarget,
                      uint16_t width, uint16_t height, double mean,
                      double stddev) {
@@ -373,16 +374,17 @@ void floatTouint8(float *src, uint8_t *dst, uint16_t width, uint16_t height) {
     }
   }
 }
-void setPixelColor(uint8_t *dst, uint16_t w, uint16_t h, int x, int y) {
+void setPixelColor(uint8_t *dst, uint16_t w, uint16_t h, int x, int y,
+                   int coloridx) {
   if ((y >= 0) && (y < h) && (x >= 0) && (x < w)) {
-    dst[3 * (w * y + x) + 2] = 255;
-    dst[3 * (w * y + x) + 1] = 0;
-    dst[3 * (w * y + x) + 0] = 0;
+    dst[3 * (w * y + x) + 2] = COLORBAGS[coloridx][2];
+    dst[3 * (w * y + x) + 1] = COLORBAGS[coloridx][1];
+    dst[3 * (w * y + x) + 0] = COLORBAGS[coloridx][0];
   }
 }
 // http://en.wikipedia.org/wiki/Midpoint_circle_algorithm
-void drawCircle(uint8_t *dst, uint16_t w, uint16_t h, int x, int y,
-                int radius) {
+void drawCircle(uint8_t *dst, uint16_t w, uint16_t h, int x, int y, int radius,
+                int coloridx) {
   int f = 1 - radius;
   int ddF_x = 1;
   int ddF_y = -2 * radius;
@@ -392,10 +394,10 @@ void drawCircle(uint8_t *dst, uint16_t w, uint16_t h, int x, int y,
   int x0 = x;
   int y0 = y;
   // setPixelColor(dst, w, h, x0, y0);
-  setPixelColor(dst, w, h, x0, y0 + radius);
-  setPixelColor(dst, w, h, x0, y0 - radius);
-  setPixelColor(dst, w, h, x0 + radius, y0);
-  setPixelColor(dst, w, h, x0 - radius, y0);
+  setPixelColor(dst, w, h, x0, y0 + radius, coloridx);
+  setPixelColor(dst, w, h, x0, y0 - radius, coloridx);
+  setPixelColor(dst, w, h, x0 + radius, y0, coloridx);
+  setPixelColor(dst, w, h, x0 - radius, y0, coloridx);
   while (xx < yy) {
     // ddF_x == 2 * x + 1;
     // ddF_y == -2 * y;
@@ -408,13 +410,35 @@ void drawCircle(uint8_t *dst, uint16_t w, uint16_t h, int x, int y,
     xx++;
     ddF_x += 2;
     f += ddF_x;
-    setPixelColor(dst, w, h, x0 + xx, y0 + yy);
-    setPixelColor(dst, w, h, x0 - xx, y0 + yy);
-    setPixelColor(dst, w, h, x0 + xx, y0 - yy);
-    setPixelColor(dst, w, h, x0 - xx, y0 - yy);
-    setPixelColor(dst, w, h, x0 + yy, y0 + xx);
-    setPixelColor(dst, w, h, x0 - yy, y0 + xx);
-    setPixelColor(dst, w, h, x0 + yy, y0 - xx);
-    setPixelColor(dst, w, h, x0 - yy, y0 - xx);
+    setPixelColor(dst, w, h, x0 + xx, y0 + yy, coloridx);
+    setPixelColor(dst, w, h, x0 - xx, y0 + yy, coloridx);
+    setPixelColor(dst, w, h, x0 + xx, y0 - yy, coloridx);
+    setPixelColor(dst, w, h, x0 - xx, y0 - yy, coloridx);
+    setPixelColor(dst, w, h, x0 + yy, y0 + xx, coloridx);
+    setPixelColor(dst, w, h, x0 - yy, y0 + xx, coloridx);
+    setPixelColor(dst, w, h, x0 + yy, y0 - xx, coloridx);
+    setPixelColor(dst, w, h, x0 - yy, y0 - xx, coloridx);
+  }
+}
+void draw_red_orientation(uint8_t *dst, uint16_t w, uint16_t h, int x, int y,
+                          float ori, int cR) {
+  int xe = (int)(x + cos(ori) * cR), ye = (int)(y + sin(ori) * cR);
+  // Bresenham's line algorithm
+  int dx = abs(xe - x), sx = x < xe ? 1 : -1;
+  int dy = -abs(ye - y), sy = y < ye ? 1 : -1;
+  int err = dx + dy, e2; /* error value e_xy */
+
+  for (;;) { /* loop */
+    setPixelColor(dst, w, h, x, y, COLOR_RED);
+    if (x == xe && y == ye) break;
+    e2 = 2 * err;
+    if (e2 >= dy) {
+      err += dy;
+      x += sx;
+    } /* e_xy+e_x > 0 */
+    if (e2 <= dx) {
+      err += dx;
+      y += sy;
+    } /* e_xy+e_y < 0 */
   }
 }

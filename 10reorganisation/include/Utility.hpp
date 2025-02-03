@@ -3,6 +3,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 #define PI 3.141592
+
 struct STfilter2D {
   vector<vector<vector<int>>> kernels;
   int threshold;
@@ -12,6 +13,12 @@ struct STfilter2D {
 enum {
   conv2D_gray = 1,
   conv2D_color = 3,
+};
+enum COLORIDX {
+  COLOR_RED = 0,
+  COLOR_GREEN = 1,
+  COLOR_BLUE = 2,
+  COLOR_WHITE = 3
 };
 int AddGaussianNoise(const uint8_t *imageSource, uint8_t *imageTarget,
                      uint16_t width, uint16_t height, double mean,
@@ -44,5 +51,10 @@ void conv2D(vector<T1> &imageSource, vector<T1> &imageTarget, uint16_t width,
 void uint8Tofloat(uint8_t *src, float *dst, uint16_t width, uint16_t height);
 void floatTouint8(float *src, uint8_t *dst, uint16_t width, uint16_t height);
 
-void drawCircle(uint8_t *dst, uint16_t w, uint16_t h, int y, int x, int radius);
+void drawCircle(uint8_t *dst, uint16_t w, uint16_t h, int x, int y, int radius,
+                int coloridx);
+void draw_red_orientation(uint8_t *dst, uint16_t w, uint16_t h, int x, int y,
+                          float ori, int cR);
+void setPixelColor(uint8_t *dst, uint16_t w, uint16_t h, int x, int y,
+                   int coloridx);
 #endif

@@ -10,21 +10,34 @@ class SimpleMat {
   uint32_t width;
   uint32_t height;
   T *data;
-  void setMat(uint32_t w, uint32_t h);
+
+  // function
   SimpleMat();
   SimpleMat(uint32_t w, uint32_t h);
+  SimpleMat(uint32_t w, uint32_t h, T *indata);
   ~SimpleMat();
+  SimpleMat(const SimpleMat<T> &mat);
+  void setMat(uint32_t w, uint32_t h);
   SimpleMat<T> Create(uint32_t w, uint32_t h);
   SimpleMat<T> downsample2x();
   void clear();
   void init(int _w, int _h);
   SimpleMat<T> &operator=(const SimpleMat<T> &mat);
 };
+
 template <typename T>
 SimpleMat<T> &SimpleMat<T>::operator=(const SimpleMat<T> &mat) {
   init(mat.width, mat.height);
   memcpy(data, mat.data, mat.width * mat.height * sizeof(T));
   return *this;
+}
+
+template <typename T>
+SimpleMat<T>::SimpleMat(const SimpleMat<T> &mat) {
+  width = mat.width;
+  height = mat.height;
+  data = new T[width * height];
+  memcpy(data, mat.data, mat.width * mat.height * sizeof(T));
 };
 template <typename T>
 void SimpleMat<T>::init(int _w, int _h) {
@@ -36,7 +49,7 @@ template <typename T>
 SimpleMat<T>::SimpleMat() {
   width = 0;
   height = 0;
-  data = NULL;
+  data = nullptr;
 };
 template <typename T>
 SimpleMat<T>::SimpleMat(uint32_t w, uint32_t h) {
@@ -45,18 +58,28 @@ SimpleMat<T>::SimpleMat(uint32_t w, uint32_t h) {
   data = new T[w * h];
 };
 template <typename T>
+SimpleMat<T>::SimpleMat(uint32_t w, uint32_t h, T *indata) {
+  width = w;
+  height = h;
+  data = new T[w * h];
+  memcpy(data, indata, width * height * sizeof(T));
+};
+template <typename T>
 SimpleMat<T> SimpleMat<T>::Create(uint32_t w, uint32_t h) {
   return SimpleMat<T>(w, h);
 };
 template <typename T>
 void SimpleMat<T>::clear() {
-
+  if (data) {
+    delete[] data;
+    data = nullptr;
+  }
 };
 template <typename T>
 SimpleMat<T>::~SimpleMat() {
   if (data) {
-    // delete[] data;
-    data = NULL;
+    delete[] data;
+    data = nullptr;
   }
 };
 template <typename T>
@@ -74,7 +97,6 @@ SimpleMat<T> SimpleMat<T>::downsample2x() {
     for (int y = 0; y < dh; ++y) {
       int sx = x << 1;
       int sy = y << 1;
-      // cout << "x,y" << x << "," << y << endl;
       dst.data[dw * y + x] = data[width * sy + sx];
     }
   }

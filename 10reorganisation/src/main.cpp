@@ -8,6 +8,7 @@
 #include "../include/SimpleMat.hpp"
 #include "../include/Utility.hpp"
 #include "../include/WhiteBalance.hpp"
+#include "../include/sift.hpp"
 void testRWbmp() {
   SimpleImage *img = new SimpleImage();
   bool res = img->Load("img/pattern.bmp");
@@ -391,6 +392,79 @@ void testhistogramequalization() {
   delete srcimg;
   delete dstimg;
 }
+void testsift() {
+  SimpleImage *srcimg = new SimpleImage();
+  SimpleImage *srcimg2 = new SimpleImage();
+
+  struct timespec t_start, t_end;
+  double elapsedTime;
+
+  bool res = srcimg->Load("img/lena.bmp");
+  srcimg2->Load("img/lena90degree.bmp");
+  if (!res) {
+    cout << "load file fail" << endl;
+  }
+  SimpleImage *dstimg = new SimpleImage(srcimg->width, srcimg->height);
+  memcpy(dstimg->image, srcimg->image,
+         (int)dstimg->width * (int)dstimg->height * (int)sizeof(uint8_t) * 3);
+  SimpleImage *dstimg2 = new SimpleImage(srcimg2->width, srcimg2->height);
+  memcpy(dstimg2->image, srcimg2->image,
+         (int)dstimg2->width * (int)dstimg2->height * (int)sizeof(uint8_t) * 3);
+
+  SimpleImage *dstimg3 =
+      new SimpleImage(srcimg->width + srcimg2->width, srcimg->height);
+  for (int i = 0; i < (int)dstimg3->width; i++) {
+    for (int j = 0; j < (int)dstimg3->height; j++) {
+      if (i < (int)srcimg->width) {
+        for (int rgb = 0; rgb < 3; rgb++) {
+          dstimg3->image[3 * (j * dstimg3->width + i) + rgb] =
+              srcimg->image[3 * (j * srcimg->width + i) + rgb];
+        }
+      } else {
+        int newi = i - srcimg->width;
+        for (int rgb = 0; rgb < 3; rgb++) {
+          dstimg3->image[3 * (j * dstimg3->width + i) + rgb] =
+              srcimg2->image[3 * (j * srcimg->width + newi) + rgb];
+        }
+      }
+    }
+  }
+  clock_gettime(CLOCK_REALTIME, &t_start);
+  list<SiftKeypoint> kp;
+  sift(srcimg->image, srcimg->width, srcimg->height, kp);
+  list<SiftKeypoint> kp2;
+  sift(srcimg2->image, srcimg2->width, srcimg2->height, kp2);
+  list<MatchPair> match_list;
+  match_keypoints(kp, kp2, match_list);
+
+  clock_gettime(CLOCK_REALTIME, &t_end);
+  elapsedTime = (t_end.tv_sec - t_start.tv_sec) * 1000.0;
+  elapsedTime += (t_end.tv_nsec - t_start.tv_nsec) / 1000000.0;
+  printf("elapsedTime: %lf ms\n", elapsedTime);
+  cout << "kp nums:" << kp.size() << endl;
+
+  draw_match_lines_to_image(dstimg3, match_list);
+  draw_keypoints_image(dstimg, kp);
+  draw_keypoints_image(dstimg2, kp2);
+#if 0
+  for (SiftKeypoint k : kp) {
+    drawCircle(dstimg->image, dstimg->width, dstimg->height,
+               k.xi * (exp2(k.octave)), k.yi * (exp2(k.octave)), 15,
+               COLOR_GREEN);
+  }
+#endif
+  dstimg->Save("img/sifttest.bmp");
+  dstimg2->Save("img/sifttest2.bmp");
+  dstimg3->Save("img/sifttest3.bmp");
+  kp.clear();
+  kp2.clear();
+  match_list.clear();
+  delete srcimg;
+  delete srcimg2;
+  delete dstimg;
+  delete dstimg2;
+  delete dstimg3;
+}
 void testharriscornerdetection() {
   SimpleImage *srcimg = new SimpleImage();
   struct timespec t_start, t_end;
@@ -418,16 +492,44 @@ void testharriscornerdetection() {
   cout << "corners nums:" << corners.size() << endl;
 
   for (cornerpoint c : corners) {
-    drawCircle(dstimg->image, dstimg->width, dstimg->height, c.x, c.y, 25);
+    drawCircle(dstimg->image, dstimg->width, dstimg->height, c.x, c.y, 25,
+               COLOR_RED);
   }
   dstimg->Save("img/chessAfterCornerPoint.bmp");
   delete srcimg;
   delete dstimg;
 }
+void testmomry2dvector() {
+  int nGpyrLayers = 6;
+  int nOctaves = 1;
+  vector<vector<SimpleMat<float>>> guasspyr(
+      nOctaves, vector<SimpleMat<float>>(nGpyrLayers));
+  for (int i = 0; i < nOctaves; i++) {
+    for (int j = 0; j < nGpyrLayers; j++) {
+    }
+  }
+  for (int i = 0; i < nOctaves; i++) {
+    for (int j = 0; j < nGpyrLayers; j++) {
+      guasspyr[i][j].clear();
+    }
+  }
+}
+void testmomry1dvector() {
+  int nGpyrLayers = 6;
+  int nOctaves = 1;
+  vector<SimpleMat<float>> guasspyr(nOctaves * nGpyrLayers);
+}
+void testmomrypureclass() {
+  int nGpyrLayers = 6;
+  int nOctaves = 1;
+  SimpleMat<float> mat[nOctaves * nGpyrLayers];  // = new SimpleImage<float>;
+}
 int main() {
   cout << "start" << endl;
-  testharriscornerdetection();
-  // testsift();
+  // testharriscornerdetection();
+  testsift();
+  // testmomrypureclass();
+
   //  testhistogramequalization();
   //   testmorphology();
   //    genpaatern();
