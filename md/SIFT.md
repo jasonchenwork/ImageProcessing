@@ -9,11 +9,11 @@ SIFT has divided four major parts:
 
 
 # Result  
-![](https://github.com/jasonchenwork/ImageProcessing/blob/main/10reorganisation/img/sifttest3.bmphttps://)
+![](https://github.com/jasonchenwork/ImageProcessing/blob/main/10reorganisation/img/sifttest3.bmp)
   
 	
 # 	Implement note  
-
+TBD
 
 
 
