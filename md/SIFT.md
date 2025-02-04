@@ -13,14 +13,13 @@ where:
  
 $$X = (x,y,\sigma)$$   D is stand for DOG's extrema position in image    
  
-$$
-\frac{ \partial D }{\partial X} =
+$\frac{ \partial D }{\partial X} =
 \begin{bmatrix}  
   \frac{ \partial D }{\partial x} \\ 
   \frac{ \partial D }{\partial y} \\ 
   \frac{ \partial D }{\partial \sigma} 
-\end{bmatrix}
-$$
+\end{bmatrix}$
+
 
  
 
