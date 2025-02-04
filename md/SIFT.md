@@ -1,7 +1,7 @@
 
 # SIFT(scale-invariant feature transform)   
-The SIFT algorithm is considered to be one of  the Match Feature Field.  
-SIFT has divided four major parts:  
+The SIFT algorithm is considered to be one of the algorithms in the field of feature matching.
+SIFT is divided into four major parts  
 1. Find extremum  from Scale-space  
 2. Keypoint localization  
 3. Keypoint description  
