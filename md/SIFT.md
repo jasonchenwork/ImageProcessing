@@ -7,7 +7,10 @@ SIFT is divided into four major parts
    The SIFT algorithm aim to locate precise extrema with sub-pixel accuracy, which can be achieved through quadratic surface fitting.  
 SIFT uses a second-order approximation of the Taylor expansion to represent the variation of the DoG image near the extrema:  
 \(D(\mathbf{ X })=D+\frac{ \partial D^T }{\partial X}X+ \frac{1}{2}X^T\frac{\partial^2 D}{\partial X^2}X \)
- 
+
+![數學公式](https://latex.codecogs.com/png.latex?D(\mathbf{X})=D+\frac{\partial D^T}{\partial X}X+\frac{1}{2}X^T\frac{\partial^2 D}{\partial X^2}X)
+
+
 where:  
 \(X = (x,y,\sigma) \) 
 D is stand for DOG's extrema position in image    
