@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 #include <omp.h>
 
+#include "../include/FFT.hpp"
 #include "../include/HarrisCornerDetection.hpp"
 #include "../include/Morphology.hpp"
 #include "../include/NonLocalMeans.hpp"
@@ -524,10 +525,51 @@ void testmomrypureclass() {
   int nOctaves = 1;
   SimpleMat<float> mat[nOctaves * nGpyrLayers];  // = new SimpleImage<float>;
 }
+void testFFT() {
+  SimpleImage *srcimg = new SimpleImage();
+
+  bool res = srcimg->Load("img/lena.bmp");
+  if (!res) {
+    cout << "load file fail" << endl;
+  }
+  SimpleImage *dstimg = new SimpleImage(srcimg->width, srcimg->height);
+  uint8_t *grayimage = new uint8_t[srcimg->width * srcimg->height];
+
+  colorimage2grayimage(srcimg->image, grayimage, srcimg->width, srcimg->height);
+  double *input_real = new double[srcimg->width * srcimg->height];
+  double *input_imag = new double[srcimg->width * srcimg->height];
+  double *output_real = new double[srcimg->width * srcimg->height];
+  double *output_imag = new double[srcimg->width * srcimg->height];
+  double *image_shift = new double[srcimg->width * srcimg->height];
+  double *image_log = new double[srcimg->width * srcimg->height];
+  int width = srcimg->width;
+  int height = srcimg->height;
+
+  TypeConver(grayimage, input_real, (uint16_t)srcimg->width,
+             (uint16_t)srcimg->height);
+
+  FFT2D(input_real, input_imag, output_real, output_imag, width, height, 1,
+        width, height);
+
+  FFTShiftMagnitude(output_real, output_imag, image_shift, width, height);
+
+  FFTShow(image_shift, image_log, width, height);
+
+  TypeConver(image_log, grayimage, (uint16_t)srcimg->width,
+             (uint16_t)srcimg->height);
+
+  grayimage2colorimage(grayimage, dstimg->image, srcimg->width, srcimg->height);
+
+  dstimg->Save("img/FFT.bmp");
+  delete srcimg;
+  delete dstimg;
+}
 int main() {
   cout << "start" << endl;
-  // testharriscornerdetection();
-  testsift();
+  testFFT();
+  // testmat();
+  //  testharriscornerdetection();
+  // testsift();
   // testmomrypureclass();
 
   //  testhistogramequalization();

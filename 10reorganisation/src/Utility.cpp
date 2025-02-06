@@ -360,6 +360,21 @@ template void conv2D<float, double>(vector<float> &imageSource,
                                     vector<float> &imageTarget, uint16_t width,
                                     uint16_t height, double *filter,
                                     uint16_t filtersize, uint8_t dim);
+
+template <typename T1, typename T2>
+void TypeConver(T1 *src, T2 *dst, uint16_t width, uint16_t height) {
+  for (int x = 0; x < width; ++x) {
+    for (int y = 0; y < height; ++y) {
+      dst[width * y + x] = (T2)src[width * y + x];
+    }
+  }
+}
+// Explicit Instantiation
+template void TypeConver(uint8_t *src, double *dst, uint16_t width,
+                         uint16_t height);
+template void TypeConver(double *src, uint8_t *dst, uint16_t width,
+                         uint16_t height);
+
 void uint8Tofloat(uint8_t *src, float *dst, uint16_t width, uint16_t height) {
   for (int x = 0; x < width; ++x) {
     for (int y = 0; y < height; ++y) {
