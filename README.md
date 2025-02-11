@@ -1,3 +1,4 @@
+
 # Introduction
 
 ImageProcessing
@@ -27,7 +28,9 @@ Morphology
  
 [SIFT](https://github.com/jasonchenwork/ImageProcessing/blob/main/md/SIFT.md)
   
-[FFT](https://github.com/jasonchenwork/ImageProcessing/blob/main/md/FFT.md)
+[FFT](https://github.com/jasonchenwork/ImageProcessing/blob/main/md/FFT.md)  
+
+[GaussianBlur](https://github.com/jasonchenwork/ImageProcessing/blob/main/md/GaussianBlur.md)  
 
 # **Author Information**
 Name
