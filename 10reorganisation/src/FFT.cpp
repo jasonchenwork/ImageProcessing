@@ -79,8 +79,7 @@ void FFT2D(double *data_real, double *data_imag, double *output_real,
 
   for (j = 0; j < ny; j++) {
     for (i = 0; i < nx; i++) {
-      real[i] = data_real[width * j + i + 0];
-
+      real[i] = data_real[width * j + i];
       imag[i] = data_imag[width * j + i];
     }
 

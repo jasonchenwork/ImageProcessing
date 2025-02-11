@@ -225,13 +225,26 @@ void imagescale(const unsigned char *imageSource, unsigned char *imageTarget,
     }
   }
 }
+void GuassianFilter1D(double *gaussianfilter, uint16_t size, double std) {
+  int windowbase = (int)size / 2;
+  double sum = 0.0;
+  for (int x = -windowbase; x <= windowbase; x++) {
+    gaussianfilter[(x + windowbase)] =
+        (1.0 / sqrt(2.0 * PI * std * std)) *
+        exp(-1.0 * ((x) * (x)) / (2.0 * std * std));
+    sum += gaussianfilter[(x + windowbase)];
+  }
+  for (int x = -windowbase; x <= windowbase; x++) {
+    gaussianfilter[(x + windowbase)] /= sum;
+  }
+}
 void GaussianFilter(double *gaussianfilter, uint16_t size, double std) {
   int windowbase = (int)size / 2;
   double sum = 0.0;
   for (int x = -windowbase; x <= windowbase; x++) {
     for (int y = -windowbase; y <= windowbase; y++) {
       gaussianfilter[(x + windowbase) * size + (y + windowbase)] =
-          (1.0 / (2.0 * PI * std * std)) *
+          (1.0 / (sqrt(2.0 * PI * std * std))) *
           exp(-1.0 * ((x) * (x) + (y) * (y)) / (2.0 * std * std));
       sum += gaussianfilter[(x + windowbase) * size + (y + windowbase)];
     }
@@ -312,6 +325,53 @@ void conv2D(T1 *imageSource, T1 *imageTarget, uint16_t width, uint16_t height,
     }
   }
 }
+
+double *conv1D(double *imageSource, uint16_t width, uint16_t height,
+               double *filter, uint16_t filtersize, conv1D_Dirs dir,
+               uint8_t dim) {
+  int halfkernelsize = filtersize / 2;
+  double *dst = new double[width * height];
+  if (dir == conv1D_col) {
+    // col direction
+    for (int x = 1; x < width - 1; ++x) {
+      for (int y = 1; y < height - 1; ++y) {
+        double filtersum[dim] = {0};
+        for (int my = y - halfkernelsize; my <= y + halfkernelsize; ++my) {
+          if (my < 0 || my >= height) continue;
+          double coef = filter[(my - y + halfkernelsize)];
+          for (int i = 0; i < dim; i++) {
+            filtersum[i] +=
+                coef * (double)imageSource[(dim * (width * my + x) + i)];
+          }
+        }
+        for (int i = 0; i < dim; i++) {
+          dst[dim * (width * y + x) + i] = filtersum[i];
+        }
+      }
+    }
+  } else {
+    // row direction
+    for (int y = 1; y < height - 1; ++y) {
+      for (int x = 1; x < width - 1; ++x) {
+        double filtersum[dim] = {0};
+        for (int mx = x - halfkernelsize; mx <= x + halfkernelsize; ++mx) {
+          if (mx < 0 || mx >= width) continue;
+          double coef = filter[(mx - x + halfkernelsize)];
+
+          for (int i = 0; i < dim; i++) {
+            filtersum[i] +=
+                coef * (double)imageSource[dim * (width * y + mx) + i];
+          }
+        }
+        for (int i = 0; i < dim; i++) {
+          dst[dim * (width * y + x) + i] = filtersum[i];
+        }
+      }
+    }
+  }
+  return dst;
+}
+
 template <typename T1, typename T2>
 void conv2D(vector<T1> &imageSource, vector<T1> &imageTarget, uint16_t width,
             uint16_t height, T2 *filter, uint16_t filtersize, uint8_t dim) {
@@ -360,7 +420,10 @@ template void conv2D<float, double>(vector<float> &imageSource,
                                     vector<float> &imageTarget, uint16_t width,
                                     uint16_t height, double *filter,
                                     uint16_t filtersize, uint8_t dim);
-
+template void conv2D<double, double>(double *imageSource, double *imageTarget,
+                                     uint16_t width, uint16_t height,
+                                     double *filter, uint16_t filtersize,
+                                     uint8_t dim);
 template <typename T1, typename T2>
 void TypeConver(T1 *src, T2 *dst, uint16_t width, uint16_t height) {
   for (int x = 0; x < width; ++x) {

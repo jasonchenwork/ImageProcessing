@@ -564,9 +564,62 @@ void testFFT() {
   delete srcimg;
   delete dstimg;
 }
+void fastguassinafilter() {
+  struct timespec t_start, t_end;
+  double elapsedTime;
+  SimpleImage *srcimg = new SimpleImage();
+
+  bool res = srcimg->Load("img/InputImage01AfterGnoise.bmp");
+  if (!res) {
+    cout << "load file fail" << endl;
+  }
+
+  double *dst = new double[srcimg->width * srcimg->height];
+  uint8_t *gray = new uint8_t[srcimg->width * srcimg->height];
+
+  double *srcimage = new double[srcimg->width * srcimg->height];
+  colorimage2grayimage(srcimg->image, gray, srcimg->width, srcimg->height);
+  TypeConver(gray, srcimage, srcimg->width, srcimg->height);
+  int windowsize = 13;
+  double std = 5.0;
+  double *gaussianfilter = new double[windowsize * windowsize];
+  // 2D conv
+  GaussianFilter(gaussianfilter, (uint16_t)windowsize, std);
+  clock_gettime(CLOCK_REALTIME, &t_start);
+  conv2D(srcimage, dst, srcimg->width, srcimg->height, gaussianfilter,
+         (uint16_t)windowsize, conv2D_gray);
+  clock_gettime(CLOCK_REALTIME, &t_end);
+  elapsedTime = (t_end.tv_sec - t_start.tv_sec) * 1000.0;
+  elapsedTime += (t_end.tv_nsec - t_start.tv_nsec) / 1000000.0;
+  printf("2D conv elapsedTime: %lf ms\n", elapsedTime);
+  // TypeConver(dst, gray, srcimg->width, srcimg->height);
+  //  separable conv
+  GuassianFilter1D(gaussianfilter, (uint16_t)windowsize, std);
+  clock_gettime(CLOCK_REALTIME, &t_start);
+
+  double *colconv = conv1D(srcimage, srcimg->width, srcimg->height,
+                           gaussianfilter, windowsize, conv1D_col, conv2D_gray);
+  dst = conv1D(colconv, srcimg->width, srcimg->height, gaussianfilter,
+               windowsize, conv1D_row, conv2D_gray);
+  clock_gettime(CLOCK_REALTIME, &t_end);
+  elapsedTime = (t_end.tv_sec - t_start.tv_sec) * 1000.0;
+  elapsedTime += (t_end.tv_nsec - t_start.tv_nsec) / 1000000.0;
+  printf("separable conv elapsedTime: %lf ms\n", elapsedTime);
+  SimpleImage *dstimg = new SimpleImage(srcimg->width, srcimg->height);
+  TypeConver(dst, gray, srcimg->width, srcimg->height);
+  grayimage2colorimage(gray, dstimg->image, srcimg->width, srcimg->height);
+  dstimg->Save("img/separableconv.bmp");
+
+  delete[] dst;
+  delete[] gray;
+  delete[] gaussianfilter;
+  delete srcimg;
+  delete dstimg;
+}
 int main() {
   cout << "start" << endl;
-  testFFT();
+  fastguassinafilter();
+  // testFFT();
   // testmat();
   //  testharriscornerdetection();
   // testsift();

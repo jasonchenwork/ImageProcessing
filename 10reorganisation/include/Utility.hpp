@@ -20,6 +20,11 @@ enum COLORIDX {
   COLOR_BLUE = 2,
   COLOR_WHITE = 3
 };
+enum conv1D_Dirs {
+  conv1D_row = 0,
+  conv1D_col = 1,
+};
+
 int AddGaussianNoise(const uint8_t *imageSource, uint8_t *imageTarget,
                      uint16_t width, uint16_t height, double mean,
                      double stddev);
@@ -38,6 +43,8 @@ void imagescale(const unsigned char *imageSource, unsigned char *imageTarget,
 
 void GaussianFilter(double *gaussianfilter, uint16_t size, double std);
 
+void GuassianFilter1D(double *gaussianfilter, uint16_t size, double std);
+
 void MedianFilter(uint8_t *imageSource, uint8_t *imageTarget, uint16_t width,
                   uint16_t height, uint16_t filtersize, uint8_t dim);
 
@@ -47,6 +54,10 @@ void conv2D(T1 *imageSource, T1 *imageTarget, uint16_t width, uint16_t height,
 template <typename T1, typename T2>
 void conv2D(vector<T1> &imageSource, vector<T1> &imageTarget, uint16_t width,
             uint16_t height, T2 *filter, uint16_t filtersize, uint8_t dim);
+
+double *conv1D(double *imageSource, uint16_t width, uint16_t height,
+               double *filter, uint16_t filtersize, conv1D_Dirs dir,
+               uint8_t dim);
 
 void uint8Tofloat(uint8_t *src, float *dst, uint16_t width, uint16_t height);
 void floatTouint8(float *src, uint8_t *dst, uint16_t width, uint16_t height);
