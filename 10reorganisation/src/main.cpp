@@ -616,9 +616,105 @@ void fastguassinafilter() {
   delete srcimg;
   delete dstimg;
 }
+void FFTsaliencymap() {
+  struct timespec t_start, t_end;
+  double elapsedTime;
+  SimpleImage *srcimg = new SimpleImage();
+
+  bool res = srcimg->Load("img/flower.bmp");
+  if (!res) {
+    cout << "load file fail" << endl;
+  }
+  SimpleImage *dstimg = new SimpleImage(srcimg->width, srcimg->height);
+  uint8_t *grayimage = new uint8_t[srcimg->width * srcimg->height];
+
+  colorimage2grayimage(srcimg->image, grayimage, srcimg->width, srcimg->height);
+  double *input_real = new double[srcimg->width * srcimg->height];
+  double *input_imag = new double[srcimg->width * srcimg->height];
+  double *output_real = new double[srcimg->width * srcimg->height];
+  double *output_imag = new double[srcimg->width * srcimg->height];
+  double *image_log = new double[srcimg->width * srcimg->height];
+  double *image_amp = new double[srcimg->width * srcimg->height];
+  double *image_phase = new double[srcimg->width * srcimg->height];
+  double *cosSpectrum = new double[srcimg->width * srcimg->height];
+  double *sinSpectrum = new double[srcimg->width * srcimg->height];
+  double *meanlogAmp = new double[srcimg->width * srcimg->height];
+  double *differSpectrum = new double[srcimg->width * srcimg->height];
+  double *expSpectrum = new double[srcimg->width * srcimg->height];
+  int width = srcimg->width;
+  int height = srcimg->height;
+
+  TypeConver(grayimage, input_real, (uint16_t)srcimg->width,
+             (uint16_t)srcimg->height);
+  clock_gettime(CLOCK_REALTIME, &t_start);
+  FFT2D(input_real, input_imag, output_real, output_imag, width, height, 1,
+        width, height);
+  FFTamplitude(output_real, output_imag, image_amp, width, height);
+  FFTlog(image_amp, image_log, width, height);
+  FFTphase(output_real, output_imag, image_phase, width, height);
+  FFTcos(image_phase, cosSpectrum, width, height);
+  FFTsin(image_phase, sinSpectrum, width, height);
+
+  int windowsize = 3;
+  double *meanfilter = new double[windowsize * windowsize];
+  for (int m = 0; m < windowsize * windowsize; m++) {
+    meanfilter[m] = 1.0 / 9.0;
+  }
+  conv2D(image_log, meanlogAmp, srcimg->width, srcimg->height, meanfilter,
+         (uint16_t)windowsize, conv2D_gray);
+
+  matrixminus(image_log, meanlogAmp, differSpectrum, width, height);
+
+  FFTexp(differSpectrum, expSpectrum, width, height);
+
+  matrixmutiply(expSpectrum, cosSpectrum, input_real, width, height);
+  matrixmutiply(expSpectrum, sinSpectrum, input_imag, width, height);
+  FFT2D(input_real, input_imag, output_real, output_imag, width, height, -1,
+        width, height);
+  FFTamplitude(output_real, output_imag, image_amp, width, height);
+
+  FFTpow2(image_amp, image_amp, width, height);
+
+  int Gwindowsize = 5;
+  double std = 2.5;
+  double *gaussianfilter = new double[Gwindowsize * Gwindowsize];
+  // 2D conv
+  GaussianFilter(gaussianfilter, (uint16_t)Gwindowsize, std);
+  conv2D(image_amp, meanlogAmp, srcimg->width, srcimg->height, gaussianfilter,
+         (uint16_t)Gwindowsize, conv2D_gray);
+  FFTnormalize(meanlogAmp, image_amp, width, height);
+
+  clock_gettime(CLOCK_REALTIME, &t_end);
+  elapsedTime = (t_end.tv_sec - t_start.tv_sec) * 1000.0;
+  elapsedTime += (t_end.tv_nsec - t_start.tv_nsec) / 1000000.0;
+  printf("saliency map elapsedTime: %lf ms\n", elapsedTime);
+  TypeConver(image_amp, grayimage, (uint16_t)srcimg->width,
+             (uint16_t)srcimg->height);
+  grayimage2colorimage(grayimage, dstimg->image, srcimg->width, srcimg->height);
+
+  dstimg->Save("img/saliency.bmp");
+  delete[] grayimage;
+  delete[] gaussianfilter;
+  delete srcimg;
+  delete dstimg;
+
+  delete[] input_real;
+  delete[] input_imag;
+  delete[] output_real;
+  delete[] output_imag;
+  delete[] image_log;
+  delete[] image_amp;
+  delete[] image_phase;
+  delete[] cosSpectrum;
+  delete[] sinSpectrum;
+  delete[] meanlogAmp;
+  delete[] differSpectrum;
+  delete[] expSpectrum;
+}
 int main() {
   cout << "start" << endl;
-  fastguassinafilter();
+  // fastguassinafilter();
+  FFTsaliencymap();
   // testFFT();
   // testmat();
   //  testharriscornerdetection();
