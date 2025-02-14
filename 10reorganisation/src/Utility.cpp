@@ -300,8 +300,8 @@ void conv2D(T1 *imageSource, T1 *imageTarget, uint16_t width, uint16_t height,
     return;  // do nothing
   }
 
-  for (int x = 1; x < width - 1; ++x) {
-    for (int y = 1; y < height - 1; ++y) {
+  for (int x = 0; x < width; ++x) {
+    for (int y = 0; y < height; ++y) {
       double filtersum[dim] = {0};
 
       for (int my = y - halfkernelsize; my <= y + halfkernelsize; ++my) {
@@ -333,8 +333,8 @@ double *conv1D(double *imageSource, uint16_t width, uint16_t height,
   double *dst = new double[width * height];
   if (dir == conv1D_col) {
     // col direction
-    for (int x = 1; x < width - 1; ++x) {
-      for (int y = 1; y < height - 1; ++y) {
+    for (int x = 0; x < width; ++x) {
+      for (int y = 0; y < height; ++y) {
         double filtersum[dim] = {0};
         for (int my = y - halfkernelsize; my <= y + halfkernelsize; ++my) {
           if (my < 0 || my >= height) continue;
@@ -351,8 +351,8 @@ double *conv1D(double *imageSource, uint16_t width, uint16_t height,
     }
   } else {
     // row direction
-    for (int y = 1; y < height - 1; ++y) {
-      for (int x = 1; x < width - 1; ++x) {
+    for (int y = 0; y < height; ++y) {
+      for (int x = 0; x < width; ++x) {
         double filtersum[dim] = {0};
         for (int mx = x - halfkernelsize; mx <= x + halfkernelsize; ++mx) {
           if (mx < 0 || mx >= width) continue;
