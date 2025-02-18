@@ -71,4 +71,6 @@ void draw_red_orientation(uint8_t *dst, uint16_t w, uint16_t h, int x, int y,
                           float ori, int cR);
 void setPixelColor(uint8_t *dst, uint16_t w, uint16_t h, int x, int y,
                    int coloridx);
+
+void stackblur(unsigned char *image, int width, int height, int radius);
 #endif

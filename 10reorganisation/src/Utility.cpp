@@ -520,3 +520,38 @@ void draw_red_orientation(uint8_t *dst, uint16_t w, uint16_t h, int x, int y,
     } /* e_xy+e_y < 0 */
   }
 }
+void stackblur(unsigned char *image, int width, int height, int radius) {
+  int wm = width - 1;
+  int hm = height - 1;
+  int wh = width * height;
+  int div = radius * 2 + 1;
+
+  uint8_t *temp = new uint8_t[wh];
+
+  for (int y = 0; y < height; y++) {
+    int sum = 0;
+    for (int i = -radius; i <= radius; i++) {
+      sum += image[y * width + min(wm, max(i, 0))];
+    }
+    for (int x = 0; x < width; x++) {
+      temp[y * width + x] = sum / div;
+      int next = min(wm, x + radius + 1);
+      int prev = max(0, x - radius);
+      sum += image[y * width + next] - image[y * width + prev];
+    }
+  }
+
+  for (int x = 0; x < width; x++) {
+    int sum = 0;
+    for (int i = -radius; i <= radius; i++) {
+      sum += temp[min(hm, max(i, 0)) * width + x];
+    }
+    for (int y = 0; y < height; y++) {
+      image[y * width + x] = sum / div;
+      int next = min(hm, y + radius + 1);
+      int prev = max(0, y - radius);
+      sum += temp[next * width + x] - temp[prev * width + x];
+    }
+  }
+  delete[] temp;
+}

@@ -610,6 +610,17 @@ void fastguassinafilter() {
   grayimage2colorimage(gray, dstimg->image, srcimg->width, srcimg->height);
   dstimg->Save("img/separableconv.bmp");
 
+  colorimage2grayimage(srcimg->image, gray, srcimg->width, srcimg->height);
+  clock_gettime(CLOCK_REALTIME, &t_start);
+  int radius = sqrt(3 * std * std + 1);
+  stackblur(gray, srcimg->width, srcimg->height, radius);
+  clock_gettime(CLOCK_REALTIME, &t_end);
+  elapsedTime = (t_end.tv_sec - t_start.tv_sec) * 1000.0;
+  elapsedTime += (t_end.tv_nsec - t_start.tv_nsec) / 1000000.0;
+  printf("stackblur conv elapsedTime: %lf ms\n", elapsedTime);
+  grayimage2colorimage(gray, dstimg->image, srcimg->width, srcimg->height);
+  dstimg->Save("img/stackblur.bmp");
+
   delete[] dst;
   delete[] gray;
   delete[] gaussianfilter;
@@ -713,7 +724,7 @@ void FFTsaliencymap() {
 }
 int main() {
   cout << "start" << endl;
-  // fastguassinafilter();
+  fastguassinafilter();
   FFTsaliencymap();
   // testFFT();
   // testmat();
