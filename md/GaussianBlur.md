@@ -31,16 +31,16 @@ StackBlur is a technique for approximating Gaussian blur. It uses two major meth
 2. Separable convolution
 The pseudo code is as follows:  
 
-    tempbuf[w*h]
-    // horizontal pass  
-    loop y
-	    loop x
-	    tempbuf[y,x] = sliding windows(x-radius~s+radius) 
+    tempbuf[w*h]  
+    // horizontal pass   
+    loop y   
+	    loop x   
+	    tempbuf[y,x] = sliding windows(x-radius~s+radius)   
 	   
-	 //  vertical pass
-	 loop x
+	 //  vertical pass  
+	 loop x  
 	   loop y  
-	     tempbuf[y,x] = sliding windows(y-radius~y+radius) 
-	     dst[y,x] = tempbuf[y,x] 
+	     tempbuf[y,x] = sliding windows(y-radius~y+radius)   
+	     dst[y,x] = tempbuf[y,x]   
 
 
