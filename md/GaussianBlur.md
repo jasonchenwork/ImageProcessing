@@ -28,7 +28,7 @@ input image size: 900×600
 # StackBlur  
 StackBlur is a technique for approximating Gaussian blur. It uses two major methods:  
 1. Sliding windows  
-2. Separable convolution
+2. Separable convolution  
 The pseudo code is as follows:  
 
     tempbuf[w*h]  
