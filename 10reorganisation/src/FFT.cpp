@@ -60,7 +60,7 @@ void FFT1D(int dir, int m, double *x, double *y) {
 }
 void DFT2D(double *data_real, double *data_imag, double *output_real,
            double *output_imag, int width, int height) {
-#pragma omp parallel for
+#pragma omp parallel for collapse(2)
   for (int i = 0; i < width; i++) {
     for (int j = 0; j < height; j++) {
       output_real[width * j + i] = 0.0;
@@ -75,6 +75,8 @@ void DFT2D(double *data_real, double *data_imag, double *output_real,
           output_imag[width * j + i] -= data_real[width * y + x] * sin(angle);
         }
       }
+      output_real[width * j + i] /= (double)(width * height);
+      output_imag[width * j + i] /= (double)(width * height);
     }
   }
 }
