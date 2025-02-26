@@ -1,5 +1,6 @@
 #include "../include/FFT.hpp"
 
+#include "../include/Utility.hpp"
 void FFT1D(int dir, int m, double *x, double *y) {
   long nn, i, i1, j, k, i2, l, l1, l2;
   float c1, c2, tx, ty, t1, t2, u1, u2, z;
@@ -57,7 +58,45 @@ void FFT1D(int dir, int m, double *x, double *y) {
     }
   }
 }
+void DFT2D(double *data_real, double *data_imag, double *output_real,
+           double *output_imag, int width, int height) {
+#pragma omp parallel for
+  for (int i = 0; i < width; i++) {
+    for (int j = 0; j < height; j++) {
+      output_real[width * j + i] = 0.0;
+      output_imag[width * j + i] = 0.0;
 
+      for (int x = 0; x < width; x++) {
+        for (int y = 0; y < height; y++) {
+          double angle = 2.0 * PI *
+                         ((double)i * (double)x / (double)width +
+                          (double)j * (double)y / (double)height);
+          output_real[width * j + i] += data_real[width * y + x] * cos(angle);
+          output_imag[width * j + i] -= data_real[width * y + x] * sin(angle);
+        }
+      }
+    }
+  }
+}
+void IDFT2D(double *data_real, double *data_imag, double *output_real,
+            double *output_imag, int width, int height) {
+  for (int x = 0; x < width; x++) {
+    for (int y = 0; y < height; y++) {
+      double real_sum = 0.0;
+
+      for (int i = 0; i < width; i++) {
+        for (int j = 0; j < height; j++) {
+          double angle =
+              2.0 * PI * ((double)i * x / width + (double)j * y / height);
+          real_sum += data_real[width * j + i] * cos(angle) -
+                      data_imag[width * j + i] * sin(angle);
+        }
+      }
+
+      output_real[width * y + x] = real_sum / (width * height);
+    }
+  }
+}
 void FFT2D(double *data_real, double *data_imag, double *output_real,
            double *output_imag, int nx, int ny, int dir, int width,
            int height) {
@@ -205,14 +244,34 @@ void FFTlog(double *in, double *fftlog, int width, int height) {
 }
 void FFTnormalize(double *in, double *fftnor, int width, int height) {
   double curmax = 0;
+  double curmin = DBL_MAX;
   for (int x = 0; x < width; x++) {
     for (int y = 0; y < height; y++) {
       if (in[width * y + x] > curmax) curmax = in[width * y + x];
+      if (in[width * y + x] < curmin) curmin = in[width * y + x];
     }
   }
   for (int x = 0; x < width; x++) {
     for (int y = 0; y < height; y++) {
-      fftnor[width * y + x] = 255.0 * in[width * y + x] / curmax;
+      fftnor[width * y + x] = (in[width * y + x] - curmin) / curmax;
+    }
+  }
+}
+void FFT255(double *in, double *fft255, int width, int height) {
+  for (int x = 0; x < width; x++) {
+    for (int y = 0; y < height; y++) {
+      fft255[width * y + x] = 255.0 * in[width * y + x];
+    }
+  }
+}
+void FFTshift(double *in, double *out, int width, int height) {
+  int i, j;
+  for (i = 0; i <= (width / 2) - 1; i++) {
+    for (j = 0; j <= (height / 2) - 1; j++) {
+      out[width * (j + (height / 2)) + (i + width / 2)] = in[width * j + i];
+      out[width * j + i] = in[width * (j + (height / 2)) + (i + width / 2)];
+      out[width * j + (i + (width / 2))] = in[width * (j + (height / 2)) + i];
+      out[width * (j + (width / 2)) + i] = in[width * j + (i + (width / 2))];
     }
   }
 }

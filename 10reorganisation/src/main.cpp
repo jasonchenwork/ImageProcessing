@@ -547,10 +547,12 @@ void testFFT() {
 
   TypeConver(grayimage, input_real, (uint16_t)srcimg->width,
              (uint16_t)srcimg->height);
-
+#if 0
   FFT2D(input_real, input_imag, output_real, output_imag, width, height, 1,
         width, height);
-
+#else
+  DFT2D(input_real, input_imag, output_real, output_imag, width, height);
+#endif
   FFTShiftMagnitude(output_real, output_imag, image_shift, width, height);
 
   FFTShow(image_shift, image_log, width, height);
@@ -724,13 +726,13 @@ void FFTsaliencymap() {
 }
 int main() {
   cout << "start" << endl;
-  fastguassinafilter();
-  FFTsaliencymap();
-  // testFFT();
-  // testmat();
-  //  testharriscornerdetection();
-  // testsift();
-  // testmomrypureclass();
+  // fastguassinafilter();
+  //  FFTsaliencymap();
+  testFFT();
+  //   testmat();
+  //    testharriscornerdetection();
+  //  testsift();
+  //  testmomrypureclass();
 
   //  testhistogramequalization();
   //   testmorphology();
