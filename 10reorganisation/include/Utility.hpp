@@ -2,7 +2,7 @@
 #define UTILITY_HPP
 #include <bits/stdc++.h>
 using namespace std;
-#define PI 3.141592
+#define PI 3.14159265358979323846
 
 struct STfilter2D {
   vector<vector<vector<int>>> kernels;

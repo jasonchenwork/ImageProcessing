@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 #include <omp.h>
 
+#include "../include/DWT.hpp"
 #include "../include/FFT.hpp"
 #include "../include/HarrisCornerDetection.hpp"
 #include "../include/Morphology.hpp"
@@ -724,11 +725,42 @@ void FFTsaliencymap() {
   delete[] differSpectrum;
   delete[] expSpectrum;
 }
+void testDWT() {
+  SimpleImage *srcimg = new SimpleImage();
+
+  bool res = srcimg->Load("img/lena.bmp");
+  if (!res) {
+    cout << "load file fail" << endl;
+  }
+  SimpleImage *dstimg = new SimpleImage(srcimg->width, srcimg->height);
+  uint8_t *grayimage = new uint8_t[srcimg->width * srcimg->height];
+  double *srcdouble = new double[srcimg->width * srcimg->height];
+  double *dstdouble = new double[srcimg->width * srcimg->height];
+
+  colorimage2grayimage(srcimg->image, grayimage, srcimg->width, srcimg->height);
+
+  TypeConver(grayimage, srcdouble, (uint16_t)srcimg->width,
+             (uint16_t)srcimg->height);
+
+  DWT(srcdouble, dstdouble, srcimg->width, srcimg->width);
+
+  TypeConver(dstdouble, grayimage, (uint16_t)srcimg->width,
+             (uint16_t)srcimg->height);
+  grayimage2colorimage(grayimage, dstimg->image, srcimg->width, srcimg->height);
+
+  dstimg->Save("img/DWT.bmp");
+  delete dstimg;
+  delete srcimg;
+  delete[] grayimage;
+  delete[] srcdouble;
+  delete[] dstdouble;
+}
 int main() {
   cout << "start" << endl;
   // fastguassinafilter();
   //  FFTsaliencymap();
-  testFFT();
+  // testFFT();
+  testDWT();
   //   testmat();
   //    testharriscornerdetection();
   //  testsift();

@@ -305,15 +305,17 @@ void FFTShiftMagnitude(double *data_real, double *data_imag, double *FFTShifted,
 }
 void FFTShow(double *FFTMagnitude, double *FFTlog, int width, int height) {
   double logmax = 0;
+  double logmmin = 0x7FFF;
   for (int x = 0; x < width; x++) {
     for (int y = 0; y < height; y++) {
       FFTlog[width * y + x] = log(1.0 + FFTMagnitude[width * y + x]);
       if (FFTlog[width * y + x] > logmax) logmax = FFTlog[width * y + x];
+      if (FFTlog[width * y + x] < logmmin) logmmin = FFTlog[width * y + x];
     }
   }
   for (int x = 0; x < width; x++) {
     for (int y = 0; y < height; y++) {
-      FFTlog[width * y + x] = 2000.0 * FFTlog[width * y + x] / logmax;
+      FFTlog[width * y + x] = 2000 * (FFTlog[width * y + x] - logmmin) / logmax;
       if (FFTlog[width * y + x] > 255) FFTlog[width * y + x] = 255;
     }
   }
