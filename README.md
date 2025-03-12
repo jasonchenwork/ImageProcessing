@@ -1,6 +1,7 @@
 
 
 
+
 # Introduction
 
 ImageProcessing
@@ -36,7 +37,9 @@ Morphology
 
 [SaliencyMap](https://github.com/jasonchenwork/ImageProcessing/blob/main/md/saliencymap.md)  
   
-[DWT](https://github.com/jasonchenwork/ImageProcessing/blob/main/md/DWT.md)
+[DWT](https://github.com/jasonchenwork/ImageProcessing/blob/main/md/DWT.md)  
+
+[DCT](https://github.com/jasonchenwork/ImageProcessing/blob/main/md/DCT.md)
 # **Author Information**
 Name
 Jason Chen
