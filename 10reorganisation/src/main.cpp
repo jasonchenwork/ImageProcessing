@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 #include <omp.h>
 
+#include "../include/DCT.hpp"
 #include "../include/DWT.hpp"
 #include "../include/FFT.hpp"
 #include "../include/HarrisCornerDetection.hpp"
@@ -755,12 +756,47 @@ void testDWT() {
   delete[] srcdouble;
   delete[] dstdouble;
 }
+void testDCT() {
+  SimpleImage *srcimg = new SimpleImage();
+  struct timespec t_start, t_end;
+  double elapsedTime;
+  bool res = srcimg->Load("img/Alley_30_noisy.bmp");
+  if (!res) {
+    cout << "load file fail" << endl;
+  }
+  SimpleImage *dstimg = new SimpleImage(srcimg->width, srcimg->height);
+  uint8_t *grayimage = new uint8_t[srcimg->width * srcimg->height];
+  double *srcdouble = new double[srcimg->width * srcimg->height * 3];
+  double *dstdouble = new double[srcimg->width * srcimg->height * 3];
+
+  TypeConver(srcimg->image, srcdouble, (uint16_t)srcimg->width * 3,
+             (uint16_t)srcimg->height);
+  clock_gettime(CLOCK_REALTIME, &t_start);
+
+  DCTdenoise(srcdouble, dstdouble, srcimg->width, srcimg->height, 3);
+
+  clock_gettime(CLOCK_REALTIME, &t_end);
+  elapsedTime = (t_end.tv_sec - t_start.tv_sec) * 1000.0;
+  elapsedTime += (t_end.tv_nsec - t_start.tv_nsec) / 1000000.0;
+  printf("testDCT elapsedTime: %lf ms\n", elapsedTime);
+
+  TypeConver(dstdouble, dstimg->image, (uint16_t)dstimg->width * 3,
+             (uint16_t)dstimg->height);
+
+  dstimg->Save("img/DCT.bmp");
+  delete dstimg;
+  delete srcimg;
+  delete[] grayimage;
+  delete[] srcdouble;
+  delete[] dstdouble;
+}
 int main() {
   cout << "start" << endl;
   // fastguassinafilter();
   //  FFTsaliencymap();
   // testFFT();
-  testDWT();
+  // testDWT();
+  testDCT();
   //   testmat();
   //    testharriscornerdetection();
   //  testsift();
