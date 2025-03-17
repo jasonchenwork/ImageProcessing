@@ -3,11 +3,13 @@
 #include "../include/Utility.hpp"
 
 void DCT(double* in, double* out, int width, int height) {
+#pragma omp for simd
   for (int u = 0; u < 8; u++) {
     for (int v = 0; v < 8; v++) {
       double sum = 0.0;
       double Cu = (u == 0) ? 1.0 / sqrt(2.0) : 1.0;
       double Cv = (v == 0) ? 1.0 / sqrt(2.0) : 1.0;
+
       for (int x = 0; x < 8; x++) {
         for (int y = 0; y < 8; y++) {
           sum += in[x * 8 + y] * cos((2.0 * x + 1.0) * u * PI / 16.0) *
@@ -20,6 +22,7 @@ void DCT(double* in, double* out, int width, int height) {
 }
 
 void IDCT(double* in, double* out, int width, int height) {
+#pragma omp for simd
   for (int x = 0; x < 8; x++) {
     for (int y = 0; y < 8; y++) {
       double sum = 0.0;
@@ -38,12 +41,13 @@ void IDCT(double* in, double* out, int width, int height) {
 }
 
 void DCTdenoise(double* in, double* out, int width, int height, int ch) {
-  double dctmap[64];
-  double idctmap[64];
-  double block[64];
   for (int rgb = 0; rgb < ch; rgb++) {
+#pragma omp parallel for num_threads(8)
     for (int i = 0; i < width - 8; i += 8) {
       for (int j = 0; j < height - 8; j += 8) {
+        double dctmap[64];
+        double idctmap[64];
+        double block[64];
         for (int x = 0; x < 8; x++) {
           for (int y = 0; y < 8; y++) {
             block[y * 8 + x] = in[(((j + y) * width + (i + x)) * ch) + rgb];
