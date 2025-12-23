@@ -9,8 +9,6 @@ Each weak classifier uses Haar features for computation. Haar features are used 
 
 This project is mainly based on the OpenCV source code.
 
-Would you like me to make it sound more academic (e.g., for a paper/report) or more natural (for a presentation or project description)?
-
 # Result  
 
 ![](https://github.com/jasonchenwork/ImageProcessing/blob/main/10reorganisation/img/testadaboost.bmp)
