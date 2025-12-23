@@ -4,11 +4,13 @@
 #include "../include/DCT.hpp"
 #include "../include/DWT.hpp"
 #include "../include/FFT.hpp"
+#include "../include/HaarObjectDetector.hpp"
 #include "../include/HarrisCornerDetection.hpp"
 #include "../include/Morphology.hpp"
 #include "../include/NonLocalMeans.hpp"
 #include "../include/SimpleImage.hpp"
 #include "../include/SimpleMat.hpp"
+#include "../include/Tinyxml.hpp"
 #include "../include/Utility.hpp"
 #include "../include/WhiteBalance.hpp"
 #include "../include/sift.hpp"
@@ -790,17 +792,55 @@ void testDCT() {
   delete[] srcdouble;
   delete[] dstdouble;
 }
+void testadaboostfacedetection() {
+  struct timespec t_start, t_end;
+  double elapsedTime;
+  HaarObjectDetector* myADABOOST;
+
+  myADABOOST = new HaarObjectDetector();
+  myADABOOST->LoadXML("data/haarcascade_frontalface_alt2.xml");
+
+  SimpleImage* srcimg = new SimpleImage();
+
+  bool res = srcimg->Load("img/lena.bmp");
+  if (!res) {
+    cout << "load file fail" << endl;
+  }
+  SimpleImage* dstimg = new SimpleImage(srcimg->width, srcimg->height);
+  uint8_t* grayimage = new uint8_t[srcimg->width * srcimg->height];
+
+  colorimage2grayimage(srcimg->image, grayimage, srcimg->width, srcimg->height);
+
+  uint8_t** testimage = convert_to_2d(grayimage, srcimg->width, srcimg->height);
+  clock_gettime(CLOCK_REALTIME, &t_start);
+  vector<ORectangle> Results =
+      myADABOOST->Process(testimage, srcimg->width, srcimg->height);
+  clock_gettime(CLOCK_REALTIME, &t_end);
+  elapsedTime = (t_end.tv_sec - t_start.tv_sec) * 1000.0;
+  elapsedTime += (t_end.tv_nsec - t_start.tv_nsec) / 1000000.0;
+  printf("testtestadaboostfacedetection elapsedTime: %lf ms\n", elapsedTime);
+  for (int i = 0; i < Results.size(); i++) {
+    drawRect(srcimg->image, Results[i].x, Results[i].y, Results[i].w,
+             Results[i].h, srcimg->width, srcimg->height, COLOR_GREEN);
+  }
+
+  srcimg->Save("testadaboost.bmp");
+  cout << "fin!:" << Results.size() << endl;
+}
+void testadaboost(void) {}
 int main() {
   cout << "start" << endl;
+
+  testadaboostfacedetection();
   // fastguassinafilter();
-  //  FFTsaliencymap();
-  // testFFT();
-  // testDWT();
-  testDCT();
-  //   testmat();
-  //    testharriscornerdetection();
-  //  testsift();
-  //  testmomrypureclass();
+  //   FFTsaliencymap();
+  //  testFFT();
+  //  testDWT();
+  //  testDCT();
+  //    testmat();
+  //     testharriscornerdetection();
+  //   testsift();
+  //   testmomrypureclass();
 
   //  testhistogramequalization();
   //   testmorphology();

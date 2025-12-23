@@ -1,7 +1,4 @@
 
-
-
-
 # Introduction
 
 ImageProcessing
@@ -9,7 +6,8 @@ ImageProcessing
 This is a project for practicing programming image processing algorithms.
 
 # **Algorithms**
-[White balance ](https://github.com/jasonchenwork/ImageProcessing/blob/main/md/whitebalance.md)  
+
+[White balance](https://github.com/jasonchenwork/ImageProcessing/blob/main/md/whitebalance.md)  
 
 [HistogramEqualization](https://github.com/jasonchenwork/ImageProcessing/blob/main/md/Histogramequalization.md)  
 
@@ -19,7 +17,7 @@ This is a project for practicing programming image processing algorithms.
 
 [Non-local means algorithm with Multi-thread](https://github.com/jasonchenwork/ImageProcessing/blob/main/md/NLMwiththread.md)  
 
-[ Non-local means algorithm with Integral Image skill and Multi-thread ](https://github.com/jasonchenwork/ImageProcessing/blob/main/md/NLMwithintegrallmagethread.md)  
+[Non-local means algorithm with Integral Image skill and Multi-thread](https://github.com/jasonchenwork/ImageProcessing/blob/main/md/NLMwithintegrallmagethread.md)  
 
 [Non-local means algorithm with OpenMP](https://github.com/jasonchenwork/ImageProcessing/blob/main/md/NLMwithintegrallmageopenmp.md)  
 
@@ -28,7 +26,7 @@ Edge Detection
 Morphology  
   
 [Harris Corner Detector](https://github.com/jasonchenwork/ImageProcessing/blob/main/md/harriscorner.md)  
- 
+
 [SIFT](https://github.com/jasonchenwork/ImageProcessing/blob/main/md/SIFT.md)
   
 [FFT](https://github.com/jasonchenwork/ImageProcessing/blob/main/md/FFT.md)  
@@ -40,7 +38,11 @@ Morphology
 [DWT](https://github.com/jasonchenwork/ImageProcessing/blob/main/md/DWT.md)  
 
 [DCT](https://github.com/jasonchenwork/ImageProcessing/blob/main/md/DCT.md)
+
+[Adaboostfacedetection](https://github.com/jasonchenwork/ImageProcessing/blob/main/md/adaboostfacedetection.md)
+
 # **Author Information**
+
 Name
 Jason Chen
   

@@ -1,7 +1,7 @@
 #include "../include/Utility.hpp"
 vector<vector<uint8_t>> COLORBAGS = {
     {0, 0, 255}, {0, 255, 0}, {255, 0, 0}, {255, 255, 255}};
-int AddGaussianNoise(const uint8_t *imageSource, uint8_t *imageTarget,
+int AddGaussianNoise(const uint8_t* imageSource, uint8_t* imageTarget,
                      uint16_t width, uint16_t height, double mean,
                      double stddev) {
   random_device rd;
@@ -33,7 +33,7 @@ int AddGaussianNoise(const uint8_t *imageSource, uint8_t *imageTarget,
 
   return 1;
 }
-void CompareImage(const uint8_t *in1, const uint8_t *in2, uint8_t *out,
+void CompareImage(const uint8_t* in1, const uint8_t* in2, uint8_t* out,
                   uint16_t width, uint16_t height) {
   for (int x = 0; x < width; ++x) {
     for (int y = 0; y < height; ++y) {
@@ -62,7 +62,7 @@ void CompareImage(const uint8_t *in1, const uint8_t *in2, uint8_t *out,
   }
 }
 
-void colorimage2grayimage(const uint8_t *imageSource, uint8_t *imageTarget,
+void colorimage2grayimage(const uint8_t* imageSource, uint8_t* imageTarget,
                           uint16_t width, uint16_t height) {
   for (int x = 0; x < width; ++x) {
     for (int y = 0; y < height; ++y) {
@@ -78,7 +78,7 @@ void colorimage2grayimage(const uint8_t *imageSource, uint8_t *imageTarget,
     }
   }
 }
-void grayimage2colorimage(const uint8_t *imageSource, uint8_t *imageTarget,
+void grayimage2colorimage(const uint8_t* imageSource, uint8_t* imageTarget,
                           uint16_t width, uint16_t height) {
   // gray image to color image
   for (int x = 0; x < width; ++x) {
@@ -94,7 +94,7 @@ void grayimage2colorimage(const uint8_t *imageSource, uint8_t *imageTarget,
   }
 }
 
-void filter2D(const uint8_t *imageSource, uint8_t *imageTarget, uint16_t width,
+void filter2D(const uint8_t* imageSource, uint8_t* imageTarget, uint16_t width,
               uint16_t height, struct STfilter2D filters) {
   int halfkernelsize = filters.kernels[0].size() / 3;
   vector<int> filterd(filters.kernels.size(), 0);
@@ -130,7 +130,7 @@ void filter2D(const uint8_t *imageSource, uint8_t *imageTarget, uint16_t width,
     }
   }
 }
-void imagescale(const unsigned char *imageSource, unsigned char *imageTarget,
+void imagescale(const unsigned char* imageSource, unsigned char* imageTarget,
                 int Swidth, int Sheight, int Twidth, int Theight) {
   double zx = (double)Twidth / (double)Swidth;
   double zy = (double)Theight / (double)Sheight;
@@ -225,7 +225,7 @@ void imagescale(const unsigned char *imageSource, unsigned char *imageTarget,
     }
   }
 }
-void GuassianFilter1D(double *gaussianfilter, uint16_t size, double std) {
+void GuassianFilter1D(double* gaussianfilter, uint16_t size, double std) {
   int windowbase = (int)size / 2;
   double sum = 0.0;
   for (int x = -windowbase; x <= windowbase; x++) {
@@ -238,7 +238,7 @@ void GuassianFilter1D(double *gaussianfilter, uint16_t size, double std) {
     gaussianfilter[(x + windowbase)] /= sum;
   }
 }
-void GaussianFilter(double *gaussianfilter, uint16_t size, double std) {
+void GaussianFilter(double* gaussianfilter, uint16_t size, double std) {
   int windowbase = (int)size / 2;
   double sum = 0.0;
   for (int x = -windowbase; x <= windowbase; x++) {
@@ -255,7 +255,7 @@ void GaussianFilter(double *gaussianfilter, uint16_t size, double std) {
     }
   }
 }
-void MedianFilter(uint8_t *imageSource, uint8_t *imageTarget, uint16_t width,
+void MedianFilter(uint8_t* imageSource, uint8_t* imageTarget, uint16_t width,
                   uint16_t height, uint16_t filtersize, uint8_t dim) {
   int halfkernelsize = filtersize / 2;
 
@@ -292,8 +292,8 @@ void MedianFilter(uint8_t *imageSource, uint8_t *imageTarget, uint16_t width,
   }
 }
 template <typename T1, typename T2>
-void conv2D(T1 *imageSource, T1 *imageTarget, uint16_t width, uint16_t height,
-            T2 *filter, uint16_t filtersize, uint8_t dim) {
+void conv2D(T1* imageSource, T1* imageTarget, uint16_t width, uint16_t height,
+            T2* filter, uint16_t filtersize, uint8_t dim) {
   int halfkernelsize = filtersize / 2;
 
   if (halfkernelsize < 1) {
@@ -326,11 +326,11 @@ void conv2D(T1 *imageSource, T1 *imageTarget, uint16_t width, uint16_t height,
   }
 }
 
-double *conv1D(double *imageSource, uint16_t width, uint16_t height,
-               double *filter, uint16_t filtersize, conv1D_Dirs dir,
+double* conv1D(double* imageSource, uint16_t width, uint16_t height,
+               double* filter, uint16_t filtersize, conv1D_Dirs dir,
                uint8_t dim) {
   int halfkernelsize = filtersize / 2;
-  double *dst = new double[width * height];
+  double* dst = new double[width * height];
   if (dir == conv1D_col) {
     // col direction
     for (int x = 0; x < width; ++x) {
@@ -373,8 +373,8 @@ double *conv1D(double *imageSource, uint16_t width, uint16_t height,
 }
 
 template <typename T1, typename T2>
-void conv2D(vector<T1> &imageSource, vector<T1> &imageTarget, uint16_t width,
-            uint16_t height, T2 *filter, uint16_t filtersize, uint8_t dim) {
+void conv2D(vector<T1>& imageSource, vector<T1>& imageTarget, uint16_t width,
+            uint16_t height, T2* filter, uint16_t filtersize, uint8_t dim) {
   int halfkernelsize = filtersize / 2;
 
   if (halfkernelsize < 1) {
@@ -408,24 +408,24 @@ void conv2D(vector<T1> &imageSource, vector<T1> &imageTarget, uint16_t width,
   }
 }
 // Explicit Instantiation
-template void conv2D<float, double>(float *imageSource, float *imageTarget,
+template void conv2D<float, double>(float* imageSource, float* imageTarget,
                                     uint16_t width, uint16_t height,
-                                    double *filter, uint16_t filtersize,
+                                    double* filter, uint16_t filtersize,
                                     uint8_t dim);
-template void conv2D<uint8_t, double>(uint8_t *imageSource,
-                                      uint8_t *imageTarget, uint16_t width,
-                                      uint16_t height, double *filter,
+template void conv2D<uint8_t, double>(uint8_t* imageSource,
+                                      uint8_t* imageTarget, uint16_t width,
+                                      uint16_t height, double* filter,
                                       uint16_t filtersize, uint8_t dim);
-template void conv2D<float, double>(vector<float> &imageSource,
-                                    vector<float> &imageTarget, uint16_t width,
-                                    uint16_t height, double *filter,
+template void conv2D<float, double>(vector<float>& imageSource,
+                                    vector<float>& imageTarget, uint16_t width,
+                                    uint16_t height, double* filter,
                                     uint16_t filtersize, uint8_t dim);
-template void conv2D<double, double>(double *imageSource, double *imageTarget,
+template void conv2D<double, double>(double* imageSource, double* imageTarget,
                                      uint16_t width, uint16_t height,
-                                     double *filter, uint16_t filtersize,
+                                     double* filter, uint16_t filtersize,
                                      uint8_t dim);
 template <typename T1, typename T2>
-void TypeConver(T1 *src, T2 *dst, uint16_t width, uint16_t height) {
+void TypeConver(T1* src, T2* dst, uint16_t width, uint16_t height) {
   for (int x = 0; x < width; ++x) {
     for (int y = 0; y < height; ++y) {
       dst[width * y + x] = (T2)src[width * y + x];
@@ -433,26 +433,26 @@ void TypeConver(T1 *src, T2 *dst, uint16_t width, uint16_t height) {
   }
 }
 // Explicit Instantiation
-template void TypeConver(uint8_t *src, double *dst, uint16_t width,
+template void TypeConver(uint8_t* src, double* dst, uint16_t width,
                          uint16_t height);
-template void TypeConver(double *src, uint8_t *dst, uint16_t width,
+template void TypeConver(double* src, uint8_t* dst, uint16_t width,
                          uint16_t height);
 
-void uint8Tofloat(uint8_t *src, float *dst, uint16_t width, uint16_t height) {
+void uint8Tofloat(uint8_t* src, float* dst, uint16_t width, uint16_t height) {
   for (int x = 0; x < width; ++x) {
     for (int y = 0; y < height; ++y) {
       dst[width * y + x] = (float)src[width * y + x];
     }
   }
 }
-void floatTouint8(float *src, uint8_t *dst, uint16_t width, uint16_t height) {
+void floatTouint8(float* src, uint8_t* dst, uint16_t width, uint16_t height) {
   for (int x = 0; x < width; ++x) {
     for (int y = 0; y < height; ++y) {
       dst[width * y + x] = (uint8_t)src[width * y + x];
     }
   }
 }
-void setPixelColor(uint8_t *dst, uint16_t w, uint16_t h, int x, int y,
+void setPixelColor(uint8_t* dst, uint16_t w, uint16_t h, int x, int y,
                    int coloridx) {
   if ((y >= 0) && (y < h) && (x >= 0) && (x < w)) {
     dst[3 * (w * y + x) + 2] = COLORBAGS[coloridx][2];
@@ -460,8 +460,19 @@ void setPixelColor(uint8_t *dst, uint16_t w, uint16_t h, int x, int y,
     dst[3 * (w * y + x) + 0] = COLORBAGS[coloridx][0];
   }
 }
+void drawRect(uint8_t* dst, int x, int y, int w, int h, uint16_t imgw,
+              uint16_t imgh, int coloridx) {
+  for (int i = x; i <= w + x; i++) {
+    setPixelColor(dst, imgw, imgh, i, y, coloridx);
+    setPixelColor(dst, imgw, imgh, i, y + h, coloridx);
+  }
+  for (int j = y; j <= h + y; j++) {
+    setPixelColor(dst, imgw, imgh, x, j, coloridx);
+    setPixelColor(dst, imgw, imgh, x + w, j, coloridx);
+  }
+}
 // http://en.wikipedia.org/wiki/Midpoint_circle_algorithm
-void drawCircle(uint8_t *dst, uint16_t w, uint16_t h, int x, int y, int radius,
+void drawCircle(uint8_t* dst, uint16_t w, uint16_t h, int x, int y, int radius,
                 int coloridx) {
   int f = 1 - radius;
   int ddF_x = 1;
@@ -498,7 +509,7 @@ void drawCircle(uint8_t *dst, uint16_t w, uint16_t h, int x, int y, int radius,
     setPixelColor(dst, w, h, x0 - yy, y0 - xx, coloridx);
   }
 }
-void draw_red_orientation(uint8_t *dst, uint16_t w, uint16_t h, int x, int y,
+void draw_red_orientation(uint8_t* dst, uint16_t w, uint16_t h, int x, int y,
                           float ori, int cR) {
   int xe = (int)(x + cos(ori) * cR), ye = (int)(y + sin(ori) * cR);
   // Bresenham's line algorithm
@@ -520,13 +531,13 @@ void draw_red_orientation(uint8_t *dst, uint16_t w, uint16_t h, int x, int y,
     } /* e_xy+e_y < 0 */
   }
 }
-void stackblur(unsigned char *image, int width, int height, int radius) {
+void stackblur(unsigned char* image, int width, int height, int radius) {
   int wm = width - 1;
   int hm = height - 1;
   int wh = width * height;
   int div = radius * 2 + 1;
 
-  uint8_t *temp = new uint8_t[wh];
+  uint8_t* temp = new uint8_t[wh];
 
   for (int y = 0; y < height; y++) {
     int sum = 0;
@@ -554,4 +565,16 @@ void stackblur(unsigned char *image, int width, int height, int radius) {
     }
   }
   delete[] temp;
+}
+unsigned char** convert_to_2d(unsigned char* image, int height, int width) {
+  unsigned char** dst =
+      (unsigned char**)malloc(height * sizeof(unsigned char*));
+
+  if (dst == NULL) return NULL;
+
+  for (int i = 0; i < height; i++) {
+    dst[i] = &image[i * width];
+  }
+
+  return dst;
 }

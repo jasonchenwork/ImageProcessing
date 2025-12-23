@@ -25,52 +25,56 @@ enum conv1D_Dirs {
   conv1D_col = 1,
 };
 
-int AddGaussianNoise(const uint8_t *imageSource, uint8_t *imageTarget,
+int AddGaussianNoise(const uint8_t* imageSource, uint8_t* imageTarget,
                      uint16_t width, uint16_t height, double mean,
                      double stddev);
 
-void CompareImage(const uint8_t *in1, const uint8_t *in2, uint8_t *out,
+void CompareImage(const uint8_t* in1, const uint8_t* in2, uint8_t* out,
                   uint16_t width, uint16_t height);
-void colorimage2grayimage(const uint8_t *imageSource, uint8_t *imageTarget,
+void colorimage2grayimage(const uint8_t* imageSource, uint8_t* imageTarget,
                           uint16_t width, uint16_t height);
-void grayimage2colorimage(const uint8_t *imageSource, uint8_t *imageTarget,
+void grayimage2colorimage(const uint8_t* imageSource, uint8_t* imageTarget,
                           uint16_t width, uint16_t height);
-void filter2D(const uint8_t *imageSource, uint8_t *imageTarget, uint16_t width,
+void filter2D(const uint8_t* imageSource, uint8_t* imageTarget, uint16_t width,
               uint16_t height, struct STfilter2D filters);
 
-void imagescale(const unsigned char *imageSource, unsigned char *imageTarget,
+void imagescale(const unsigned char* imageSource, unsigned char* imageTarget,
                 int Swidth, int Sheight, int Twidth, int Theight);
 
-void GaussianFilter(double *gaussianfilter, uint16_t size, double std);
+void GaussianFilter(double* gaussianfilter, uint16_t size, double std);
 
-void GuassianFilter1D(double *gaussianfilter, uint16_t size, double std);
+void GuassianFilter1D(double* gaussianfilter, uint16_t size, double std);
 
-void MedianFilter(uint8_t *imageSource, uint8_t *imageTarget, uint16_t width,
+void MedianFilter(uint8_t* imageSource, uint8_t* imageTarget, uint16_t width,
                   uint16_t height, uint16_t filtersize, uint8_t dim);
 
 template <typename T1, typename T2>
-void conv2D(T1 *imageSource, T1 *imageTarget, uint16_t width, uint16_t height,
-            T2 *filter, uint16_t filtersize, uint8_t dim);
+void conv2D(T1* imageSource, T1* imageTarget, uint16_t width, uint16_t height,
+            T2* filter, uint16_t filtersize, uint8_t dim);
 template <typename T1, typename T2>
-void conv2D(vector<T1> &imageSource, vector<T1> &imageTarget, uint16_t width,
-            uint16_t height, T2 *filter, uint16_t filtersize, uint8_t dim);
+void conv2D(vector<T1>& imageSource, vector<T1>& imageTarget, uint16_t width,
+            uint16_t height, T2* filter, uint16_t filtersize, uint8_t dim);
 
-double *conv1D(double *imageSource, uint16_t width, uint16_t height,
-               double *filter, uint16_t filtersize, conv1D_Dirs dir,
+double* conv1D(double* imageSource, uint16_t width, uint16_t height,
+               double* filter, uint16_t filtersize, conv1D_Dirs dir,
                uint8_t dim);
 
-void uint8Tofloat(uint8_t *src, float *dst, uint16_t width, uint16_t height);
-void floatTouint8(float *src, uint8_t *dst, uint16_t width, uint16_t height);
+void uint8Tofloat(uint8_t* src, float* dst, uint16_t width, uint16_t height);
+void floatTouint8(float* src, uint8_t* dst, uint16_t width, uint16_t height);
 
 template <typename T1, typename T2>
-void TypeConver(T1 *src, T2 *dst, uint16_t width, uint16_t height);
+void TypeConver(T1* src, T2* dst, uint16_t width, uint16_t height);
 
-void drawCircle(uint8_t *dst, uint16_t w, uint16_t h, int x, int y, int radius,
+void drawCircle(uint8_t* dst, uint16_t w, uint16_t h, int x, int y, int radius,
                 int coloridx);
-void draw_red_orientation(uint8_t *dst, uint16_t w, uint16_t h, int x, int y,
+void draw_red_orientation(uint8_t* dst, uint16_t w, uint16_t h, int x, int y,
                           float ori, int cR);
-void setPixelColor(uint8_t *dst, uint16_t w, uint16_t h, int x, int y,
+void setPixelColor(uint8_t* dst, uint16_t w, uint16_t h, int x, int y,
                    int coloridx);
 
-void stackblur(unsigned char *image, int width, int height, int radius);
+void stackblur(unsigned char* image, int width, int height, int radius);
+unsigned char** convert_to_2d(unsigned char* image, int height, int width);
+
+void drawRect(uint8_t* dst, int x, int y, int w, int h, uint16_t imgw,
+              uint16_t imgh, int coloridx);
 #endif
