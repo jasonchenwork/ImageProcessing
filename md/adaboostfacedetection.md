@@ -17,10 +17,6 @@ This project is mainly based on the OpenCV source code.
 
 TBD
 
-# How to improve speed  
-
-TBD
-
 # Reference  
 
 [1] Rapid Object Detection using a Boosted Cascade of Simple Features” “Robust Real-Time Face Detection
