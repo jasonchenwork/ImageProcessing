@@ -40,7 +40,9 @@ void filter2D(const uint8_t* imageSource, uint8_t* imageTarget, uint16_t width,
 
 void imagescale(const unsigned char* imageSource, unsigned char* imageTarget,
                 int Swidth, int Sheight, int Twidth, int Theight);
-
+void imagescale2Donechannel(unsigned char** imageSource,
+                            unsigned char** imageTarget, int Swidth,
+                            int Sheight, int Twidth, int Theight);
 void GaussianFilter(double* gaussianfilter, uint16_t size, double std);
 
 void GuassianFilter1D(double* gaussianfilter, uint16_t size, double std);

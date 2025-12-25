@@ -798,7 +798,7 @@ void testadaboostfacedetection() {
   HaarObjectDetector* myADABOOST;
 
   myADABOOST = new HaarObjectDetector();
-  myADABOOST->LoadXML("data/haarcascade_frontalface_alt2.xml");
+  myADABOOST->LoadXML("data/haarcascade_frontalface_alt.xml");
 
   SimpleImage* srcimg = new SimpleImage();
 
@@ -813,8 +813,10 @@ void testadaboostfacedetection() {
 
   uint8_t** testimage = convert_to_2d(grayimage, srcimg->width, srcimg->height);
   clock_gettime(CLOCK_REALTIME, &t_start);
-  vector<ORectangle> Results =
-      myADABOOST->Process(testimage, srcimg->width, srcimg->height);
+  vector<ORectangle> Results = myADABOOST->ProcessMultiScaleWindow(
+      testimage, srcimg->width, srcimg->height);
+  // //ProcessMultiScaleImage ProcessMultiScaleWindow
+
   clock_gettime(CLOCK_REALTIME, &t_end);
   elapsedTime = (t_end.tv_sec - t_start.tv_sec) * 1000.0;
   elapsedTime += (t_end.tv_nsec - t_start.tv_nsec) / 1000000.0;

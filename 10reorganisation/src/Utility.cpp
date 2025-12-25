@@ -225,6 +225,69 @@ void imagescale(const unsigned char* imageSource, unsigned char* imageTarget,
     }
   }
 }
+void imagescale2Donechannel(unsigned char** imageSource,
+                            unsigned char** imageTarget, int Swidth,
+                            int Sheight, int Twidth, int Theight) {
+  double zx = (double)Twidth / (double)Swidth;
+  double zy = (double)Theight / (double)Sheight;
+
+  int i, j, m, n;
+
+  double p, q;
+
+  int gray = 0;
+
+  for (i = 0; i < Theight; i++) {
+    for (j = 0; j < Twidth; j++) {
+      double x, y;
+      y = (i / zy);
+      x = (j / zx);
+
+      if (y > 0) {
+        m = (int)(y);
+      } else {
+        m = (int)(y - 1);
+      }
+
+      if (x > 0) {
+        n = (int)(x);
+      } else {
+        n = (int)(x - 1);
+      }
+
+      q = y - m;
+      p = x - n;
+
+      if (q == 1) {
+        q = 0;
+        m += 1;
+      }
+      if (p == 1) {
+        p = 0;
+        n += 1;
+      }
+      if ((m >= 0) && (m < Sheight - 1) && (n >= 0) && (n < Swidth - 1)) {
+        gray = ((1.0 - q) *
+                ((1.0 - p) * (imageSource[m][n]) + p * (imageSource[m + 1][n]) +
+                 q * ((1.0 - p) * (imageSource[m][n + 1]) +
+                      p * (imageSource[m + 1][n + 1]))));
+
+      } else {
+        gray = 0;
+      }
+
+      if (gray < 0) {
+        gray = 0;
+      }
+
+      if (gray > 255) {
+        gray = 255;
+      }
+
+      imageTarget[i][j] = (unsigned char)gray;
+    }
+  }
+}
 void GuassianFilter1D(double* gaussianfilter, uint16_t size, double std) {
   int windowbase = (int)size / 2;
   double sum = 0.0;

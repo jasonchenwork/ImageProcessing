@@ -3,6 +3,7 @@
 #include <bits/stdc++.h>
 
 #include "../include/IntegralImage2.hpp"
+#include "../include/Utility.hpp"
 using namespace std;
 
 #ifndef dmin
@@ -61,7 +62,7 @@ typedef struct {
 
 typedef struct {
   double Stage_Threshold;
-
+  // int count;
   vector<StageTree> Tree;
 
 } HaarStage;
@@ -77,8 +78,12 @@ class HaarObjectDetector {
   void update(int width, int height);
   bool HaarClassifierCompute(IntegralImage2* im, ORectangle window,
                              double scale);
+  bool HaarClassifierCompute2(IntegralImage2* im, ORectangle window,
+                              double scale);
   double FeatureGetSum(IntegralImage2* im, int x, int y, HaarFeature HF,
                        double scale);
+  double FeatureGetSum2(IntegralImage2* im, int x, int y, HaarFeature HF,
+                        double scale);
   void updateFeature(double scale);
 
  public:
@@ -105,6 +110,9 @@ class HaarObjectDetector {
 
   // methods
   void LoadXML(string path);
-  vector<ORectangle> Process(unsigned char** Src, int width, int height);
+  vector<ORectangle> ProcessMultiScaleWindow(unsigned char** Src, int width,
+                                             int height);
+  vector<ORectangle> ProcessMultiScaleImage(unsigned char** Src, int width,
+                                            int height);
 };
 #endif
