@@ -26,7 +26,8 @@ test image is lena(512x512)
   
 # Implement note  
 
-1. haar's weights need to normalize
+## haar's weights need to normalize
+
    $$w'_i​= \frac{w_i}{CascadeW×CascadeH}$$
 
 The method for scaling windows is integrated into the update feature function. This is the method in scaling image:
@@ -48,7 +49,7 @@ The method for scaling windows is integrated into the update feature function. T
 
 ```
 
-1. brightness normalize
+## brightness normalize
 
 $$f_{\text{norm}} = \frac{\sum_i w_i S(R_i) - \text{mean}_{\text{window}} \cdot \sum_i w_i |R_i|}{\text{std}_{\text{window}}}$$
 
