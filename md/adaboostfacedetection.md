@@ -64,10 +64,17 @@ $$f_{\text{norm}} = \frac{\sum_i w_i S(R_i)}{\text{std}_{\text{window}}}$$
 
 Therefore, there is no need to follow the calculation based on the current feature rectangle, and it can be further optimized afterwards.
 Let's
-$  \frac{GetFeature()}{\text{std}_{\text{window}}} < {\text{node}_{\text{threshold}}} $
+$$
+\frac{GetFeature()}{\text{std}_{\text{window}}} < {\text{node}_{\text{threshold}}}
+$$
+
 to
-$  \text{GetFeature()} < {\text{node}_{\text{threshold}}} * {\text{std}_{\text{window}}} $
-factor = ${\text{std}_{\text{window}}} $
+
+$$
+\text{GetFeature()} < {\text{node}_{\text{threshold}}} * {\text{std}_{\text{window}}}
+$$
+
+factor = $ {\text{std}_{\text{window}}} $
 
 ```CPP
 bool HaarObjectDetector::HaarClassifierCompute2(IntegralImage2* im,
@@ -85,8 +92,8 @@ bool HaarObjectDetector::HaarClassifierCompute2(IntegralImage2* im,
 
   factor = (factor >= 0.0) ? sqrt(factor) : 1.0;
 
-  ...
-  ...
+    ...
+    ...
     double sum = FeatureGetSum2(
             im, x, y, myHaarCascadeStage.Stage[i].Tree[j].Node[z].Feature,
             scale);
@@ -96,6 +103,7 @@ bool HaarObjectDetector::HaarClassifierCompute2(IntegralImage2* im,
           {
             ...
           }
+    ...
  
 ```
 
