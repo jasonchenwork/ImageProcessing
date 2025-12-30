@@ -58,14 +58,14 @@ $|R_i|$ → rectangle area
 
 mean_window / std_window → window pixel mean & std
 Due to  
-$ \sum_i w_i |R_i| =0 $
+$ \sum_i w_i |R_i| =0 $  
 Let's  
 $$f_{\text{norm}} = \frac{\sum_i w_i S(R_i)}{\text{std}_{\text{window}}}$$
 
 Therefore, there is no need to follow the calculation based on the current feature rectangle, and it can be further optimized afterwards.  
 Let's  
 $$
-\frac{GetFeature()}{\text{std}_{\text{window}}} < {\text{node}_{\text{threshold}}}
+\frac{\text{GetFeature()}}{\text{std}_{\text{window}}} < {\text{node}_{\text{threshold}}}
 $$
 
 to
