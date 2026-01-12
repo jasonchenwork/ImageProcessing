@@ -68,11 +68,13 @@ void colorimage2grayimage(const uint8_t* imageSource, uint8_t* imageTarget,
     for (int y = 0; y < height; ++y) {
       int curIndex = 3 * (width * y + x);
 
-      int curR = imageSource[curIndex + 2];
-      int curG = imageSource[curIndex + 1];
-      int curB = imageSource[curIndex + 0];
+      double curR = imageSource[curIndex + 2] * 0.299;
+      double curG = imageSource[curIndex + 1] * 0.589;
+      double curB = imageSource[curIndex + 0] * 0.114;
 
-      int grayvalue = (curR + curG + curB) / 3;
+      int grayvalue = (int)(curR + curG + curB);
+
+      if (grayvalue > 255) grayvalue = 255;
 
       imageTarget[width * y + x] = grayvalue;
     }
@@ -318,6 +320,71 @@ void GaussianFilter(double* gaussianfilter, uint16_t size, double std) {
     }
   }
 }
+void FastMedianFilter(uint8_t* imageSource, uint8_t* imageTarget,
+                      uint16_t width, uint16_t height, uint16_t filtersize,
+                      uint8_t dim) {
+  int halfkernelsize = filtersize / 2;
+  int mediancountTH = (filtersize * filtersize) / 2;
+  bool firstconv = true;
+
+  if (halfkernelsize < 1) {
+    return;  // do nothing
+  }
+  vector<vector<uint8_t>> hisgram(dim, vector<uint8_t>(256, 0));
+  for (int y = halfkernelsize; y < height - halfkernelsize; ++y) {
+    for (int x = halfkernelsize; x < width - halfkernelsize; ++x) {
+      if (firstconv) {
+        for (int my = y - halfkernelsize; my <= y + halfkernelsize; ++my) {
+          if (my < 0 || my >= height) continue;
+          for (int mx = x - halfkernelsize; mx <= x + halfkernelsize; ++mx) {
+            if (mx < 0 || mx >= width) continue;
+            for (int i = 0; i < dim; i++) {
+              hisgram[i][imageSource[dim * (width * my + mx) + i]]++;
+            }
+          }
+        }
+        firstconv = false;
+      } else {
+        // add&remove
+        for (int my = y - halfkernelsize; my <= y + halfkernelsize; ++my) {
+          for (int i = 0; i < dim; i++) {
+            hisgram[i]
+                   [imageSource[dim * (width * my + x + halfkernelsize) + i]]++;
+            hisgram[i][imageSource[dim * (width * my + x - halfkernelsize - 1) +
+                                   i]]--;
+          }
+        }
+      }
+// find median
+#if 0
+      int lx = max(x - halfkernelsize, 0);
+      int ly = max(y - halfkernelsize, 0);
+      int rx = min(x + halfkernelsize, width - 1);
+      int ry = min(y + halfkernelsize, height - 1);
+      int area = (rx - lx + 1) * (ry - ly + 1);
+      int mediancountTH = area >> 1;
+
+#endif
+
+      for (int i = 0; i < dim; i++) {
+        int count = 0;
+        for (int j = 0; j < 256; j++) {
+          count += hisgram[i][j];
+          if (count >= mediancountTH) {
+            imageTarget[dim * (width * y + x) + i] = j;
+            break;
+          }
+        }
+      }
+    }
+    firstconv = true;
+    for (int i = 0; i < dim; i++) {
+      for (int j = 0; j < 256; j++) {
+        hisgram[i][j] = 0;
+      }
+    }
+  }
+}
 void MedianFilter(uint8_t* imageSource, uint8_t* imageTarget, uint16_t width,
                   uint16_t height, uint16_t filtersize, uint8_t dim) {
   int halfkernelsize = filtersize / 2;
@@ -325,9 +392,8 @@ void MedianFilter(uint8_t* imageSource, uint8_t* imageTarget, uint16_t width,
   if (halfkernelsize < 1) {
     return;  // do nothing
   }
-
-  for (int x = 1; x < width - 1; ++x) {
-    for (int y = 1; y < height - 1; ++y) {
+  for (int y = halfkernelsize; y < height - halfkernelsize; ++y) {
+    for (int x = halfkernelsize; x < width - halfkernelsize; ++x) {
       vector<vector<int>> filter(dim, vector<int>());
 
       for (int my = y - halfkernelsize; my <= y + halfkernelsize; ++my) {

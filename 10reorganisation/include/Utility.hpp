@@ -49,7 +49,9 @@ void GuassianFilter1D(double* gaussianfilter, uint16_t size, double std);
 
 void MedianFilter(uint8_t* imageSource, uint8_t* imageTarget, uint16_t width,
                   uint16_t height, uint16_t filtersize, uint8_t dim);
-
+void FastMedianFilter(uint8_t* imageSource, uint8_t* imageTarget,
+                      uint16_t width, uint16_t height, uint16_t filtersize,
+                      uint8_t dim);
 template <typename T1, typename T2>
 void conv2D(T1* imageSource, T1* imageTarget, uint16_t width, uint16_t height,
             T2* filter, uint16_t filtersize, uint8_t dim);

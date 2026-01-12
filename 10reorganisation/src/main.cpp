@@ -228,6 +228,29 @@ void testgaussianfilter() {
 
   dstimg->Save("img/InputImage01AfterGsmooth.bmp");
 }
+void testfastmediafilter() {
+  struct timespec t_start, t_end;
+  double elapsedTime;
+  SimpleImage* srcimg = new SimpleImage();
+
+  bool res = srcimg->Load("img/InputImage01AfterGnoise.bmp");
+  if (!res) {
+    cout << "load file fail" << endl;
+  }
+  SimpleImage* dstimg = new SimpleImage(srcimg->width, srcimg->height);
+
+  clock_gettime(CLOCK_REALTIME, &t_start);
+  int filtersize = 7;
+  FastMedianFilter(srcimg->image, dstimg->image, srcimg->width, srcimg->height,
+                   filtersize, conv2D_color);
+
+  clock_gettime(CLOCK_REALTIME, &t_end);
+  elapsedTime = (t_end.tv_sec - t_start.tv_sec) * 1000.0;
+  elapsedTime += (t_end.tv_nsec - t_start.tv_nsec) / 1000000.0;
+  printf("elapsedTime: %lf ms\n", elapsedTime);
+
+  dstimg->Save("img/InputImage01AfterFastMedianFilter.bmp");
+}
 void testmediafilter() {
   struct timespec t_start, t_end;
   double elapsedTime;
