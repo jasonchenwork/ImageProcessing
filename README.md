@@ -39,7 +39,9 @@ Morphology
 
 [DCT](https://github.com/jasonchenwork/ImageProcessing/blob/main/md/DCT.md)
 
-[Adaboostfacedetection](https://github.com/jasonchenwork/ImageProcessing/blob/main/md/adaboostfacedetection.md)
+[Adaboostfacedetection](https://github.com/jasonchenwork/ImageProcessing/blob/main/md/adaboostfacedetection.md)  
+
+[FastMedianFilter](https://github.com/jasonchenwork/ImageProcessing/blob/main/md/FastMedianFilter.md)  
 
 # **Author Information**
 
