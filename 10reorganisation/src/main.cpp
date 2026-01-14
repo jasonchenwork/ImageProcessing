@@ -10,6 +10,7 @@
 #include "../include/NonLocalMeans.hpp"
 #include "../include/SimpleImage.hpp"
 #include "../include/SimpleMat.hpp"
+#include "../include/StereoImage.hpp"
 #include "../include/Tinyxml.hpp"
 #include "../include/Utility.hpp"
 #include "../include/WhiteBalance.hpp"
@@ -852,20 +853,93 @@ void testadaboostfacedetection() {
   srcimg->Save("testadaboost.bmp");
   cout << "fin!:" << Results.size() << endl;
 }
-void testadaboost(void) {}
+void teststereoimageBM() {
+  struct timespec t_start, t_end;
+  double elapsedTime;
+  SimpleImage* srcimgL = new SimpleImage();
+  SimpleImage* srcimgR = new SimpleImage();
+
+  bool resL = srcimgL->Load("img/sceneL.bmp");
+  bool resR = srcimgR->Load("img/sceneR.bmp");
+
+  int w = srcimgL->width;
+  int h = srcimgL->height;
+
+  int windows_size = 7;
+  int displacement = 20;
+
+  uint8_t* srcL = new uint8_t[w * h];
+  uint8_t* srcR = new uint8_t[w * h];
+  uint8_t* dst = new uint8_t[w * h];
+
+  if (!resL || !resR) {
+    cout << "load file fail" << endl;
+  }
+  SimpleImage* dstimg = new SimpleImage(w, h);
+
+  colorimage2grayimage(srcimgL->image, srcL, w, h);
+  colorimage2grayimage(srcimgR->image, srcR, w, h);
+  clock_gettime(CLOCK_REALTIME, &t_start);
+  stereoimageBM(dst, srcL, srcR, w, h, windows_size, displacement);
+  clock_gettime(CLOCK_REALTIME, &t_end);
+  elapsedTime = (t_end.tv_sec - t_start.tv_sec) * 1000.0;
+  elapsedTime += (t_end.tv_nsec - t_start.tv_nsec) / 1000000.0;
+  printf("%s elapsedTime: %lf ms\n", __func__, elapsedTime);
+  grayimage2colorimage(dst, dstimg->image, w, h);
+
+  dstimg->Save("img/teststereoimage.bmp");
+}
+void teststereoimageBMwithSGM() {
+  struct timespec t_start, t_end;
+  double elapsedTime;
+  SimpleImage* srcimgL = new SimpleImage();
+  SimpleImage* srcimgR = new SimpleImage();
+
+  bool resL = srcimgL->Load("img/sceneL.bmp");
+  bool resR = srcimgR->Load("img/sceneR.bmp");
+
+  int w = srcimgL->width;
+  int h = srcimgL->height;
+
+  int windows_size = 7;
+  int displacement = 20;
+
+  uint8_t* srcL = new uint8_t[w * h];
+  uint8_t* srcR = new uint8_t[w * h];
+  uint8_t* dst = new uint8_t[w * h];
+
+  if (!resL || !resR) {
+    cout << "load file fail" << endl;
+  }
+  SimpleImage* dstimg = new SimpleImage(w, h);
+
+  colorimage2grayimage(srcimgL->image, srcL, w, h);
+  colorimage2grayimage(srcimgR->image, srcR, w, h);
+  clock_gettime(CLOCK_REALTIME, &t_start);
+  stereoimageBMwithSGM(dst, srcL, srcR, w, h, windows_size, displacement, 10,
+                       120);
+  clock_gettime(CLOCK_REALTIME, &t_end);
+  elapsedTime = (t_end.tv_sec - t_start.tv_sec) * 1000.0;
+  elapsedTime += (t_end.tv_nsec - t_start.tv_nsec) / 1000000.0;
+  printf("%s elapsedTime: %lf ms\n", __func__, elapsedTime);
+  grayimage2colorimage(dst, dstimg->image, w, h);
+
+  dstimg->Save("img/teststereoimageSGM.bmp");
+}
 int main() {
   cout << "start" << endl;
-
-  testadaboostfacedetection();
-  // fastguassinafilter();
-  //   FFTsaliencymap();
-  //  testFFT();
-  //  testDWT();
-  //  testDCT();
-  //    testmat();
-  //     testharriscornerdetection();
-  //   testsift();
-  //   testmomrypureclass();
+  teststereoimageBM();
+  teststereoimageBMwithSGM();
+  //  testadaboostfacedetection();
+  //    fastguassinafilter();
+  //      FFTsaliencymap();
+  //     testFFT();
+  //     testDWT();
+  //     testDCT();
+  //       testmat();
+  //        testharriscornerdetection();
+  //      testsift();
+  //      testmomrypureclass();
 
   //  testhistogramequalization();
   //   testmorphology();

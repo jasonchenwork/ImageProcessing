@@ -43,6 +43,8 @@ Morphology
 
 [FastMedianFilter](https://github.com/jasonchenwork/ImageProcessing/blob/main/md/FastMedianFilter.md)  
 
+[StereoImageSGM](https://github.com/jasonchenwork/ImageProcessing/blob/main/md/StereoImageSGM.md)  
+
 # **Author Information**
 
 Name
