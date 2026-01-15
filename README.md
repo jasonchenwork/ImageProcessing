@@ -3,7 +3,27 @@
 
 ImageProcessing
 
-This is a project for practicing programming image processing algorithms.
+This is a project for practicing programming image processing algorithms.  
+
+I implement image processing algorithms in C++ without using im libraries.  
+
+Support Oepn&Save bmp files without any libraries.  
+  
+```C++
+#include <bits/stdc++.h>
+#include "../include/SimpleImage.hpp"
+
+int main() {
+  SimpleImage* img = new SimpleImage();
+  bool res = img->Load("img/pattern.bmp");
+  if (!res) {
+    cout << "load file fail" << endl;
+  }
+  img->Save("img/test05.bmp");
+  delete img;
+  return 0;
+}
+```  
 
 # **Algorithms**
 
