@@ -8,6 +8,7 @@
 #include "../include/HarrisCornerDetection.hpp"
 #include "../include/Morphology.hpp"
 #include "../include/NonLocalMeans.hpp"
+#include "../include/Opticalflow.hpp"
 #include "../include/SimpleImage.hpp"
 #include "../include/SimpleMat.hpp"
 #include "../include/StereoImage.hpp"
@@ -926,10 +927,47 @@ void teststereoimageBMwithSGM() {
 
   dstimg->Save("img/teststereoimageSGM.bmp");
 }
+void testOpticalFlowHS() {
+  struct timespec t_start, t_end;
+  double elapsedTime;
+  SimpleImage* srcimgL = new SimpleImage();
+  SimpleImage* srcimgR = new SimpleImage();
+
+  bool resL = srcimgL->Load("img/frame10.bmp");
+  bool resR = srcimgR->Load("img/frame11.bmp");
+
+  int w = srcimgL->width;
+  int h = srcimgL->height;
+
+  uint8_t* src0 = new uint8_t[w * h];
+  uint8_t* src1 = new uint8_t[w * h];
+  uint8_t* dst = new uint8_t[w * h * 3];
+
+  if (!resL || !resR) {
+    cout << "load file fail" << endl;
+  }
+  SimpleImage* dstimg = new SimpleImage(w, h);
+  int interations = 10;
+  double alpha = 3;
+
+  colorimage2grayimage(srcimgL->image, src0, w, h);
+  colorimage2grayimage(srcimgR->image, src1, w, h);
+  clock_gettime(CLOCK_REALTIME, &t_start);
+  opticalflowHS(dst, src0, src1, w, h, interations, alpha);
+  clock_gettime(CLOCK_REALTIME, &t_end);
+  elapsedTime = (t_end.tv_sec - t_start.tv_sec) * 1000.0;
+  elapsedTime += (t_end.tv_nsec - t_start.tv_nsec) / 1000000.0;
+  printf("%s elapsedTime: %lf ms\n", __func__, elapsedTime);
+  // grayimage2colorimage(dst, dstimg->image, w, h);
+  dstimg->image = dst;
+
+  dstimg->Save("img/testopticalflowHS.bmp");
+}
 int main() {
   cout << "start" << endl;
-  teststereoimageBM();
-  teststereoimageBMwithSGM();
+  // teststereoimageBM();
+  // teststereoimageBMwithSGM();
+  testOpticalFlowHS();
   //  testadaboostfacedetection();
   //    fastguassinafilter();
   //      FFTsaliencymap();

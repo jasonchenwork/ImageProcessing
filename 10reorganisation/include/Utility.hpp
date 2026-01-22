@@ -81,4 +81,7 @@ unsigned char** convert_to_2d(unsigned char* image, int height, int width);
 
 void drawRect(uint8_t* dst, int x, int y, int w, int h, uint16_t imgw,
               uint16_t imgh, int coloridx);
+
+void rgb2hsv(double* dst, unsigned char* src, int height, int width);
+void hsv2rgb(unsigned char* dst, double* src, int height, int width);
 #endif

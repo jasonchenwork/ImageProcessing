@@ -707,3 +707,108 @@ unsigned char** convert_to_2d(unsigned char* image, int height, int width) {
 
   return dst;
 }
+void rgb2hsv(double* dst, unsigned char* src, int height, int width) {
+  for (int y = 0; y < height; ++y) {
+    for (int x = 0; x < width; ++x) {
+      double r = src[(y * width + x) * 3 + 2] / 255.0;
+      double g = src[(y * width + x) * 3 + 1] / 255.0;
+      double b = src[(y * width + x) * 3 + 0] / 255.0;
+
+      double cMax = max({r, g, b});
+      double cMin = min({r, g, b});
+      double delta = cMax - cMin;
+
+      // S
+      if (cMax == 0) {
+        dst[(y * width + x) * 3 + 1] = 0;
+      } else {
+        dst[(y * width + x) * 3 + 1] = delta / cMax;
+      }
+      double hue;
+
+      if (delta == 0) {
+        hue = 0;
+      } else {
+        if (cMax == r) {
+          hue = 60 * (g - b) / delta;
+
+        } else if (cMax == g) {
+          hue = 60 * (2 + (b - r) / delta);
+        } else {
+          hue = 60 * (4 + (r - g) / delta);
+        }
+      }
+      if (hue < 0) {
+        hue += 360;
+      }
+      dst[(y * width + x) * 3 + 2] = hue;  // Hue
+
+      dst[(y * width + x) * 3 + 0] = cMax;  // V
+    }
+  }
+};
+void hsv2rgb(unsigned char* dst, double* src, int height, int width) {
+  double r, g, b;
+  for (int y = 0; y < height; ++y) {
+    for (int x = 0; x < width; ++x) {
+      double Hue = src[(y * width + x) * 3 + 2];
+      double Saturation = src[(y * width + x) * 3 + 1];
+      double Value = src[(y * width + x) * 3 + 0];
+
+      if (Saturation == 0) {
+        r = Value;
+        g = Value;
+        b = Value;
+      } else {
+        if (Hue >= 360) Hue = 0;
+        Hue /= 60;
+        int i = static_cast<int>(floor(Hue));
+        double f = Hue - i;
+
+        double p = Value * (1.0 - Saturation);
+        double q = Value * (1.0 - Saturation * f);
+        double t = Value * (1.0 - Saturation * (1.0 - f));
+
+        switch (i) {
+          case 0:
+            r = Value;
+            g = t;
+            b = p;
+            break;
+          case 1:
+            r = q;
+            g = Value;
+            b = p;
+            break;
+          case 2:
+            r = p;
+            g = Value;
+            b = t;
+            break;
+          case 3:
+            r = p;
+            g = q;
+            b = Value;
+            break;
+          case 4:
+            r = t;
+            g = p;
+            b = Value;
+            break;
+          default:
+            r = Value;
+            g = p;
+            b = q;
+            break;
+        }
+      }
+
+      dst[(y * width + x) * 3 + 0] =
+          static_cast<unsigned char>(b * 255.0);  // B
+      dst[(y * width + x) * 3 + 1] =
+          static_cast<unsigned char>(g * 255.0);  // G
+      dst[(y * width + x) * 3 + 2] =
+          static_cast<unsigned char>(r * 255.0);  // R
+    }
+  }
+}
