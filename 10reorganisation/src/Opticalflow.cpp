@@ -33,7 +33,90 @@ vector<vector<vector<double>>> GetPartialDerivative(uint8_t* srcFirst,
   }
   return E;
 }
+vector<vector<double>> matrix_transform(vector<vector<double>>& A) {
+  vector<vector<double>> At(A[0].size(), vector<double>(A.size(), 0));
 
+  for (int y = 0; y < A.size(); y++) {
+    for (int x = 0; x < A[0].size(); x++) {
+      At[x][y] = A[y][x];
+    }
+  }
+
+  return At;
+}
+vector<vector<double>> matrix_multiply(vector<vector<double>>& M1,
+                                       vector<vector<double>>& M2) {
+  vector<vector<double>> out(M1.size(), vector<double>(M2[0].size(), 0));
+
+  for (int y = 0; y < out.size(); y++) {
+    for (int x = 0; x < out[0].size(); x++) {
+      double tmp = 0;
+      for (int z = 0; z < M1[0].size(); z++) {
+        tmp += M1[y][z] * M2[z][x];
+      }
+      out[y][x] = tmp;
+    }
+  }
+
+  return out;
+}
+vector<vector<double>> matrix_2dinverse(vector<vector<double>>& A) {
+  vector<vector<double>> out(2, vector<double>(2, 0));
+  double a = A[0][0];
+  double b = A[0][1];
+  double c = A[1][0];
+  double d = A[1][1];
+
+  double T = 1.0 / (a * d - b * c);
+
+  out[0][0] = T * d;
+  out[0][1] = T * -b;
+  out[1][0] = T * -c;
+  out[1][1] = T * a;
+
+  return out;
+}
+void opticalflowLK(uint8_t* dst, uint8_t* srcFirst, uint8_t* srcSecond,
+                   int width, int height, int wsize) {
+  stackblur(srcFirst, width, height, 5);
+
+  stackblur(srcSecond, width, height, 5);
+
+  vector<vector<vector<double>>> E =
+      GetPartialDerivative(srcFirst, srcSecond, width, height);
+
+  vector<vector<vector<double>>> motion(
+      height, vector<vector<double>>(width, vector<double>(2, 0)));
+
+  vector<vector<double>> A(wsize * wsize, vector<double>(2, 0));
+  vector<vector<double>> B(wsize * wsize, vector<double>(1, 0));
+  vector<vector<double>> At(wsize * wsize, vector<double>(2, 0));
+
+  for (int y = wsize / 2; y < height - wsize / 2; y++) {
+    for (int x = wsize / 2; x < width - wsize / 2; x++) {
+      int widx = 0;
+      for (int y1 = -wsize / 2; y1 < wsize / 2; y1++) {
+        for (int x1 = -wsize / 2; x1 < wsize / 2; x1++) {
+          A[widx][0] = E[y + y1][x + x1][0];
+          A[widx][1] = E[y + y1][x + x1][1];
+          B[widx][0] = -1 * E[y + y1][x + x1][2];
+          widx++;
+        }
+      }
+
+      vector<vector<double>> At = matrix_transform(A);
+      vector<vector<double>> tmp = matrix_multiply(At, A);
+      tmp = matrix_2dinverse(tmp);
+
+      vector<vector<double>> tmp2 = matrix_multiply(At, B);
+      vector<vector<double>> out = matrix_multiply(tmp, tmp2);
+
+      motion[y][x][0] = out[0][0];
+      motion[y][x][1] = out[1][0];
+    }
+  }
+  ShowOpticalFlowField(dst, motion, width, height);
+}
 void opticalflowHS(uint8_t* dst, uint8_t* srcFirst, uint8_t* srcSecond,
                    int width, int height, int iterations, double alpha) {
   stackblur(srcFirst, width, height, 5);

@@ -5,6 +5,8 @@
 using namespace std;
 void opticalflowHS(uint8_t* dst, uint8_t* srcFirst, uint8_t* srcSecond,
                    int width, int height, int iterations, double alpha);
+void opticalflowLK(uint8_t* dst, uint8_t* srcFirst, uint8_t* srcSecond,
+                   int width, int height, int wsize);
 void ShowOpticalFlowField(uint8_t* dst, vector<vector<vector<double>>>& motion,
                           int width, int height);
 #endif

@@ -963,11 +963,47 @@ void testOpticalFlowHS() {
 
   dstimg->Save("img/testopticalflowHS.bmp");
 }
+void testOpticalFlowLK() {
+  struct timespec t_start, t_end;
+  double elapsedTime;
+  SimpleImage* srcimgL = new SimpleImage();
+  SimpleImage* srcimgR = new SimpleImage();
+
+  bool resL = srcimgL->Load("img/frame10.bmp");
+  bool resR = srcimgR->Load("img/frame11.bmp");
+
+  int w = srcimgL->width;
+  int h = srcimgL->height;
+
+  uint8_t* src0 = new uint8_t[w * h];
+  uint8_t* src1 = new uint8_t[w * h];
+  uint8_t* dst = new uint8_t[w * h * 3];
+
+  if (!resL || !resR) {
+    cout << "load file fail" << endl;
+  }
+  SimpleImage* dstimg = new SimpleImage(w, h);
+  int windows_size = 10;
+
+  colorimage2grayimage(srcimgL->image, src0, w, h);
+  colorimage2grayimage(srcimgR->image, src1, w, h);
+  clock_gettime(CLOCK_REALTIME, &t_start);
+  opticalflowLK(dst, src0, src1, w, h, windows_size);
+  clock_gettime(CLOCK_REALTIME, &t_end);
+  elapsedTime = (t_end.tv_sec - t_start.tv_sec) * 1000.0;
+  elapsedTime += (t_end.tv_nsec - t_start.tv_nsec) / 1000000.0;
+  printf("%s elapsedTime: %lf ms\n", __func__, elapsedTime);
+  // grayimage2colorimage(dst, dstimg->image, w, h);
+  dstimg->image = dst;
+
+  dstimg->Save("img/testopticalflowLK.bmp");
+}
 int main() {
   cout << "start" << endl;
   // teststereoimageBM();
   // teststereoimageBMwithSGM();
-  testOpticalFlowHS();
+  // testOpticalFlowHS();
+  testOpticalFlowLK();
   //  testadaboostfacedetection();
   //    fastguassinafilter();
   //      FFTsaliencymap();
