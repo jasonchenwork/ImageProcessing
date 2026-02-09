@@ -1,6 +1,7 @@
 #ifndef UTILITY_HPP
 #define UTILITY_HPP
 #include <bits/stdc++.h>
+
 using namespace std;
 #define PI 3.14159265358979323846
 
@@ -18,12 +19,19 @@ enum COLORIDX {
   COLOR_RED = 0,
   COLOR_GREEN = 1,
   COLOR_BLUE = 2,
-  COLOR_WHITE = 3
+  COLOR_WHITE = 3,
+  COLOR_YELLOW = 4,
+  COLOR_PURPLE = 5,
+  COLOR_ORANGE = 6,
+  COLOR_Cyan = 7,
+  COLOR_Pink = 8,
+  COLOR_Gray = 9
 };
 enum conv1D_Dirs {
   conv1D_row = 0,
   conv1D_col = 1,
 };
+extern vector<vector<uint8_t>> COLORBAGS;
 
 int AddGaussianNoise(const uint8_t* imageSource, uint8_t* imageTarget,
                      uint16_t width, uint16_t height, double mean,

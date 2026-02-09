@@ -1,6 +1,8 @@
 #include "../include/Utility.hpp"
 vector<vector<uint8_t>> COLORBAGS = {
-    {0, 0, 255}, {0, 255, 0}, {255, 0, 0}, {255, 255, 255}};
+    {0, 0, 255},     {0, 255, 0},    {255, 0, 0},   {255, 255, 255},
+    {255, 255, 0},   {128, 0, 128},  {255, 165, 0}, {0, 255, 255},
+    {255, 192, 203}, {128, 128, 128}};
 int AddGaussianNoise(const uint8_t* imageSource, uint8_t* imageTarget,
                      uint16_t width, uint16_t height, double mean,
                      double stddev) {

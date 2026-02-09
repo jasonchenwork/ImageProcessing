@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 #include <omp.h>
 
+#include "../include/CCL.hpp"
 #include "../include/DCT.hpp"
 #include "../include/DWT.hpp"
 #include "../include/FFT.hpp"
@@ -930,28 +931,28 @@ void teststereoimageBMwithSGM() {
 void testOpticalFlowHS() {
   struct timespec t_start, t_end;
   double elapsedTime;
-  SimpleImage* srcimgL = new SimpleImage();
-  SimpleImage* srcimgR = new SimpleImage();
+  SimpleImage* srcimg0 = new SimpleImage();
+  SimpleImage* srcimg1 = new SimpleImage();
 
-  bool resL = srcimgL->Load("img/frame10.bmp");
-  bool resR = srcimgR->Load("img/frame11.bmp");
+  bool res0 = srcimg0->Load("img/frame10.bmp");
+  bool res1 = srcimg1->Load("img/frame11.bmp");
 
-  int w = srcimgL->width;
-  int h = srcimgL->height;
+  int w = srcimg0->width;
+  int h = srcimg0->height;
 
   uint8_t* src0 = new uint8_t[w * h];
   uint8_t* src1 = new uint8_t[w * h];
   uint8_t* dst = new uint8_t[w * h * 3];
 
-  if (!resL || !resR) {
+  if (!res0 || !res1) {
     cout << "load file fail" << endl;
   }
   SimpleImage* dstimg = new SimpleImage(w, h);
   int interations = 10;
   double alpha = 3;
 
-  colorimage2grayimage(srcimgL->image, src0, w, h);
-  colorimage2grayimage(srcimgR->image, src1, w, h);
+  colorimage2grayimage(srcimg0->image, src0, w, h);
+  colorimage2grayimage(srcimg1->image, src1, w, h);
   clock_gettime(CLOCK_REALTIME, &t_start);
   opticalflowHS(dst, src0, src1, w, h, interations, alpha);
   clock_gettime(CLOCK_REALTIME, &t_end);
@@ -966,27 +967,27 @@ void testOpticalFlowHS() {
 void testOpticalFlowLK() {
   struct timespec t_start, t_end;
   double elapsedTime;
-  SimpleImage* srcimgL = new SimpleImage();
-  SimpleImage* srcimgR = new SimpleImage();
+  SimpleImage* srcimg0 = new SimpleImage();
+  SimpleImage* srcimg1 = new SimpleImage();
 
-  bool resL = srcimgL->Load("img/frame10.bmp");
-  bool resR = srcimgR->Load("img/frame11.bmp");
+  bool res0 = srcimg0->Load("img/frame10.bmp");
+  bool res1 = srcimg1->Load("img/frame11.bmp");
 
-  int w = srcimgL->width;
-  int h = srcimgL->height;
+  int w = srcimg0->width;
+  int h = srcimg0->height;
 
   uint8_t* src0 = new uint8_t[w * h];
   uint8_t* src1 = new uint8_t[w * h];
   uint8_t* dst = new uint8_t[w * h * 3];
 
-  if (!resL || !resR) {
+  if (!res0 || !res1) {
     cout << "load file fail" << endl;
   }
   SimpleImage* dstimg = new SimpleImage(w, h);
   int windows_size = 10;
 
-  colorimage2grayimage(srcimgL->image, src0, w, h);
-  colorimage2grayimage(srcimgR->image, src1, w, h);
+  colorimage2grayimage(srcimg0->image, src0, w, h);
+  colorimage2grayimage(srcimg1->image, src1, w, h);
   clock_gettime(CLOCK_REALTIME, &t_start);
   opticalflowLK(dst, src0, src1, w, h, windows_size);
   clock_gettime(CLOCK_REALTIME, &t_end);
@@ -998,12 +999,34 @@ void testOpticalFlowLK() {
 
   dstimg->Save("img/testopticalflowLK.bmp");
 }
+void testCCL_dfs() {
+  struct timespec t_start, t_end;
+  double elapsedTime;
+  SimpleImage* srcimg = new SimpleImage();
+  bool res = srcimg->Load("img/CCL.bmp");
+
+  int w = srcimg->width;
+  int h = srcimg->height;
+  SimpleImage* dstimg = new SimpleImage(w, h);
+  if (!res) {
+    cout << "load file fail" << endl;
+  }
+  clock_gettime(CLOCK_REALTIME, &t_start);
+  CCL_dfs(dstimg->image, srcimg->image, w, h);
+  clock_gettime(CLOCK_REALTIME, &t_end);
+  elapsedTime = (t_end.tv_sec - t_start.tv_sec) * 1000.0;
+  elapsedTime += (t_end.tv_nsec - t_start.tv_nsec) / 1000000.0;
+  printf("%s elapsedTime: %lf ms\n", __func__, elapsedTime);
+
+  dstimg->Save("img/testCCL.bmp");
+}
 int main() {
   cout << "start" << endl;
   // teststereoimageBM();
   // teststereoimageBMwithSGM();
   // testOpticalFlowHS();
-  testOpticalFlowLK();
+  // testOpticalFlowLK();
+  testCCL_dfs();
   //  testadaboostfacedetection();
   //    fastguassinafilter();
   //      FFTsaliencymap();
