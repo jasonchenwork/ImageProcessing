@@ -6,11 +6,11 @@
   
 There have many methods can implement  
 
-1. DFS
+1. One-Pass / Search-based Algorithms  
 
-2. Two Pass
+2. Two Pass  
 TBD
-3. 
+3. Run-Length Encoding  
 TBD  
 
 ![](https://github.com/jasonchenwork/ImageProcessing/blob/main/10reorganisation/img/CCL.bmp)
