@@ -69,7 +69,7 @@ Morphology
 
 [OpticalFlowLK](https://github.com/jasonchenwork/ImageProcessing/blob/main/md/OpticalFlowLK.md)  
 
-[CCL](https://github.com/jasonchenwork/ImageProcessing/blob/main/md/CCL.md)  
+[Connected Component Labeling](https://github.com/jasonchenwork/ImageProcessing/blob/main/md/CCL.md)  
 # **Author Information**
 
 Name
