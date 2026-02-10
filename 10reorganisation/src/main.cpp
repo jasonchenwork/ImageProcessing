@@ -1019,6 +1019,31 @@ void testCCL_dfs() {
   printf("%s elapsedTime: %lf ms\n", __func__, elapsedTime);
 
   dstimg->Save("img/testCCL.bmp");
+  delete dstimg;
+  delete srcimg;
+}
+void testCCL_2pass() {
+  struct timespec t_start, t_end;
+  double elapsedTime;
+  SimpleImage* srcimg = new SimpleImage();
+  bool res = srcimg->Load("img/CCL.bmp");
+
+  int w = srcimg->width;
+  int h = srcimg->height;
+  SimpleImage* dstimg = new SimpleImage(w, h);
+  if (!res) {
+    cout << "load file fail" << endl;
+  }
+  clock_gettime(CLOCK_REALTIME, &t_start);
+  CCL_2pass(dstimg->image, srcimg->image, w, h);
+  clock_gettime(CLOCK_REALTIME, &t_end);
+  elapsedTime = (t_end.tv_sec - t_start.tv_sec) * 1000.0;
+  elapsedTime += (t_end.tv_nsec - t_start.tv_nsec) / 1000000.0;
+  printf("%s elapsedTime: %lf ms\n", __func__, elapsedTime);
+
+  dstimg->Save("img/testCCL2pass.bmp");
+  delete dstimg;
+  delete srcimg;
 }
 int main() {
   cout << "start" << endl;
@@ -1027,6 +1052,7 @@ int main() {
   // testOpticalFlowHS();
   // testOpticalFlowLK();
   testCCL_dfs();
+  testCCL_2pass();
   //  testadaboostfacedetection();
   //    fastguassinafilter();
   //      FFTsaliencymap();

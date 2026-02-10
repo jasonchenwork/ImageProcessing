@@ -461,11 +461,11 @@ double* conv1D(double* imageSource, uint16_t width, uint16_t height,
                double* filter, uint16_t filtersize, conv1D_Dirs dir,
                uint8_t dim) {
   int halfkernelsize = filtersize / 2;
-  double* dst = new double[width * height];
+  double* dst = new double[width * height * dim];
   if (dir == conv1D_col) {
     // col direction
-    for (int x = 0; x < width; ++x) {
-      for (int y = 0; y < height; ++y) {
+    for (int y = 0; y < height; ++y) {
+      for (int x = 0; x < width; ++x) {
         double filtersum[dim] = {0};
         for (int my = y - halfkernelsize; my <= y + halfkernelsize; ++my) {
           if (my < 0 || my >= height) continue;
