@@ -157,3 +157,129 @@ void CCL_2pass(uint8_t* dst, uint8_t* src, int width, int height) {
   delete[] gray;
   delete[] id;
 }
+
+struct LineSegment {
+  int start;
+  int end;
+  int id;
+};
+bool isOverlap(LineSegment a, LineSegment b) {
+  if (a.end + 1 <= b.start || a.start >= b.end + 1) {
+    return false;
+  } else {
+    return true;
+  }
+}
+void CCL_rle(uint8_t* dst, uint8_t* src, int width, int height) {
+  int maxid =
+      (width * height) / 2;  // Since the palette only supports 10 colors
+  unionfind* uf = new unionfind(maxid);
+  int maxLineSegmentlen = width / 2;
+  LineSegment pre[maxLineSegmentlen];
+  LineSegment cur[maxLineSegmentlen];
+  uint8_t* gray = new uint8_t[width * height];
+  int* id = new int[width * height]();
+  colorimage2grayimage(src, gray, width, height);
+  int curID = 1;
+  bool isStart = false;
+  int curcnt = 0;
+  memset(pre, -1, sizeof(pre));
+  int curlen = 0;
+  int prelen = 0;
+
+  for (int y = 0; y < height; y++) {
+    memset(cur, -1, sizeof(cur));
+    curcnt = 0;
+    for (int x = 0; x < width; x++) {
+      if (gray[y * width + x] == 255) {
+        if (cur[curcnt].start == -1) {
+          cur[curcnt].start = x;
+        }
+      } else {
+        if (cur[curcnt].start != -1) {
+          cur[curcnt].end = x - 1;
+          curcnt++;
+        }
+      }
+    }  // end x
+#if 1
+    if (cur[curcnt].start != -1 && cur[curcnt].end == -1) {
+      cur[curcnt].end = width - 1;
+      curcnt++;
+    }
+#endif
+    curlen = curcnt;
+
+    if (y == 0) {
+      for (int i = 0; i < curlen; i++) {
+        cur[i].id = curID;
+        uf->id[curID] = curID;
+
+        for (int j = cur[i].start; j <= cur[i].end; j++) {
+          id[y * width + j] = curID;
+        }
+        curID++;
+      }
+      memcpy(pre, cur, sizeof(cur));
+      prelen = curlen;
+    } else {
+      for (int i = 0; i < curlen; i++) {
+        cur[i].id = curID;
+        uf->id[curID] = curID;
+
+        for (int j = cur[i].start; j <= cur[i].end; j++) {
+          id[y * width + j] = curID;
+        }
+        curID++;
+      }
+#if 0
+      for (int i = 0; i < prelen; i++) {
+        for (int j = 0; j < curlen; j++) {
+          if (isOverlap(pre[i], cur[j])) {
+            uf->_union(pre[i].id, cur[j].id);
+          }
+        }
+      }
+#else
+      // use two points to optimalize
+      int preptr = 0;
+      int curptr = 0;
+      while (preptr < prelen && curptr < curlen) {
+        if (isOverlap(pre[preptr], cur[curptr])) {
+          uf->_union(pre[preptr].id, cur[curptr].id);
+        }
+        if (pre[preptr].end < cur[curptr].end) {
+          preptr++;
+        } else {
+          curptr++;
+        }
+      }
+#endif
+      memcpy(pre, cur, sizeof(cur));
+      prelen = curlen;
+    }
+  }
+
+  for (int y = 0; y < height; y++) {
+    for (int x = 0; x < width; x++) {
+      if (id[y * width + x] != 0) {
+        id[y * width + x] = (uf->find(id[y * width + x]) % 10) + 1;
+      }
+    }
+  }
+
+  // put color to dst
+  for (int y = 0; y < height; y++) {
+    for (int x = 0; x < width; x++) {
+      if (id[y * width + x] != 0) {
+        dst[3 * (y * width + x) + 2] = COLORBAGS[id[y * width + x]][0];
+        dst[3 * (y * width + x) + 1] = COLORBAGS[id[y * width + x]][1];
+        dst[3 * (y * width + x) + 0] = COLORBAGS[id[y * width + x]][2];
+      }
+    }
+  }
+
+  delete uf;
+  delete[] gray;
+  delete[] id;
+}

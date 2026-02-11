@@ -12,8 +12,8 @@ SimpleImage::SimpleImage(uint32_t w, uint32_t h) {
   width = w;
   height = h;
   image = new uint8_t[width * height * 3 *
-                      sizeof(uint8_t)];  //(uint8_t *)malloc((size_t)width *
-                                         // height * 3 * sizeof(uint8_t));
+                      sizeof(uint8_t)]();  //(uint8_t *)malloc((size_t)width *
+                                           // height * 3 * sizeof(uint8_t));
 }
 
 void SimpleImage::bmpheaderINIT() {

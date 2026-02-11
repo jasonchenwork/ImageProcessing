@@ -10,7 +10,7 @@ There have many methods can implement
 use DFS  
 2. Two Pass with Union Find(Done)
   
-3. Run-Length Encoding (TBD)  
+3. Run-Length Encoding (Done)  
 
 ![](https://github.com/jasonchenwork/ImageProcessing/blob/main/10reorganisation/img/CCL.bmp)
 # Result  
