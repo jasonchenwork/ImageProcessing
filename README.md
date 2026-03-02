@@ -59,7 +59,7 @@ Morphology
 
 [DCT](https://github.com/jasonchenwork/ImageProcessing/blob/main/md/DCT.md)
 
-[Adaboostfacedetection](https://github.com/jasonchenwork/ImageProcessing/blob/main/md/adaboostfacedetection.md)  
+[HaarCascadesfacedetection](https://github.com/jasonchenwork/ImageProcessing/blob/main/md/adaboostfacedetection.md)  
 
 [FastMedianFilter](https://github.com/jasonchenwork/ImageProcessing/blob/main/md/FastMedianFilter.md)  
 
@@ -70,6 +70,8 @@ Morphology
 [OpticalFlowLK](https://github.com/jasonchenwork/ImageProcessing/blob/main/md/OpticalFlowLK.md)  
 
 [Connected Component Labeling](https://github.com/jasonchenwork/ImageProcessing/blob/main/md/CCL.md)  
+
+HOGCascades(there are still bugs) 
 # **Author Information**
 
 Name

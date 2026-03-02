@@ -20,7 +20,20 @@ void Delete2Darray(int** arr, int y) {
   }
   delete[] arr;
 }
+void IntegralImage2::INIT(int width, int height) {
+  this->width = width;
+  this->height = height;
 
+  this->nWidth = width + 1;
+  this->nHeight = height + 1;
+
+  nSum = new double[this->nWidth * this->nHeight];
+  sSum = new double[this->nWidth * this->nHeight];
+  for (int i = 0; i < this->nWidth * this->nHeight; i++) {
+    nSum[i] = sSum[i] = 0;
+  }
+}
+IntegralImage2::IntegralImage2() {}
 IntegralImage2::IntegralImage2(int width, int height) {
   this->width = width;
   this->height = height;
@@ -39,26 +52,6 @@ IntegralImage2::IntegralImage2(int width, int height) {
 IntegralImage2::~IntegralImage2() {
   delete[] nSum;
   delete[] sSum;
-};
-
-void IntegralImage2::FromImage(unsigned char** Src) {
-  for (int y = 1; y < this->height; y++) {
-    int yy = this->nWidth * (y);
-    int y1 = this->nWidth * (y - 1);
-
-    for (int x = 1; x < this->width; x++) {
-      double p1 = Src[y][x];
-      double p2 = p1 * p1;
-
-      int r = yy + (x);
-      int a = yy + (x - 1);
-      int b = y1 + (x);
-      int c = y1 + (x - 1);
-
-      nSum[r] = p1 + nSum[a] + nSum[b] - nSum[c];
-      sSum[r] = p2 + sSum[a] + sSum[b] - sSum[c];
-    }
-  }
 };
 
 double IntegralImage2::GetSum(int x, int y, int width, int height) {

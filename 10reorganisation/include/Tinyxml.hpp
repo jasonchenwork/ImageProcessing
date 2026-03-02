@@ -21,4 +21,6 @@ enum {
 };
 XmlNode* readXml(string filename);
 XmlNode* findxmlnode(XmlNode* cur, string& s);
+XmlNode* findxmlNxtnode(XmlNode* cur, string& s);
+void printXml(XmlNode* node, int depth);
 #endif

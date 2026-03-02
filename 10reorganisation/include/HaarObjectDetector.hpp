@@ -85,6 +85,7 @@ class HaarObjectDetector {
   double FeatureGetSum2(IntegralImage2* im, int x, int y, HaarFeature HF,
                         double scale);
   void updateFeature(double scale);
+  vector<double> steps;
 
  public:
   // costructor
@@ -104,7 +105,6 @@ class HaarObjectDetector {
 
   int lastWidth;
   int lastHeight;
-  vector<double> steps;
 
   // Classifier
 

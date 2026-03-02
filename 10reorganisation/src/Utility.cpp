@@ -332,7 +332,7 @@ void FastMedianFilter(uint8_t* imageSource, uint8_t* imageTarget,
   if (halfkernelsize < 1) {
     return;  // do nothing
   }
-  vector<vector<uint8_t>> hisgram(dim, vector<uint8_t>(256, 0));
+  vector<vector<uint8_t>> histgram(dim, vector<uint8_t>(256, 0));
   for (int y = halfkernelsize; y < height - halfkernelsize; ++y) {
     for (int x = halfkernelsize; x < width - halfkernelsize; ++x) {
       if (firstconv) {
@@ -341,7 +341,7 @@ void FastMedianFilter(uint8_t* imageSource, uint8_t* imageTarget,
           for (int mx = x - halfkernelsize; mx <= x + halfkernelsize; ++mx) {
             if (mx < 0 || mx >= width) continue;
             for (int i = 0; i < dim; i++) {
-              hisgram[i][imageSource[dim * (width * my + mx) + i]]++;
+              histgram[i][imageSource[dim * (width * my + mx) + i]]++;
             }
           }
         }
@@ -350,10 +350,11 @@ void FastMedianFilter(uint8_t* imageSource, uint8_t* imageTarget,
         // add&remove
         for (int my = y - halfkernelsize; my <= y + halfkernelsize; ++my) {
           for (int i = 0; i < dim; i++) {
-            hisgram[i]
-                   [imageSource[dim * (width * my + x + halfkernelsize) + i]]++;
-            hisgram[i][imageSource[dim * (width * my + x - halfkernelsize - 1) +
-                                   i]]--;
+            histgram[i][imageSource[dim * (width * my + x + halfkernelsize) +
+                                    i]]++;
+            histgram[i]
+                    [imageSource[dim * (width * my + x - halfkernelsize - 1) +
+                                 i]]--;
           }
         }
       }
@@ -371,7 +372,7 @@ void FastMedianFilter(uint8_t* imageSource, uint8_t* imageTarget,
       for (int i = 0; i < dim; i++) {
         int count = 0;
         for (int j = 0; j < 256; j++) {
-          count += hisgram[i][j];
+          count += histgram[i][j];
           if (count >= mediancountTH) {
             imageTarget[dim * (width * y + x) + i] = j;
             break;
@@ -382,7 +383,7 @@ void FastMedianFilter(uint8_t* imageSource, uint8_t* imageTarget,
     firstconv = true;
     for (int i = 0; i < dim; i++) {
       for (int j = 0; j < 256; j++) {
-        hisgram[i][j] = 0;
+        histgram[i][j] = 0;
       }
     }
   }
@@ -455,6 +456,50 @@ void conv2D(T1* imageSource, T1* imageTarget, uint16_t width, uint16_t height,
       }
     }
   }
+}
+double** conv1D(double** imageSource, uint16_t width, uint16_t height,
+                double* filter, uint16_t filtersize, conv1D_Dirs dir) {
+  int halfkernelsize = filtersize / 2;
+  double** dst;  //= new double[width * height ];
+  dst = new double*[height];
+  for (int i = 0; i < height; i++) {
+    dst[i] = new double[width];
+  }
+  if (dir == conv1D_col) {
+    // col direction
+    for (int y = 0; y < height; ++y) {
+      for (int x = 0; x < width; ++x) {
+        double filtersum = {0};
+        for (int my = y - halfkernelsize; my <= y + halfkernelsize; ++my) {
+          if (my < 0 || my >= height) continue;
+          double coef = filter[(my - y + halfkernelsize)];
+
+          filtersum +=
+              coef * (double)imageSource[my][x];  // (double)imageSource[((width
+                                                  // * my + x) + i)];
+        }
+
+        dst[y][x] = filtersum;
+      }
+    }
+  } else {
+    // row direction
+    for (int y = 0; y < height; ++y) {
+      for (int x = 0; x < width; ++x) {
+        double filtersum;
+        for (int mx = x - halfkernelsize; mx <= x + halfkernelsize; ++mx) {
+          if (mx < 0 || mx >= width) continue;
+          double coef = filter[(mx - x + halfkernelsize)];
+
+          filtersum = coef * imageSource[y][mx];  //(double)imageSource[dim *
+                                                  //(width * y + mx) + i];
+        }
+
+        dst[y][x] = filtersum;
+      }
+    }
+  }
+  return dst;
 }
 
 double* conv1D(double* imageSource, uint16_t width, uint16_t height,
@@ -569,6 +614,16 @@ template void TypeConver(uint8_t* src, double* dst, uint16_t width,
 template void TypeConver(double* src, uint8_t* dst, uint16_t width,
                          uint16_t height);
 
+template <typename T1, typename T2>
+void TypeConver(T1** src, T2** dst, uint16_t width, uint16_t height) {
+  for (int x = 0; x < width; ++x) {
+    for (int y = 0; y < height; ++y) {
+      dst[y][x] = (T2)src[y][x];
+    }
+  }
+}
+template void TypeConver(uint8_t** src, double** dst, uint16_t width,
+                         uint16_t height);
 void uint8Tofloat(uint8_t* src, float* dst, uint16_t width, uint16_t height) {
   for (int x = 0; x < width; ++x) {
     for (int y = 0; y < height; ++y) {

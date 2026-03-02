@@ -578,7 +578,7 @@ std::vector<ORectangle> HaarObjectDetector::ProcessMultiScaleImage(
           ORectangle object;
           object.x = x * scale;
           object.y = y * scale;
-          object.w = baseHeight * scale;
+          object.w = baseWidth * scale;
           object.h = baseHeight * scale;
 
           detectedObjects.push_back(object);

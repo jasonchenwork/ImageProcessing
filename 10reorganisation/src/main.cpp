@@ -5,6 +5,7 @@
 #include "../include/DCT.hpp"
 #include "../include/DWT.hpp"
 #include "../include/FFT.hpp"
+#include "../include/HOGObjectDetector.hpp"
 #include "../include/HaarObjectDetector.hpp"
 #include "../include/HarrisCornerDetection.hpp"
 #include "../include/Morphology.hpp"
@@ -1069,18 +1070,60 @@ void testCCL_rle() {
   delete srcimg;
 }
 void testadaboostHOG() {
-  XmlNode* adaboostHOG = readXml("data/hogcascade_pedestrians.xml");
-  printXml(adaboostHOG, 0);
+  // XmlNode* adaboostHOG = readXml("data/hogcascade_pedestrians.xml");
+  // printXml(adaboostHOG, 0);
+  HOGObjectDetector* myADABOOST;
+
+  myADABOOST = new HOGObjectDetector();
+  myADABOOST->LoadXML("data/hogcascade_pedestrians.xml");
+
+  struct timespec t_start, t_end;
+  double elapsedTime;
+
+  SimpleImage* srcimg = new SimpleImage();
+
+  bool res = srcimg->Load("img/Pedestrian2.bmp");
+  if (!res) {
+    cout << "load file fail" << endl;
+  }
+  SimpleImage* dstimg = new SimpleImage(srcimg->width, srcimg->height);
+  uint8_t* grayimage = new uint8_t[srcimg->width * srcimg->height];
+
+  colorimage2grayimage(srcimg->image, grayimage, srcimg->width, srcimg->height);
+
+  uint8_t** testimage = convert_to_2d(grayimage, srcimg->width, srcimg->height);
+  clock_gettime(CLOCK_REALTIME, &t_start);
+#if 1
+  vector<ORectangle> Results = myADABOOST->ProcessMultiScaleImage(
+      testimage, srcimg->width, srcimg->height);
+#else
+  vector<ORectangle> Results = myADABOOST->ProcessMultiScaleWindow(
+      testimage, srcimg->width, srcimg->height);
+#endif
+
+  clock_gettime(CLOCK_REALTIME, &t_end);
+  elapsedTime = (t_end.tv_sec - t_start.tv_sec) * 1000.0;
+  elapsedTime += (t_end.tv_nsec - t_start.tv_nsec) / 1000000.0;
+  printf("%s elapsedTime: %lf ms\n", __func__, elapsedTime);
+  for (int i = 0; i < Results.size(); i++) {
+    drawRect(srcimg->image, Results[i].x, Results[i].y, Results[i].w,
+             Results[i].h, srcimg->width, srcimg->height, COLOR_GREEN);
+  }
+
+  srcimg->Save("img/testadaboostHOG.bmp");
+  cout << "fin!:" << Results.size() << endl;
 }
 int main() {
   cout << "start" << endl;
-  // teststereoimageBM();
-  // teststereoimageBMwithSGM();
-  // testOpticalFlowHS();
-  // testOpticalFlowLK();
-  testCCL_dfs();
-  testCCL_2pass();
-  testCCL_rle();
+
+  testadaboostHOG();
+  //  teststereoimageBM();
+  //  teststereoimageBMwithSGM();
+  //  testOpticalFlowHS();
+  //  testOpticalFlowLK();
+  // testCCL_dfs();
+  // testCCL_2pass();
+  // testCCL_rle();
   //   testadaboostfacedetection();
   //     fastguassinafilter();
   //       FFTsaliencymap();

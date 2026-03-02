@@ -71,7 +71,7 @@ XmlNode* parseElement(const string& s, size_t& pos) {
   return node;
 }
 //  print xml inf
-void printXml(XmlNode* node, int depth = 0) {
+void printXml(XmlNode* node, int depth) {
   if (!node) return;
   if (node->name == "#text") {
     if (!node->val.empty()) cout << string(depth * 2, ' ') << node->val << endl;
@@ -113,7 +113,7 @@ XmlNode* readXml(string filename) {
   }
   XmlNode* root = parseXml(xml);
 
-    file.close();  //
+  file.close();  //
   return root;
 }
 XmlNode* findxmlnode(XmlNode* cur, string& s) {
@@ -123,4 +123,12 @@ XmlNode* findxmlnode(XmlNode* cur, string& s) {
     return cur;
   }
   return findxmlnode(cur->child, s);
+}
+XmlNode* findxmlNxtnode(XmlNode* cur, string& s) {
+  if (cur == nullptr) return nullptr;
+
+  if (cur->name == s) {
+    return cur;
+  }
+  return findxmlNxtnode(cur->next, s);
 }

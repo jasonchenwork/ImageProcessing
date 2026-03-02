@@ -89,6 +89,16 @@ void CCL_2pass(uint8_t* dst, uint8_t* src, int width, int height) {
 
   colorimage2grayimage(src, gray, width, height);
   int curID = 1;
+  /*
+topmask
+      +-+-+-+
+      |X|X|X|
+      +-+-+-+
+      |X|O| |
+      +-+-+-+
+      | | | |
+      +-+-+-+
+  */
 
   int topmask[4][2] = {{-1, 0}, {-1, -1}, {0, -1}, {1, -1}};
 
@@ -223,6 +233,7 @@ void CCL_rle(uint8_t* dst, uint8_t* src, int width, int height) {
       memcpy(pre, cur, sizeof(cur));
       prelen = curlen;
     } else {
+#if 1
       for (int i = 0; i < curlen; i++) {
         cur[i].id = curID;
         uf->id[curID] = curID;
@@ -232,6 +243,7 @@ void CCL_rle(uint8_t* dst, uint8_t* src, int width, int height) {
         }
         curID++;
       }
+#endif
 #if 0
       for (int i = 0; i < prelen; i++) {
         for (int j = 0; j < curlen; j++) {
@@ -247,6 +259,14 @@ void CCL_rle(uint8_t* dst, uint8_t* src, int width, int height) {
       while (preptr < prelen && curptr < curlen) {
         if (isOverlap(pre[preptr], cur[curptr])) {
           uf->_union(pre[preptr].id, cur[curptr].id);
+
+#if 0
+          if (cur[curptr].id == -1) {
+            cur[curptr].id = pre[preptr].id;
+          } 
+          uf->_union(pre[preptr].id, cur[curptr].id);
+
+#endif
         }
         if (pre[preptr].end < cur[curptr].end) {
           preptr++;
@@ -254,6 +274,19 @@ void CCL_rle(uint8_t* dst, uint8_t* src, int width, int height) {
           curptr++;
         }
       }
+#if 0
+      while (curptr < curlen) {
+        cur[curptr].id = curID;
+        uf->id[curID] = curID;
+        curID++;
+        curptr++;
+      }
+      for (int i = 0; i < curlen; i++) {
+        for (int j = cur[i].start; j <= cur[i].end; j++) {
+          id[y * width + j] = cur[i].id;
+        }
+      }
+#endif
 #endif
       memcpy(pre, cur, sizeof(cur));
       prelen = curlen;
@@ -263,7 +296,7 @@ void CCL_rle(uint8_t* dst, uint8_t* src, int width, int height) {
   for (int y = 0; y < height; y++) {
     for (int x = 0; x < width; x++) {
       if (id[y * width + x] != 0) {
-        id[y * width + x] = (uf->find(id[y * width + x]) % 10) + 1;
+        id[y * width + x] = (uf->find(id[y * width + x]) % 10);
       }
     }
   }
