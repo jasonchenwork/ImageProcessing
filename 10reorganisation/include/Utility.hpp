@@ -89,7 +89,7 @@ void setPixelColor(uint8_t* dst, uint16_t w, uint16_t h, int x, int y,
                    int coloridx);
 
 void stackblur(unsigned char* image, int width, int height, int radius);
-unsigned char** convert_to_2d(unsigned char* image, int height, int width);
+unsigned char** convert_to_2d(unsigned char* image, int width, int height);
 
 void drawRect(uint8_t* dst, int x, int y, int w, int h, uint16_t imgw,
               uint16_t imgh, int coloridx);

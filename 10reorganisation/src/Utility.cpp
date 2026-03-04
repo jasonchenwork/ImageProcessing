@@ -752,7 +752,7 @@ void stackblur(unsigned char* image, int width, int height, int radius) {
   }
   delete[] temp;
 }
-unsigned char** convert_to_2d(unsigned char* image, int height, int width) {
+unsigned char** convert_to_2d(unsigned char* image, int width, int height) {
   unsigned char** dst =
       (unsigned char**)malloc(height * sizeof(unsigned char*));
 

@@ -3,7 +3,7 @@
 #include "../include/HaarObjectDetector.hpp"
 #include "../include/IntegralImage2.hpp"
 #include "../include/Tinyxml.hpp"
-
+static const double THRESHOLD_EPS = 1e-5;
 HOGObjectDetector::HOGObjectDetector(HOGCascadeStage Cascade) {
   factor = 1.05;
 
@@ -20,12 +20,13 @@ double HOGObjectDetector::FeatureGetSum(IntegralImage2* im, int x, int y,
   double sum = 0.0;
 
   int binIDX = HOGRect.idx % 9;
-  int blocktable[4][2] = {{0, 0}, {1, 0}, {0, 1}, {1, 1}};
+  static int blocktable[4][2] = {{0, 0}, {1, 0}, {0, 1}, {1, 1}};
   int blockidx = HOGRect.idx / 9;
   int curx = round(HOGRect.x * scale);
   int cury = round(HOGRect.y * scale);
   int w = round(HOGRect.w * scale);
   int h = round(HOGRect.h * scale);
+
 #if 0
   if (HOGRect.idx < 9) {
     blockidx = 0;
@@ -52,7 +53,7 @@ double HOGObjectDetector::FeatureGetSum(IntegralImage2* im, int x, int y,
   // double inv_area = (im[9].GetSum(tx, ty, HOGRect.w, HOGRect.h) + 0.001f);
   // inv_area = (im[9].GetSum(tx, ty, w, h) + 0.001f);
 #endif
-  return sum / inv_area;
+  return sum / (inv_area + 0.001);
 };
 bool HOGObjectDetector::HOGClassifierCompute(IntegralImage2* im,
                                              ORectangle rectangle,
@@ -89,10 +90,11 @@ bool HOGObjectDetector::HOGClassifierCompute(IntegralImage2* im,
 
     }  // end j tree
 
-    if (value < myHOGCascadeStage.Stage[i].Stage_Threshold) {
+    if (value < (myHOGCascadeStage.Stage[i].Stage_Threshold - THRESHOLD_EPS)) {
       // If it is, the stage has rejected the current
       // image and it doesn't contains our object.
       myHOGCascadeStage.Stage[i].count++;
+
       // printf("Rejected at Stage %d, value: %f, thresh: %f\n", i, value,
       // myHOGCascadeStage.Stage[i].Stage_Threshold);
 
@@ -163,8 +165,8 @@ std::vector<ORectangle> HOGObjectDetector::ProcessMultiScaleWindow(
       double mag = sqrt(Gx[y][x] * Gx[y][x] + Gy[y][x] * Gy[y][x]);
 
       double angle = atan2(Gy[y][x], Gx[y][x]);
-      if (angle < 0) angle += PI;
-      angle = angle * (9.0 / PI);  // - 0.5f;
+      // if (angle < 0) angle += PI;
+      angle = angle * (9.0 / PI) - 0.5f;
       int bidx = floor(angle);
       /// angle -= bidx;
       // if (bidx >= 9) bidx = 8;
