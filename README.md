@@ -71,7 +71,7 @@ Morphology
 
 [Connected Component Labeling](https://github.com/jasonchenwork/ImageProcessing/blob/main/md/CCL.md)  
 
-[HOGCascades](https://github.com/jasonchenwork/ImageProcessing/blob/main/md/HOGCascade.md)  
+[HOGCascades](https://github.com/jasonchenwork/ImageProcessing/blob/main/md/HOGcascade.md)  
 
 # **Author Information**
 
