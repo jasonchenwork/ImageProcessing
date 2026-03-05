@@ -556,6 +556,38 @@ void testmomrypureclass() {
   int nOctaves = 1;
   SimpleMat<float> mat[nOctaves * nGpyrLayers];  // = new SimpleImage<float>;
 }
+void testmat() {
+  int A1data[9] = {1, 1, 1, 2, 2, 2, 3, 3, 3};
+  SimpleMat<int> A1(3, 3, A1data);
+  int A2data[3] = {1, 2, 3};
+  SimpleMat<int> A2(1, 3, A2data);
+
+  A1.show();
+  A2.show();
+  SimpleMat<int> A3 = A1 * A2;
+  A3.show();
+
+  int Origindata[9] = {1, 1, 1, 2, 2, 2, 3, 3, 3};
+  SimpleMat<int> A(3, 3, Origindata);
+  int Origindata2[9] = {3, 3, 3, 2, 2, 2, 1, 1, 1};
+  SimpleMat<int> B(3, 3, Origindata2);
+
+  cout << "A + B: " << endl;
+  SimpleMat<int> res = A + B;
+  res.show();
+
+  cout << "A - B: " << endl;
+  res = A - B;
+  res.show();
+
+  cout << "A / B: " << endl;
+  res = A / B;
+  res.show();
+
+  cout << "A.*B: " << endl;
+  res = A.mul(B);
+  res.show();
+}
 void testFFT() {
   SimpleImage *srcimg = new SimpleImage();
 
@@ -1116,7 +1148,7 @@ void testadaboostHOG() {
 int main() {
   cout << "start" << endl;
 
-  testadaboostHOG();
+  // testadaboostHOG();
   //  teststereoimageBM();
   //  teststereoimageBMwithSGM();
   //  testOpticalFlowHS();
@@ -1130,7 +1162,7 @@ int main() {
   //      testFFT();
   //      testDWT();
   //      testDCT();
-  //        testmat();
+  testmat();
   //         testharriscornerdetection();
   //       testsift();
   //       testmomrypureclass();
