@@ -267,7 +267,7 @@ void testmediafilter() {
   SimpleImage *dstimg = new SimpleImage(srcimg->width, srcimg->height);
 
   clock_gettime(CLOCK_REALTIME, &t_start);
-  int filtersize = 7;
+  int filtersize = 11;
   MedianFilter(srcimg->image, dstimg->image, srcimg->width, srcimg->height,
                filtersize, conv2D_color);
 
@@ -591,7 +591,7 @@ void testmat() {
 void testFFT() {
   SimpleImage *srcimg = new SimpleImage();
 
-  bool res = srcimg->Load("img/lena.bmp");
+  bool res = srcimg->Load("img/smalllena.bmp");
   if (!res) {
     cout << "load file fail" << endl;
   }
@@ -865,7 +865,7 @@ void testadaboostfacedetection() {
   if (!res) {
     cout << "load file fail" << endl;
   }
-  SimpleImage* dstimg = new SimpleImage(srcimg->width, srcimg->height);
+  // SimpleImage* dstimg = new SimpleImage(srcimg->width, srcimg->height);
   uint8_t* grayimage = new uint8_t[srcimg->width * srcimg->height];
 
   colorimage2grayimage(srcimg->image, grayimage, srcimg->width, srcimg->height);
@@ -880,7 +880,7 @@ void testadaboostfacedetection() {
   elapsedTime = (t_end.tv_sec - t_start.tv_sec) * 1000.0;
   elapsedTime += (t_end.tv_nsec - t_start.tv_nsec) / 1000000.0;
   printf("testtestadaboostfacedetection elapsedTime: %lf ms\n", elapsedTime);
-  for (int i = 0; i < Results.size(); i++) {
+  for (int i = 0; i < (int)Results.size(); i++) {
     drawRect(srcimg->image, Results[i].x, Results[i].y, Results[i].w,
              Results[i].h, srcimg->width, srcimg->height, COLOR_GREEN);
   }
@@ -1118,7 +1118,7 @@ void testadaboostHOG() {
   if (!res) {
     cout << "load file fail" << endl;
   }
-  SimpleImage* dstimg = new SimpleImage(srcimg->width, srcimg->height);
+  // SimpleImage* dstimg = new SimpleImage(srcimg->width, srcimg->height);
   uint8_t* grayimage = new uint8_t[srcimg->width * srcimg->height];
 
   colorimage2grayimage(srcimg->image, grayimage, srcimg->width, srcimg->height);
@@ -1137,7 +1137,7 @@ void testadaboostHOG() {
   elapsedTime = (t_end.tv_sec - t_start.tv_sec) * 1000.0;
   elapsedTime += (t_end.tv_nsec - t_start.tv_nsec) / 1000000.0;
   printf("%s elapsedTime: %lf ms\n", __func__, elapsedTime);
-  for (int i = 0; i < Results.size(); i++) {
+  for (int i = 0; i < (int)Results.size(); i++) {
     drawRect(srcimg->image, Results[i].x, Results[i].y, Results[i].w,
              Results[i].h, srcimg->width, srcimg->height, COLOR_GREEN);
   }

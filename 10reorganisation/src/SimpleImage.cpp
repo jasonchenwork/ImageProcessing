@@ -26,8 +26,8 @@ void SimpleImage::bmpheaderINIT() {
   bmpf_h.F_Info.bit_per_pixel = 24;
 }
 
-bool SimpleImage::Load(const char *fname_s) {
-  FILE *fp_s = NULL;  // source file handler
+bool SimpleImage::Load(const char* fname_s) {
+  FILE* fp_s = NULL;  // source file handler
   int Mod4;
   uint8_t padding[3 * 3] = {0};
 
@@ -83,8 +83,8 @@ bool SimpleImage::Load(const char *fname_s) {
   return true;
 }
 
-bool SimpleImage::Save(const char *fname_s) {
-  FILE *fp_s = NULL;  // source file handler
+bool SimpleImage::Save(const char* fname_s) {
+  FILE* fp_s = NULL;  // source file handler
   int Mod4;
   int savewidth;
   uint8_t padding[3 * 3] = {0};

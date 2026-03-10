@@ -191,7 +191,7 @@ void CCL_rle(uint8_t* dst, uint8_t* src, int width, int height) {
   int* id = new int[width * height]();
   colorimage2grayimage(src, gray, width, height);
   int curID = 1;
-  bool isStart = false;
+  // bool isStart = false;
   int curcnt = 0;
   memset(pre, -1, sizeof(pre));
   int curlen = 0;

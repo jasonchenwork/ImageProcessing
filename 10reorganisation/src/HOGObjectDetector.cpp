@@ -60,15 +60,16 @@ bool HOGObjectDetector::HOGClassifierCompute(IntegralImage2* im,
                                              double scale) {
   int x = rectangle.x;
   int y = rectangle.y;
-  int w = rectangle.w;
-  int h = rectangle.h;
+  // int w = rectangle.w;
+  // int h = rectangle.h;
 
-  for (int i = 0; i < myHOGCascadeStage.Stage.size(); i++) {
+  for (int i = 0; i < (int)myHOGCascadeStage.Stage.size(); i++) {
     double value = 0.0;
-    for (int j = 0; j < myHOGCascadeStage.Stage[i].Tree.size(); j++) {
+    for (int j = 0; j < (int)myHOGCascadeStage.Stage[i].Tree.size(); j++) {
       int current = 0;
 
-      for (int z = 0; z < myHOGCascadeStage.Stage[i].Tree[j].Node.size(); z++) {
+      for (int z = 0; z < (int)myHOGCascadeStage.Stage[i].Tree[j].Node.size();
+           z++) {
         double sum = FeatureGetSum(
             im, x, y,
             features[myHOGCascadeStage.Stage[i].Tree[j].Node[z].FeatureIDX],
@@ -110,7 +111,7 @@ bool HOGObjectDetector::HOGClassifierCompute(IntegralImage2* im,
 std::vector<ORectangle> HOGObjectDetector::ProcessMultiScaleWindow(
     unsigned char** Src, int width, int height) {
   detectedObjects.clear();
-  for (int i = 0; i < myHOGCascadeStage.Stage.size(); i++) {
+  for (int i = 0; i < (int)myHOGCascadeStage.Stage.size(); i++) {
     myHOGCascadeStage.Stage[i].count = 0;
   }
   int process_width = width;
@@ -211,7 +212,7 @@ std::vector<ORectangle> HOGObjectDetector::ProcessMultiScaleWindow(
     steps.push_back(1);
   }
 
-  for (int i = 0; i < steps.size(); i++) {
+  for (int i = 0; i < (int)steps.size(); i++) {
     double scaling = steps[i];
 
     window.w = (int)(baseWidth * scaling);
@@ -277,7 +278,7 @@ std::vector<ORectangle> HOGObjectDetector::ProcessMultiScaleWindow(
   NineBins = nullptr;
 #endif
 
-  for (int i = 0; i < myHOGCascadeStage.Stage.size(); i++) {
+  for (int i = 0; i < (int)myHOGCascadeStage.Stage.size(); i++) {
     cout << "i: " << i << " , " << myHOGCascadeStage.Stage[i].count << endl;
   }
   return detectedObjects;
@@ -291,7 +292,7 @@ void HOGObjectDetector::update(int width, int height) {
 };
 std::vector<ORectangle> HOGObjectDetector::ProcessMultiScaleImage(
     unsigned char** Src, int width, int height) {
-  for (int i = 0; i < myHOGCascadeStage.Stage.size(); i++) {
+  for (int i = 0; i < (int)myHOGCascadeStage.Stage.size(); i++) {
     myHOGCascadeStage.Stage[i].count = 0;
   }
   detectedObjects.clear();
@@ -462,7 +463,7 @@ std::vector<ORectangle> HOGObjectDetector::ProcessMultiScaleImage(
     NineBins = nullptr;
 #endif
   }
-  for (int i = 0; i < myHOGCascadeStage.Stage.size(); i++) {
+  for (int i = 0; i < (int)myHOGCascadeStage.Stage.size(); i++) {
     cout << "i: " << i << " , " << myHOGCascadeStage.Stage[i].count << endl;
   }
   return detectedObjects;

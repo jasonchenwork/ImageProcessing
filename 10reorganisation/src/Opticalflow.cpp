@@ -36,8 +36,8 @@ vector<vector<vector<double>>> GetPartialDerivative(uint8_t* srcFirst,
 vector<vector<double>> matrix_transform(vector<vector<double>>& A) {
   vector<vector<double>> At(A[0].size(), vector<double>(A.size(), 0));
 
-  for (int y = 0; y < A.size(); y++) {
-    for (int x = 0; x < A[0].size(); x++) {
+  for (int y = 0; y < (int)A.size(); y++) {
+    for (int x = 0; x < (int)A[0].size(); x++) {
       At[x][y] = A[y][x];
     }
   }
@@ -48,10 +48,10 @@ vector<vector<double>> matrix_multiply(vector<vector<double>>& M1,
                                        vector<vector<double>>& M2) {
   vector<vector<double>> out(M1.size(), vector<double>(M2[0].size(), 0));
 
-  for (int y = 0; y < out.size(); y++) {
-    for (int x = 0; x < out[0].size(); x++) {
+  for (int y = 0; y < (int)out.size(); y++) {
+    for (int x = 0; x < (int)out[0].size(); x++) {
       double tmp = 0;
-      for (int z = 0; z < M1[0].size(); z++) {
+      for (int z = 0; z < (int)M1[0].size(); z++) {
         tmp += M1[y][z] * M2[z][x];
       }
       out[y][x] = tmp;

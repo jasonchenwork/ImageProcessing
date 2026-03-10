@@ -1,7 +1,7 @@
 #include "../include/FFT.hpp"
 
 #include "../include/Utility.hpp"
-void FFT1D(int dir, int m, double *x, double *y) {
+void FFT1D(int dir, int m, double* x, double* y) {
   long nn, i, i1, j, k, i2, l, l1, l2;
   float c1, c2, tx, ty, t1, t2, u1, u2, z;
   nn = 1;
@@ -58,8 +58,9 @@ void FFT1D(int dir, int m, double *x, double *y) {
     }
   }
 }
-void DFT2D(double *data_real, double *data_imag, double *output_real,
-           double *output_imag, int width, int height) {
+void DFT2D(double* data_real, double* data_imag, double* output_real,
+           double* output_imag, int width, int height) {
+  (void)data_imag;
 #pragma omp parallel for collapse(2)
   for (int i = 0; i < width; i++) {
     for (int j = 0; j < height; j++) {
@@ -80,8 +81,9 @@ void DFT2D(double *data_real, double *data_imag, double *output_real,
     }
   }
 }
-void IDFT2D(double *data_real, double *data_imag, double *output_real,
-            double *output_imag, int width, int height) {
+void IDFT2D(double* data_real, double* data_imag, double* output_real,
+            double* output_imag, int width, int height) {
+  (void)output_imag;
   for (int x = 0; x < width; x++) {
     for (int y = 0; y < height; y++) {
       double real_sum = 0.0;
@@ -99,16 +101,16 @@ void IDFT2D(double *data_real, double *data_imag, double *output_real,
     }
   }
 }
-void FFT2D(double *data_real, double *data_imag, double *output_real,
-           double *output_imag, int nx, int ny, int dir, int width,
+void FFT2D(double* data_real, double* data_imag, double* output_real,
+           double* output_imag, int nx, int ny, int dir, int width,
            int height) {
   int i, j;
   int m;
 
   assert(width % 2 == 0 && height % 2 == 0);
 
-  double *real;
-  double *imag;
+  double* real;
+  double* imag;
 
   real = new double[nx];
   imag = new double[nx];
@@ -167,7 +169,7 @@ void FFT2D(double *data_real, double *data_imag, double *output_real,
   real = nullptr;
   imag = nullptr;
 }
-void FFTamplitude(double *data_real, double *data_imag, double *amplitude,
+void FFTamplitude(double* data_real, double* data_imag, double* amplitude,
                   int width, int height) {
   int i, j;
   for (i = 0; i < width; i++) {
@@ -178,7 +180,7 @@ void FFTamplitude(double *data_real, double *data_imag, double *amplitude,
     }
   }
 }
-void FFTpow2(double *in, double *out, int width, int height) {
+void FFTpow2(double* in, double* out, int width, int height) {
   int i, j;
   for (i = 0; i < width; i++) {
     for (j = 0; j < height; j++) {
@@ -186,7 +188,7 @@ void FFTpow2(double *in, double *out, int width, int height) {
     }
   }
 }
-void FFTphase(double *data_real, double *data_imag, double *phase, int width,
+void FFTphase(double* data_real, double* data_imag, double* phase, int width,
               int height) {
   int i, j;
   for (i = 0; i < width; i++) {
@@ -196,7 +198,7 @@ void FFTphase(double *data_real, double *data_imag, double *phase, int width,
     }
   }
 }
-void FFTcos(double *in, double *out, int width, int height) {
+void FFTcos(double* in, double* out, int width, int height) {
   int i, j;
   for (i = 0; i < width; i++) {
     for (j = 0; j < height; j++) {
@@ -204,7 +206,7 @@ void FFTcos(double *in, double *out, int width, int height) {
     }
   }
 }
-void FFTsin(double *in, double *out, int width, int height) {
+void FFTsin(double* in, double* out, int width, int height) {
   int i, j;
   for (i = 0; i < width; i++) {
     for (j = 0; j < height; j++) {
@@ -212,7 +214,7 @@ void FFTsin(double *in, double *out, int width, int height) {
     }
   }
 }
-void FFTexp(double *in, double *out, int width, int height) {
+void FFTexp(double* in, double* out, int width, int height) {
   int i, j;
   for (i = 0; i < width; i++) {
     for (j = 0; j < height; j++) {
@@ -220,7 +222,7 @@ void FFTexp(double *in, double *out, int width, int height) {
     }
   }
 }
-void matrixminus(double *in1, double *in2, double *out, int width, int height) {
+void matrixminus(double* in1, double* in2, double* out, int width, int height) {
   int i, j;
   for (i = 0; i < width; i++) {
     for (j = 0; j < height; j++) {
@@ -228,7 +230,7 @@ void matrixminus(double *in1, double *in2, double *out, int width, int height) {
     }
   }
 }
-void matrixmutiply(double *in1, double *in2, double *out, int width,
+void matrixmutiply(double* in1, double* in2, double* out, int width,
                    int height) {
   int i, j;
   for (i = 0; i < width; i++) {
@@ -237,14 +239,14 @@ void matrixmutiply(double *in1, double *in2, double *out, int width,
     }
   }
 }
-void FFTlog(double *in, double *fftlog, int width, int height) {
+void FFTlog(double* in, double* fftlog, int width, int height) {
   for (int x = 0; x < width; x++) {
     for (int y = 0; y < height; y++) {
       fftlog[width * y + x] = log(in[width * y + x]);
     }
   }
 }
-void FFTnormalize(double *in, double *fftnor, int width, int height) {
+void FFTnormalize(double* in, double* fftnor, int width, int height) {
   double curmax = 0;
   double curmin = DBL_MAX;
   for (int x = 0; x < width; x++) {
@@ -255,18 +257,19 @@ void FFTnormalize(double *in, double *fftnor, int width, int height) {
   }
   for (int x = 0; x < width; x++) {
     for (int y = 0; y < height; y++) {
-      fftnor[width * y + x] = (in[width * y + x] - curmin) / curmax;
+      fftnor[width * y + x] =
+          ((in[width * y + x] - curmin) / (curmax - curmin)) * 255.0;
     }
   }
 }
-void FFT255(double *in, double *fft255, int width, int height) {
+void FFT255(double* in, double* fft255, int width, int height) {
   for (int x = 0; x < width; x++) {
     for (int y = 0; y < height; y++) {
       fft255[width * y + x] = 255.0 * in[width * y + x];
     }
   }
 }
-void FFTshift(double *in, double *out, int width, int height) {
+void FFTshift(double* in, double* out, int width, int height) {
   int i, j;
   for (i = 0; i <= (width / 2) - 1; i++) {
     for (j = 0; j <= (height / 2) - 1; j++) {
@@ -277,7 +280,7 @@ void FFTshift(double *in, double *out, int width, int height) {
     }
   }
 }
-void FFTShiftMagnitude(double *data_real, double *data_imag, double *FFTShifted,
+void FFTShiftMagnitude(double* data_real, double* data_imag, double* FFTShifted,
                        int width, int height) {
   int i, j;
   for (i = 0; i <= (width / 2) - 1; i++) {
@@ -303,7 +306,7 @@ void FFTShiftMagnitude(double *data_real, double *data_imag, double *FFTShifted,
     }
   }
 }
-void FFTShow(double *FFTMagnitude, double *FFTlog, int width, int height) {
+void FFTShow(double* FFTMagnitude, double* FFTlog, int width, int height) {
   double logmax = 0;
   double logmmin = 0x7FFF;
   for (int x = 0; x < width; x++) {

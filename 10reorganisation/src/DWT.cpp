@@ -1,11 +1,11 @@
 #include "../include/DWT.hpp"
 
 template <typename T1>
-void DWT(T1 *imageSource, T1 *imageTarget, int width, int size) {
-  int x, y, i, j;
-  int offset = width / 2;
+void DWT(T1* imageSource, T1* imageTarget, int width, int size) {
+  int x, y;
+  // int offset = width / 2;
 
-  int *image_TMP = new int[width * width];  // image array
+  int* image_TMP = new int[width * width];  // image array
 
   // horization
   for (y = 0; y < size; y++) {
@@ -46,11 +46,11 @@ void DWT(T1 *imageSource, T1 *imageTarget, int width, int size) {
   delete[] image_TMP;
 }
 // Explicit Instantiation
-template void DWT(double *imageSource, double *imageTarget, int width,
+template void DWT(double* imageSource, double* imageTarget, int width,
                   int size);
 
 template <typename T1>
-void IDWT(T1 *imageSource, T1 *imageTarget, int width, int size) {
+void IDWT(T1* imageSource, T1* imageTarget, int width, int size) {
   int x, y;
   for (x = 0; x < size / 2; x++) {
     for (y = 0; y < size / 2; y++) {
@@ -78,4 +78,4 @@ void IDWT(T1 *imageSource, T1 *imageTarget, int width, int size) {
   }
 }
 template <typename T1>
-void IDWT(double *imageSource, double *imageTarget, int width, int size);
+void IDWT(double* imageSource, double* imageTarget, int width, int size);

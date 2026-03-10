@@ -80,10 +80,8 @@ class HaarObjectDetector {
                              double scale);
   bool HaarClassifierCompute2(IntegralImage2* im, ORectangle window,
                               double scale);
-  double FeatureGetSum(IntegralImage2* im, int x, int y, HaarFeature HF,
-                       double scale);
-  double FeatureGetSum2(IntegralImage2* im, int x, int y, HaarFeature HF,
-                        double scale);
+  double FeatureGetSum(IntegralImage2* im, int x, int y, HaarFeature HF);
+  double FeatureGetSum2(IntegralImage2* im, int x, int y, HaarFeature HF);
   void updateFeature(double scale);
   vector<double> steps;
 

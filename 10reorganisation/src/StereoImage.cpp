@@ -43,8 +43,8 @@ void stereoimageBMwithSGM(uint8_t* dst, uint8_t* srcL, uint8_t* srcR, int width,
   // calculate cost
   for (int y = halfw; y < (height - halfw); y++) {
     for (int x = halfw; x < (width - halfw); x++) {
-      int mindisplacement = 0;
-      int minsum = INT_MAX;
+      // int mindisplacement = 0;
+      // int minsum = INT_MAX;
 
       ;
       for (int d = 0; d < displacement; d++) {
@@ -100,8 +100,11 @@ void stereoimageBMwithSGM(uint8_t* dst, uint8_t* srcL, uint8_t* srcR, int width,
           }
         }
 
-        // Lr(p, d) = C(p, d) + min( Lr(p-r, d), Lr(p-r, d-1)+P1, Lr(p-r,
-        // d+1)+P1, min(Lr(p-r, k))+P2 ) - min(Lr(p-r, k))
+        // Lr(p, d) = C(p, d) +
+        // min( Lr(p-r, d),
+        //      Lr(p-r, d-1)+P1,
+        //      Lr(p-r, d+1)+P1,
+        //      min(Lr(p-r, k))+P2 ) - min(Lr(p-r, k))
         for (int d = 0; d < displacement; ++d) {
           int Lr_prev_d = pathAggr[prevY][prevX][d];
 

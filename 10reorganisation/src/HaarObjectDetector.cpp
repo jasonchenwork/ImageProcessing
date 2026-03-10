@@ -14,9 +14,9 @@ HaarObjectDetector::~HaarObjectDetector() {
 
 };
 void HaarObjectDetector::updateFeature(double scale) {
-  for (int i = 0; i < myHaarCascadeStage.Stage.size(); i++) {
-    for (int j = 0; j < myHaarCascadeStage.Stage[i].Tree.size(); j++) {
-      for (int z = 0; z < myHaarCascadeStage.Stage[i].Tree[j].Node.size();
+  for (int i = 0; i < (int)myHaarCascadeStage.Stage.size(); i++) {
+    for (int j = 0; j < (int)myHaarCascadeStage.Stage[i].Tree.size(); j++) {
+      for (int z = 0; z < (int)myHaarCascadeStage.Stage[i].Tree[j].Node.size();
            z++) {
         if (myHaarCascadeStage.Stage[i]
                 .Tree[j]
@@ -79,11 +79,9 @@ void HaarObjectDetector::updateFeature(double scale) {
                         .Node[z]
                         .Feature.Rectangle[0]
                         .h;
-          double a_wei = myHaarCascadeStage.Stage[i]
-                             .Tree[j]
-                             .Node[z]
-                             .Feature.Rectangle[0]
-                             .weight;
+
+          // double a_wei =
+          // myHaarCascadeStage.Stage[i].Tree[j].Node[z].Feature.Rectangle[0].weight;
 
           int b_area = myHaarCascadeStage.Stage[i]
                            .Tree[j]
@@ -340,10 +338,10 @@ void HaarObjectDetector::update(int width, int height) {
   for (double f = start; f < stop; f *= step) steps.push_back(f);
 };
 double HaarObjectDetector::FeatureGetSum2(IntegralImage2* im, int x, int y,
-                                          HaarFeature HF, double scale) {
+                                          HaarFeature HF) {
   double sum = 0.0;
   if (!HF.Tilted) {
-    for (int i = 0; i < HF.Rectangle.size(); i++) {
+    for (int i = 0; i < (int)HF.Rectangle.size(); i++) {
       sum += im->GetSum(x + (HF.Rectangle[i].x), y + HF.Rectangle[i].y,
                         HF.Rectangle[i].w, HF.Rectangle[i].h) *
              (HF.Rectangle[i].weight * (1.0 / (baseWidth * baseHeight)));
@@ -353,11 +351,11 @@ double HaarObjectDetector::FeatureGetSum2(IntegralImage2* im, int x, int y,
   return sum;
 };
 double HaarObjectDetector::FeatureGetSum(IntegralImage2* im, int x, int y,
-                                         HaarFeature HF, double scale) {
+                                         HaarFeature HF) {
   double sum = 0.0;
 
   if (!HF.Tilted) {
-    for (int i = 0; i < HF.Rectangle.size(); i++) {
+    for (int i = 0; i < (int)HF.Rectangle.size(); i++) {
 #if 1
       sum +=
           im->GetSum(x + (HF.Rectangle[i].ScaleX), y + HF.Rectangle[i].ScaleY,
@@ -379,6 +377,7 @@ double HaarObjectDetector::FeatureGetSum(IntegralImage2* im, int x, int y,
 bool HaarObjectDetector::HaarClassifierCompute2(IntegralImage2* im,
                                                 ORectangle rectangle,
                                                 double scale) {
+  (void)scale;  // Ïû³ý¾¯¸æ
   int x = rectangle.x;
   int y = rectangle.y;
   int w = rectangle.w;
@@ -390,16 +389,15 @@ bool HaarObjectDetector::HaarClassifierCompute2(IntegralImage2* im,
   double factor = im->GetSum2(x, y, w, h) * invArea - (mean * mean);
 
   factor = (factor >= 0.0) ? sqrt(factor) : 1.0;
-  for (int i = 0; i < myHaarCascadeStage.Stage.size(); i++) {
+  for (int i = 0; i < (int)myHaarCascadeStage.Stage.size(); i++) {
     double value = 0.0;
-    for (int j = 0; j < myHaarCascadeStage.Stage[i].Tree.size(); j++) {
+    for (int j = 0; j < (int)myHaarCascadeStage.Stage[i].Tree.size(); j++) {
       int current = 0;
 
-      for (int z = 0; z < myHaarCascadeStage.Stage[i].Tree[j].Node.size();
+      for (int z = 0; z < (int)myHaarCascadeStage.Stage[i].Tree[j].Node.size();
            z++) {
         double sum = FeatureGetSum2(
-            im, x, y, myHaarCascadeStage.Stage[i].Tree[j].Node[z].Feature,
-            scale);
+            im, x, y, myHaarCascadeStage.Stage[i].Tree[j].Node[z].Feature);
 
         if (sum < myHaarCascadeStage.Stage[i].Tree[j].Node[z].Node_Threshold *
                       factor) {
@@ -450,16 +448,15 @@ bool HaarObjectDetector::HaarClassifierCompute(IntegralImage2* im,
 
   factor = (factor >= 0.0) ? sqrt(factor) : 1.0;
 
-  for (int i = 0; i < myHaarCascadeStage.Stage.size(); i++) {
+  for (int i = 0; i < (int)myHaarCascadeStage.Stage.size(); i++) {
     double value = 0.0;
-    for (int j = 0; j < myHaarCascadeStage.Stage[i].Tree.size(); j++) {
+    for (int j = 0; j < (int)myHaarCascadeStage.Stage[i].Tree.size(); j++) {
       int current = 0;
 
-      for (int z = 0; z < myHaarCascadeStage.Stage[i].Tree[j].Node.size();
+      for (int z = 0; z < (int)myHaarCascadeStage.Stage[i].Tree[j].Node.size();
            z++) {
         double sum = FeatureGetSum(
-            im, x, y, myHaarCascadeStage.Stage[i].Tree[j].Node[z].Feature,
-            scale);
+            im, x, y, myHaarCascadeStage.Stage[i].Tree[j].Node[z].Feature);
 
         if (sum < myHaarCascadeStage.Stage[i].Tree[j].Node[z].Node_Threshold *
                       factor) {
@@ -507,7 +504,7 @@ std::vector<ORectangle> HaarObjectDetector::ProcessMultiScaleWindow(
     steps.push_back(1);
   }
 
-  for (int i = 0; i < steps.size(); i++) {
+  for (int i = 0; i < (int)steps.size(); i++) {
     double scaling = steps[i];
 
     updateFeature(scaling);
