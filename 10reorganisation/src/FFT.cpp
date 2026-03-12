@@ -58,6 +58,7 @@ void FFT1D(int dir, int m, double* x, double* y) {
     }
   }
 }
+#if 0
 void DFT2D(double* data_real, double* data_imag, double* output_real,
            double* output_imag, int width, int height) {
   (void)data_imag;
@@ -72,12 +73,13 @@ void DFT2D(double* data_real, double* data_imag, double* output_real,
           double angle = 2.0 * PI *
                          ((double)i * (double)x / (double)width +
                           (double)j * (double)y / (double)height);
+          // DFT 正向：cos(a) - i*sin(a)
           output_real[width * j + i] += data_real[width * y + x] * cos(angle);
           output_imag[width * j + i] -= data_real[width * y + x] * sin(angle);
         }
       }
-      output_real[width * j + i] /= (double)(width * height);
-      output_imag[width * j + i] /= (double)(width * height);
+      // output_real[width * j + i] /= (double)(width * height);
+      // output_imag[width * j + i] /= (double)(width * height);
     }
   }
 }
@@ -101,6 +103,71 @@ void IDFT2D(double* data_real, double* data_imag, double* output_real,
     }
   }
 }
+#else
+// 1D DFT 核心邏輯
+void DFT1D(double* in_real, double* in_imag, double* out_real, double* out_imag,
+           int N, bool inverse) {
+  double angle_sign = inverse ? 1.0 : -1.0;
+  double inv_N = inverse ? 1.0 / N : 1.0;
+
+  for (int k = 0; k < N; k++) {
+    double sum_r = 0, sum_i = 0;
+    for (int n = 0; n < N; n++) {
+      double angle = 2.0 * PI * k * n / N;
+      double cos_a = cos(angle);
+      double sin_a = angle_sign * sin(angle);
+
+      // 複數乘法: (in_r + i*in_i) * (cos_a + i*sin_a)
+      sum_r += in_real[n] * cos_a - in_imag[n] * sin_a;
+      sum_i += in_real[n] * sin_a + in_imag[n] * cos_a;
+    }
+    out_real[k] = sum_r * inv_N;
+    out_imag[k] = sum_i * inv_N;
+  }
+}
+void DFT2D_Separable(double* data_real, double* data_imag, double* out_real,
+                     double* out_imag, int width, int height, bool inverse) {
+  // 暫存矩陣，用來存放「行變換」後的結果
+  std::vector<double> temp_real(width * height, 0.0);
+  std::vector<double> temp_imag(width * height, 0.0);
+
+  // Step 1: 對每一列 (Row) 做 1D DFT
+  for (int y = 0; y < height; y++) {
+    DFT1D(&data_real[y * width], &data_imag[y * width], &temp_real[y * width],
+          &temp_imag[y * width], width, inverse);
+  }
+
+  // Step 2: 對每一行 (Column) 做 1D DFT
+  // 注意：行不連續，需要先提取到臨時陣列
+  for (int x = 0; x < width; x++) {
+    std::vector<double> col_in_r(height), col_in_i(height);
+    std::vector<double> col_out_r(height), col_out_i(height);
+
+    for (int y = 0; y < height; y++) {
+      col_in_r[y] = temp_real[y * width + x];
+      col_in_i[y] = temp_imag[y * width + x];
+    }
+
+    DFT1D(col_in_r.data(), col_in_i.data(), col_out_r.data(), col_out_i.data(),
+          height, inverse);
+
+    for (int y = 0; y < height; y++) {
+      out_real[y * width + x] = col_out_r[y];
+      out_imag[y * width + x] = col_out_i[y];
+    }
+  }
+}
+void DFT2D(double* data_real, double* data_imag, double* output_real,
+           double* output_imag, int width, int height) {
+  DFT2D_Separable(data_real, data_imag, output_real, output_imag, width, height,
+                  false);
+}
+void IDFT2D(double* data_real, double* data_imag, double* output_real,
+            double* output_imag, int width, int height) {
+  DFT2D_Separable(data_real, data_imag, output_real, output_imag, width, height,
+                  true);
+}
+#endif
 void FFT2D(double* data_real, double* data_imag, double* output_real,
            double* output_imag, int nx, int ny, int dir, int width,
            int height) {
@@ -271,14 +338,29 @@ void FFT255(double* in, double* fft255, int width, int height) {
 }
 void FFTshift(double* in, double* out, int width, int height) {
   int i, j;
-  for (i = 0; i <= (width / 2) - 1; i++) {
-    for (j = 0; j <= (height / 2) - 1; j++) {
-      out[width * (j + (height / 2)) + (i + width / 2)] = in[width * j + i];
-      out[width * j + i] = in[width * (j + (height / 2)) + (i + width / 2)];
-      out[width * j + (i + (width / 2))] = in[width * (j + (height / 2)) + i];
-      out[width * (j + (width / 2)) + i] = in[width * j + (i + (width / 2))];
+  int halfW = width / 2;
+  int halfH = height / 2;
+  double* result = new double[width * height];
+  for (i = 0; i < (halfW); i++) {
+    for (j = 0; j < (halfH); j++) {
+      int topLeft = j * width + i;
+      int topRight = j * width + (i + halfW);
+      int bottomLeft = (j + halfH) * width + i;
+      int bottomRight = (j + halfH) * width + (i + halfW);
+
+      // Swap Top-Left with Bottom-Right
+      result[bottomRight] = in[topLeft];
+      result[topLeft] = in[bottomRight];
+
+      // Swap Top-Right with Bottom-Left
+      result[bottomLeft] = in[topRight];
+      result[topRight] = in[bottomLeft];
     }
   }
+  for (i = 0; i < width * height; i++) {
+    out[i] = result[i];
+  }
+  delete[] result;
 }
 void FFTShiftMagnitude(double* data_real, double* data_imag, double* FFTShifted,
                        int width, int height) {

@@ -98,4 +98,7 @@ void rgb2hsv(double* dst, unsigned char* src, int height, int width);
 void hsv2rgb(unsigned char* dst, double* src, int height, int width);
 
 void drawLine(double* dst, int x0, int y0, int x1, int y1, int w, int h);
+
+void clampImage(double* dst, double* src, uint16_t w, uint16_t h, double minVal,
+                double maxVal);
 #endif

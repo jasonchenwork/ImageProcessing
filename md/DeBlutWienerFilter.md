@@ -1,9 +1,174 @@
-#ifndef SIMPLEMAT_HPP
-#define SIMPLEMAT_HPP
-#include <bits/stdc++.h>
 
-#include <iostream>
-using namespace std;
+# DeBlur with Wiener Filter
+
+# result
+
+![Before](https://github.com/jasonchenwork/ImageProcessing/blob/main/10reorganisation/img/blurred_image1.bmp)
+
+![After](https://github.com/jasonchenwork/ImageProcessing/blob/main/10reorganisation/img/deblurred_image_afterWienerFilter.bmp)
+
+# Pseudo code
+
+```C++
+
+input: color image
+parameter: len, thena
+
+// 1st 
+// build PSF 
+   
+  // create a empty image(w,h)
+  // draw a while line with parameter(len,thena)
+  // normalize it
+  // do phase shift
+// 2nd 
+  // build Wiener Filter from PSF
+  // H is DFT of PSF 
+  // G = H* / (|H|^2 + SNR)
+  // H*: conjugate of H
+  // |H|^2: magnitude squared of H
+// 3rd
+  for(int i=0;i<3;i++) // Loop RGB
+  {
+    currentImage = rgb[i];
+    debluredImage=currentImage * G;
+
+    clamp(debluredImage);
+    rgb[i]= IDFT(debluredImage);
+  }
+  
+
+
+
+```
+ç‚ºäº†ç¨‹å¼çœ‹èµ·ä¾†ç°¡æ½”å°‡DFTå°è£class,é€£åŒé‹ç®—ä¹Ÿä¸€ä½µå°è£
+
+```C++
+class ImageDFT {
+ public:
+  SimpleMat<double> real;
+  SimpleMat<double> imag;
+  int width;
+  int height;
+
+  ImageDFT(int w, int h) : real(w, h), imag(w, h), width(w), height(h) {};
+  template <typename T>
+  ImageDFT(T* image, int w, int h)
+      : real(w, h), imag(w, h), width(w), height(h) {
+    // Constructor implementation (if needed)
+    SimpleMat<double> input_real;
+    SimpleMat<double> input_imag(w, h);
+    double* image_double = new double[w * h];
+    TypeConver(image, image_double, (uint16_t)w, (uint16_t)h);
+    input_real = SimpleMat<double>(w, h, image_double);
+
+    DFT2D(input_real.data, input_imag.data, real.data, imag.data, width,
+          height);
+
+    delete[] image_double;
+    image_double = nullptr;
+  }
+
+  template <typename T>
+  ImageDFT(SimpleMat<T> image)
+      : real(image.width, image.height),
+        imag(image.width, image.height),
+        width(image.width),
+        height(image.height) {
+    int w = image.width;
+    int h = image.height;
+
+    SimpleMat<double> input_real;
+    SimpleMat<double> input_imag(w, h);
+    // double* image_double = new double[w * h];
+    // TypeConver(image.data, image_double, (uint16_t)w, (uint16_t)h);
+    input_real = SimpleMat<double>(w, h, image.data);
+
+    DFT2D(input_real.data, input_imag.data, real.data, imag.data, width,
+          height);
+
+    // delete[] image_double;
+    // image_double = nullptr;
+  }
+
+  ~ImageDFT() {
+    // Destructor implementation (if needed)
+  }
+
+  friend ImageDFT operator*(const ImageDFT& dft1, const ImageDFT& dft2) {
+    assert(dft1.width == dft2.width && dft1.height == dft2.height);
+    ImageDFT result(dft1.width, dft1.height);
+    for (int i = 0; i < dft1.width * dft1.height; i++) {
+      double r1 = dft1.real.data[i];
+      double i1 = dft1.imag.data[i];
+      double r2 = dft2.real.data[i];
+      double i2 = dft2.imag.data[i];
+
+      result.real.data[i] = r1 * r2 - i1 * i2;
+      result.imag.data[i] = r1 * i2 + i1 * r2;
+    }
+    return result;
+  }
+  friend ImageDFT operator/(const ImageDFT& dft1, const double scalar) {
+    assert(scalar != 0);
+    ImageDFT result(dft1.width, dft1.height);
+    for (int i = 0; i < dft1.width * dft1.height; i++) {
+      result.real.data[i] = dft1.real.data[i] / scalar;
+      result.imag.data[i] = dft1.imag.data[i] / scalar;
+    }
+    return result;
+  }
+  ImageDFT div(SimpleMat<double>& mat) {
+    ImageDFT result(width, height);
+    for (int i = 0; i < width * height; i++) {
+      if (mat.data[i] != 0) {
+        result.real.data[i] = real.data[i] / mat.data[i];
+        result.imag.data[i] = imag.data[i] / mat.data[i];
+      } else {
+        result.real.data[i] = 0;
+        result.imag.data[i] = 0;
+      }
+    }
+    return result;
+  }
+  // SimpleMat<double> getIDFTImage();
+  SimpleMat<double> getMagnitude() {
+    SimpleMat<double> magnitude(width, height);
+    for (int i = 0; i < width * height; i++) {
+      magnitude.data[i] =
+          sqrt(real.data[i] * real.data[i] + imag.data[i] * imag.data[i]);
+    }
+    return magnitude;
+  }
+  SimpleMat<double> getConjugate() {
+    SimpleMat<double> conjugate(width, height);
+    for (int i = 0; i < width * height; i++) {
+      conjugate.data[i] = imag.data[i] * -1;
+    }
+    return conjugate;
+  }
+  SimpleMat<double> getIDFTImage() {
+    SimpleMat<double> output_real(width, height);
+    SimpleMat<double> output_imag(width, height);
+
+    IDFT2D(real.data, imag.data, output_real.data, output_imag.data, width,
+           height);
+
+    return output_real;
+  }
+  ImageDFT conjugate() const {
+    ImageDFT res(width, height);
+    res.real = this->real;  // å¯¦éƒ¨ä¸è®Š
+    for (int i = 0; i < width * height; i++) {
+      res.imag.data[i] = -this->imag.data[i];  // è™›éƒ¨å–å
+    }
+    return res;
+  }
+};
+```
+SimpleMatä¹Ÿæ˜¯çŸ©é™£å°è£
+
+```C++
 template <typename T>
 class SimpleMat {
  public:
@@ -18,7 +183,7 @@ class SimpleMat {
     height = 0;
     data = nullptr;
   }
-  // 2. ¿½Ø½¨˜‹×Ó (Deep Copy)
+  // 2. æ‹·è²å»ºæ§‹å­ (Deep Copy)
   SimpleMat(const SimpleMat<T>& other)
       : width(other.width), height(other.height) {
     data = new T[width * height];
@@ -35,7 +200,7 @@ class SimpleMat {
     data = new T[w * h];
     memcpy(data, indata, width * height * sizeof(T));
   };
-  // 3. ÒÆ„Ó½¨˜‹×Ó (Move Constructor) - Ğ§ÄÜƒ»¯êPæI
+  // 3. ç§»å‹•å»ºæ§‹å­ (Move Constructor) - æ•ˆèƒ½å„ªåŒ–é—œéµ
   SimpleMat(SimpleMat<T>&& other) noexcept
       : width(other.width), height(other.height), data(other.data) {
     other.data = nullptr;
@@ -50,7 +215,7 @@ class SimpleMat {
   }
   // operator
 
-  // ¾Øê‡ß\Ëã
+  // çŸ©é™£é‹ç®—
   SimpleMat<T>& operator+=(const SimpleMat<T>& other) {
     assert(width == other.width && height == other.height);
     for (uint32_t i = 0; i < width * height; ++i) data[i] += other.data[i];
@@ -113,9 +278,9 @@ class SimpleMat {
     lhs /= rhs;
     return lhs;
   }
-  // ¼ƒÁ¿ß\Ëã
+  // ç´”é‡é‹ç®—
 
-  //  1. ÏÈŒ×÷³É†Tº¯”µ°æ±¾µÄ operator-= (»ùµAß‰İ‹)
+  //  1. å…ˆå¯¦ä½œæˆå“¡å‡½æ•¸ç‰ˆæœ¬çš„ operator-= (åŸºç¤é‚è¼¯)
   SimpleMat<T>& operator+=(T scalar) {
     uint32_t size = width * height;
     for (uint32_t i = 0; i < size; ++i) {
@@ -163,8 +328,8 @@ class SimpleMat {
     return lhs;
   }
 
-  // 5. ÙxÖµß\Ëã×Ó (Copy & Move Assignment)
-  SimpleMat<T>& operator=(SimpleMat<T> other) {  // Ê¹ÓÃ Copy-and-Swap ¼¼ÇÉ
+  // 5. è³¦å€¼é‹ç®—å­ (Copy & Move Assignment)
+  SimpleMat<T>& operator=(SimpleMat<T> other) {  // ä½¿ç”¨ Copy-and-Swap æŠ€å·§
     swap(*this, other);
     return *this;
   }
@@ -175,11 +340,11 @@ class SimpleMat {
     swap(first.data, second.data);
   }
 
-  // 2. ÀûÓÃ += íŒ×÷ + (¼ƒÁ¿¼Ó·¨)
-  // ß@Ñe‚÷Èë lhs (left hand side) •r²»¼Ó
-  // &£¬ÊÇéÁËÀûÓÃ¡¸ÒÆ„Ó½¨˜‹×Ó¡¹×Ô„ÓÑ}ÑuÒ»·İĞÂµÄ
+  // 2. åˆ©ç”¨ += ä¾†å¯¦ä½œ + (ç´”é‡åŠ æ³•)
+  // é€™è£¡å‚³å…¥ lhs (left hand side) æ™‚ä¸åŠ 
+  // &ï¼Œæ˜¯ç‚ºäº†åˆ©ç”¨ã€Œç§»å‹•å»ºæ§‹å­ã€è‡ªå‹•è¤‡è£½ä¸€ä»½æ–°çš„
 
-  // ÔªËØ‚€„e³Ë·¨ functions
+  // å…ƒç´ å€‹åˆ¥ä¹˜æ³• functions
   SimpleMat<T> mul(const SimpleMat<T>& mat1) {
     uint32_t m = mat1.width;
     uint32_t n = mat1.height;
@@ -264,5 +429,5 @@ class SimpleMat {
     return dst;
   }
 };
+```
 
-#endif

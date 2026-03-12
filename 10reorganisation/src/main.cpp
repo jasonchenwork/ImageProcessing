@@ -4,6 +4,7 @@
 #include "../include/CCL.hpp"
 #include "../include/DCT.hpp"
 #include "../include/DWT.hpp"
+#include "../include/DeBlur.hpp"
 #include "../include/FFT.hpp"
 #include "../include/HOGObjectDetector.hpp"
 #include "../include/HaarObjectDetector.hpp"
@@ -18,8 +19,9 @@
 #include "../include/Utility.hpp"
 #include "../include/WhiteBalance.hpp"
 #include "../include/sift.hpp"
+
 void testRWbmp() {
-  SimpleImage *img = new SimpleImage();
+  SimpleImage* img = new SimpleImage();
   bool res = img->Load("img/pattern.bmp");
   if (!res) {
     cout << "load file fail" << endl;
@@ -29,13 +31,13 @@ void testRWbmp() {
   delete img;
 }
 void testWhiteBalance() {
-  SimpleImage *srcimg = new SimpleImage();
+  SimpleImage* srcimg = new SimpleImage();
 
   bool res = srcimg->Load("img/InputImage01.bmp");
   if (!res) {
     cout << "load file fail" << endl;
   }
-  SimpleImage *dstimg = new SimpleImage(srcimg->width, srcimg->height);
+  SimpleImage* dstimg = new SimpleImage(srcimg->width, srcimg->height);
   whitebalanceGWA(srcimg->image, dstimg->image, srcimg->width, srcimg->height);
   dstimg->Save("img/InputImage01AfterGWA.bmp");
   whitebalance2005Lam(srcimg->image, dstimg->image, srcimg->width,
@@ -46,11 +48,11 @@ void testWhiteBalance() {
 }
 
 void testcomparedimage() {
-  SimpleImage *srcimg1 = new SimpleImage();
+  SimpleImage* srcimg1 = new SimpleImage();
   srcimg1->Load("img/InputImage01AfterGnoise.bmp");
-  SimpleImage *srcimg2 = new SimpleImage();
+  SimpleImage* srcimg2 = new SimpleImage();
   srcimg2->Load("img/InputImage01AfterNLmeans.bmp");
-  SimpleImage *dstimg = new SimpleImage(srcimg1->width, srcimg1->height);
+  SimpleImage* dstimg = new SimpleImage(srcimg1->width, srcimg1->height);
   CompareImage(srcimg1->image, srcimg2->image, dstimg->image, srcimg1->width,
                srcimg1->height);
 
@@ -62,13 +64,13 @@ void testcomparedimage() {
 void testDeNoise() {
   struct timespec t_start, t_end;
   double elapsedTime;
-  SimpleImage *srcimg = new SimpleImage();
+  SimpleImage* srcimg = new SimpleImage();
 
   bool res = srcimg->Load("img/InputImage01AfterGnoise.bmp");
   if (!res) {
     cout << "load file fail" << endl;
   }
-  SimpleImage *dstimg = new SimpleImage(srcimg->width, srcimg->height);
+  SimpleImage* dstimg = new SimpleImage(srcimg->width, srcimg->height);
   clock_gettime(CLOCK_REALTIME, &t_start);
   NLmeans(srcimg->image, dstimg->image, srcimg->width, srcimg->height, 5, 3, 5);
   clock_gettime(CLOCK_REALTIME, &t_end);
@@ -84,14 +86,14 @@ void testDeNoise() {
 void testDeNoisewithIntegralImage() {
   struct timespec t_start, t_end;
   double elapsedTime;
-  SimpleImage *srcimg = new SimpleImage();
+  SimpleImage* srcimg = new SimpleImage();
 
   bool res = srcimg->Load(
       "img/InputImage01AfterGnoise.bmp");  // pattern InputImage01AfterGnoise
   if (!res) {
     cout << "load file fail" << endl;
   }
-  SimpleImage *dstimg = new SimpleImage(srcimg->width, srcimg->height);
+  SimpleImage* dstimg = new SimpleImage(srcimg->width, srcimg->height);
   clock_gettime(CLOCK_REALTIME, &t_start);
   NLmeanswithIntegralImage(srcimg->image, dstimg->image, srcimg->width,
                            srcimg->height, 5, 3, 5);
@@ -108,13 +110,13 @@ void testDeNoisewithIntegralImage() {
 void testNLmeanswiththread() {
   struct timespec t_start, t_end;
   double elapsedTime;
-  SimpleImage *srcimg = new SimpleImage();
+  SimpleImage* srcimg = new SimpleImage();
 
   bool res = srcimg->Load("img/InputImage01AfterGnoise.bmp");
   if (!res) {
     cout << "load file fail" << endl;
   }
-  SimpleImage *dstimg = new SimpleImage(srcimg->width, srcimg->height);
+  SimpleImage* dstimg = new SimpleImage(srcimg->width, srcimg->height);
   clock_gettime(CLOCK_REALTIME, &t_start);
   NLmeanswiththreadmain(srcimg->image, dstimg->image, srcimg->width,
                         srcimg->height, 5, 3, 5);
@@ -131,13 +133,13 @@ void testNLmeanswiththread() {
 void testNLmeanswithintegralimagethread() {
   struct timespec t_start, t_end;
   double elapsedTime;
-  SimpleImage *srcimg = new SimpleImage();
+  SimpleImage* srcimg = new SimpleImage();
 
   bool res = srcimg->Load("img/InputImage01AfterGnoise.bmp");
   if (!res) {
     cout << "load file fail" << endl;
   }
-  SimpleImage *dstimg = new SimpleImage(srcimg->width, srcimg->height);
+  SimpleImage* dstimg = new SimpleImage(srcimg->width, srcimg->height);
 
   clock_gettime(CLOCK_REALTIME, &t_start);
   NLmeanswithmixmain(srcimg->image, dstimg->image, srcimg->width,
@@ -159,10 +161,10 @@ int filtersobel(vector<int> in) {
   }
   return (int)sqrt(res);
 }
-void edgedetection(const uint8_t *imageSource, uint8_t *imageTarget,
+void edgedetection(const uint8_t* imageSource, uint8_t* imageTarget,
                    uint16_t width, uint16_t height, int sobelthr) {
-  uint8_t *grayimage = new uint8_t[width * height];
-  uint8_t *edgeimage = new uint8_t[width * height];
+  uint8_t* grayimage = new uint8_t[width * height];
+  uint8_t* edgeimage = new uint8_t[width * height];
   colorimage2grayimage(imageSource, grayimage, width, height);
 
   STfilter2D sobel;
@@ -182,13 +184,13 @@ void edgedetection(const uint8_t *imageSource, uint8_t *imageTarget,
 void testedgedection() {
   struct timespec t_start, t_end;
   double elapsedTime;
-  SimpleImage *srcimg = new SimpleImage();
+  SimpleImage* srcimg = new SimpleImage();
 
   bool res = srcimg->Load("img/InputImage01.bmp");
   if (!res) {
     cout << "load file fail" << endl;
   }
-  SimpleImage *dstimg = new SimpleImage(srcimg->width, srcimg->height);
+  SimpleImage* dstimg = new SimpleImage(srcimg->width, srcimg->height);
 
   clock_gettime(CLOCK_REALTIME, &t_start);
   edgedetection(srcimg->image, dstimg->image, srcimg->width, srcimg->height,
@@ -202,11 +204,11 @@ void testedgedection() {
   dstimg->Save("img/InputImage01Afteredgedetection.bmp");
 }
 
-void gaussiansmooth(uint8_t *imageSource, uint8_t *imageTarget, uint16_t width,
+void gaussiansmooth(uint8_t* imageSource, uint8_t* imageTarget, uint16_t width,
                     uint16_t height) {
   int windowsize = 13;
   double std = 1.0;
-  double *gaussianfilter = new double[windowsize * windowsize];
+  double* gaussianfilter = new double[windowsize * windowsize];
   GaussianFilter(gaussianfilter, (uint16_t)windowsize, std);
   conv2D(imageSource, imageTarget, width, height, gaussianfilter,
          (uint16_t)windowsize, conv2D_color);
@@ -214,13 +216,13 @@ void gaussiansmooth(uint8_t *imageSource, uint8_t *imageTarget, uint16_t width,
 void testgaussianfilter() {
   struct timespec t_start, t_end;
   double elapsedTime;
-  SimpleImage *srcimg = new SimpleImage();
+  SimpleImage* srcimg = new SimpleImage();
 
   bool res = srcimg->Load("img/InputImage01AfterGnoise.bmp");
   if (!res) {
     cout << "load file fail" << endl;
   }
-  SimpleImage *dstimg = new SimpleImage(srcimg->width, srcimg->height);
+  SimpleImage* dstimg = new SimpleImage(srcimg->width, srcimg->height);
 
   clock_gettime(CLOCK_REALTIME, &t_start);
   gaussiansmooth(srcimg->image, dstimg->image, srcimg->width, srcimg->height);
@@ -244,7 +246,7 @@ void testfastmediafilter() {
   SimpleImage* dstimg = new SimpleImage(srcimg->width, srcimg->height);
 
   clock_gettime(CLOCK_REALTIME, &t_start);
-  int filtersize = 7;
+  int filtersize = 11;
   FastMedianFilter(srcimg->image, dstimg->image, srcimg->width, srcimg->height,
                    filtersize, conv2D_color);
 
@@ -258,13 +260,13 @@ void testfastmediafilter() {
 void testmediafilter() {
   struct timespec t_start, t_end;
   double elapsedTime;
-  SimpleImage *srcimg = new SimpleImage();
+  SimpleImage* srcimg = new SimpleImage();
 
   bool res = srcimg->Load("img/InputImage01AfterGnoise.bmp");
   if (!res) {
     cout << "load file fail" << endl;
   }
-  SimpleImage *dstimg = new SimpleImage(srcimg->width, srcimg->height);
+  SimpleImage* dstimg = new SimpleImage(srcimg->width, srcimg->height);
 
   clock_gettime(CLOCK_REALTIME, &t_start);
   int filtersize = 11;
@@ -281,7 +283,7 @@ void testmediafilter() {
 void testresize() {
   struct timespec t_start, t_end;
   double elapsedTime;
-  SimpleImage *srcimg = new SimpleImage();
+  SimpleImage* srcimg = new SimpleImage();
 
   bool res = srcimg->Load("img/InputImage01.bmp");
   if (!res) {
@@ -289,7 +291,7 @@ void testresize() {
   }
   int newwidth = srcimg->width * 2;
   int newheight = srcimg->height * 2;
-  SimpleImage *dstimg = new SimpleImage(newwidth, newheight);
+  SimpleImage* dstimg = new SimpleImage(newwidth, newheight);
 
   clock_gettime(CLOCK_REALTIME, &t_start);
 
@@ -305,13 +307,13 @@ void testresize() {
 void testDeNoisewithopenmp() {
   struct timespec t_start, t_end;
   double elapsedTime;
-  SimpleImage *srcimg = new SimpleImage();
+  SimpleImage* srcimg = new SimpleImage();
 
   bool res = srcimg->Load("img/InputImage01AfterGnoise.bmp");
   if (!res) {
     cout << "load file fail" << endl;
   }
-  SimpleImage *dstimg = new SimpleImage(srcimg->width, srcimg->height);
+  SimpleImage* dstimg = new SimpleImage(srcimg->width, srcimg->height);
   clock_gettime(CLOCK_REALTIME, &t_start);
   NLmeanswithopenmp(srcimg->image, dstimg->image, srcimg->width, srcimg->height,
                     5, 3, 5);
@@ -329,14 +331,14 @@ void testDeNoisewithopenmp() {
 void testDeNoisewithIntegralImageopenmp() {
   struct timespec t_start, t_end;
   double elapsedTime;
-  SimpleImage *srcimg = new SimpleImage();
+  SimpleImage* srcimg = new SimpleImage();
 
   bool res = srcimg->Load(
       "img/InputImage01AfterGnoise.bmp");  // pattern InputImage01AfterGnoise
   if (!res) {
     cout << "load file fail" << endl;
   }
-  SimpleImage *dstimg = new SimpleImage(srcimg->width, srcimg->height);
+  SimpleImage* dstimg = new SimpleImage(srcimg->width, srcimg->height);
   clock_gettime(CLOCK_REALTIME, &t_start);
   NLmeanswithIntegralImageopenmp(srcimg->image, dstimg->image, srcimg->width,
                                  srcimg->height, 5, 3, 5);
@@ -353,9 +355,9 @@ void testDeNoisewithIntegralImageopenmp() {
 void genpaatern() {
   int width = 255;
   int height = 255;
-  SimpleImage *dstimg = new SimpleImage(width, height);
+  SimpleImage* dstimg = new SimpleImage(width, height);
 
-  uint8_t *buf = new uint8_t[width * height];
+  uint8_t* buf = new uint8_t[width * height];
   for (int x = 0; x < width; x++) {
     for (int y = 0; y < height; y++) {
       buf[(width * (y) + x)] = (x) % 255;
@@ -388,16 +390,16 @@ void genpaatern() {
 void testmorphology() {
   struct timespec t_start, t_end;
   double elapsedTime;
-  SimpleImage *srcimg = new SimpleImage();
+  SimpleImage* srcimg = new SimpleImage();
   uint16_t filtersize = 9;
 
   bool res = srcimg->Load("img/testMorphology.bmp");
   if (!res) {
     cout << "load file fail" << endl;
   }
-  SimpleImage *dstimg = new SimpleImage(srcimg->width, srcimg->height);
-  uint8_t *grayimage = new uint8_t[srcimg->width * srcimg->height];
-  uint8_t *outimage = new uint8_t[srcimg->width * srcimg->height];
+  SimpleImage* dstimg = new SimpleImage(srcimg->width, srcimg->height);
+  uint8_t* grayimage = new uint8_t[srcimg->width * srcimg->height];
+  uint8_t* outimage = new uint8_t[srcimg->width * srcimg->height];
   clock_gettime(CLOCK_REALTIME, &t_start);
   colorimage2grayimage(srcimg->image, grayimage, srcimg->width, srcimg->height);
   TopHat(grayimage, outimage, srcimg->width, srcimg->height, filtersize);
@@ -411,13 +413,13 @@ void testmorphology() {
   dstimg->Save("img/testMorphologyafterTopHat.bmp");
 }
 void testhistogramequalization() {
-  SimpleImage *srcimg = new SimpleImage();
+  SimpleImage* srcimg = new SimpleImage();
 
   bool res = srcimg->Load("img/InputImage01.bmp");
   if (!res) {
     cout << "load file fail" << endl;
   }
-  SimpleImage *dstimg = new SimpleImage(srcimg->width, srcimg->height);
+  SimpleImage* dstimg = new SimpleImage(srcimg->width, srcimg->height);
   HistogramEqualization(srcimg->image, dstimg->image, srcimg->width,
                         srcimg->height);
   dstimg->Save("img/InputImage01Afteristogramequalization.bmp");
@@ -425,8 +427,8 @@ void testhistogramequalization() {
   delete dstimg;
 }
 void testsift() {
-  SimpleImage *srcimg = new SimpleImage();
-  SimpleImage *srcimg2 = new SimpleImage();
+  SimpleImage* srcimg = new SimpleImage();
+  SimpleImage* srcimg2 = new SimpleImage();
 
   struct timespec t_start, t_end;
   double elapsedTime;
@@ -436,14 +438,14 @@ void testsift() {
   if (!res) {
     cout << "load file fail" << endl;
   }
-  SimpleImage *dstimg = new SimpleImage(srcimg->width, srcimg->height);
+  SimpleImage* dstimg = new SimpleImage(srcimg->width, srcimg->height);
   memcpy(dstimg->image, srcimg->image,
          (int)dstimg->width * (int)dstimg->height * (int)sizeof(uint8_t) * 3);
-  SimpleImage *dstimg2 = new SimpleImage(srcimg2->width, srcimg2->height);
+  SimpleImage* dstimg2 = new SimpleImage(srcimg2->width, srcimg2->height);
   memcpy(dstimg2->image, srcimg2->image,
          (int)dstimg2->width * (int)dstimg2->height * (int)sizeof(uint8_t) * 3);
 
-  SimpleImage *dstimg3 =
+  SimpleImage* dstimg3 =
       new SimpleImage(srcimg->width + srcimg2->width, srcimg->height);
   for (int i = 0; i < (int)dstimg3->width; i++) {
     for (int j = 0; j < (int)dstimg3->height; j++) {
@@ -498,7 +500,7 @@ void testsift() {
   delete dstimg3;
 }
 void testharriscornerdetection() {
-  SimpleImage *srcimg = new SimpleImage();
+  SimpleImage* srcimg = new SimpleImage();
   struct timespec t_start, t_end;
   double elapsedTime;
 
@@ -506,7 +508,7 @@ void testharriscornerdetection() {
   if (!res) {
     cout << "load file fail" << endl;
   }
-  SimpleImage *dstimg = new SimpleImage(srcimg->width, srcimg->height);
+  SimpleImage* dstimg = new SimpleImage(srcimg->width, srcimg->height);
   memcpy(dstimg->image, srcimg->image,
          (int)dstimg->width * (int)dstimg->height * (int)sizeof(uint8_t) * 3);
   clock_gettime(CLOCK_REALTIME, &t_start);
@@ -589,22 +591,22 @@ void testmat() {
   res.show();
 }
 void testFFT() {
-  SimpleImage *srcimg = new SimpleImage();
+  SimpleImage* srcimg = new SimpleImage();
 
   bool res = srcimg->Load("img/smalllena.bmp");
   if (!res) {
     cout << "load file fail" << endl;
   }
-  SimpleImage *dstimg = new SimpleImage(srcimg->width, srcimg->height);
-  uint8_t *grayimage = new uint8_t[srcimg->width * srcimg->height];
+  SimpleImage* dstimg = new SimpleImage(srcimg->width, srcimg->height);
+  uint8_t* grayimage = new uint8_t[srcimg->width * srcimg->height];
 
   colorimage2grayimage(srcimg->image, grayimage, srcimg->width, srcimg->height);
-  double *input_real = new double[srcimg->width * srcimg->height];
-  double *input_imag = new double[srcimg->width * srcimg->height];
-  double *output_real = new double[srcimg->width * srcimg->height];
-  double *output_imag = new double[srcimg->width * srcimg->height];
-  double *image_shift = new double[srcimg->width * srcimg->height];
-  double *image_log = new double[srcimg->width * srcimg->height];
+  double* input_real = new double[srcimg->width * srcimg->height];
+  double* input_imag = new double[srcimg->width * srcimg->height];
+  double* output_real = new double[srcimg->width * srcimg->height];
+  double* output_imag = new double[srcimg->width * srcimg->height];
+  double* image_shift = new double[srcimg->width * srcimg->height];
+  double* image_log = new double[srcimg->width * srcimg->height];
   int width = srcimg->width;
   int height = srcimg->height;
 
@@ -629,25 +631,69 @@ void testFFT() {
   delete srcimg;
   delete dstimg;
 }
+#if 0
+void testDrawLine() {
+  SimpleImage* srcimg = new SimpleImage();
+
+  bool res = srcimg->Load("img/testline.bmp");
+  if (!res) {
+    cout << "load file fail" << endl;
+  }
+  SimpleImage* dstimg = new SimpleImage(srcimg->width, srcimg->height);
+  uint8_t* grayimage = new uint8_t[srcimg->width * srcimg->height];
+
+  colorimage2grayimage(srcimg->image, grayimage, srcimg->width, srcimg->height);
+
+  drawLine(grayimage, 10, 10, 120, 120, dstimg->width, dstimg->height,
+           COLOR_RED);
+
+  grayimage2colorimage(grayimage, dstimg->image, srcimg->width, srcimg->height);
+  dstimg->Save("img/testlineres.bmp");
+  delete srcimg;
+  delete dstimg;
+}
+#endif
+void testImageDFT() {
+  SimpleImage* srcimg = new SimpleImage();
+
+  bool res = srcimg->Load("img/smalllena.bmp");
+  if (!res) {
+    cout << "load file fail" << endl;
+  }
+  SimpleImage* dstimg = new SimpleImage(srcimg->width, srcimg->height);
+  uint8_t* grayimage = new uint8_t[srcimg->width * srcimg->height];
+
+  colorimage2grayimage(srcimg->image, grayimage, srcimg->width, srcimg->height);
+
+  ImageDFT* imagedft = new ImageDFT(grayimage, srcimg->width, srcimg->height);
+
+  SimpleMat<double> outimage = imagedft->getIDFTImage();
+
+  grayimage2colorimage(grayimage, dstimg->image, srcimg->width, srcimg->height);
+
+  dstimg->Save("img/testImageDFT.bmp");
+  delete srcimg;
+  delete dstimg;
+}
 void fastguassinafilter() {
   struct timespec t_start, t_end;
   double elapsedTime;
-  SimpleImage *srcimg = new SimpleImage();
+  SimpleImage* srcimg = new SimpleImage();
 
   bool res = srcimg->Load("img/InputImage01AfterGnoise.bmp");
   if (!res) {
     cout << "load file fail" << endl;
   }
 
-  double *dst = new double[srcimg->width * srcimg->height];
-  uint8_t *gray = new uint8_t[srcimg->width * srcimg->height];
+  double* dst = new double[srcimg->width * srcimg->height];
+  uint8_t* gray = new uint8_t[srcimg->width * srcimg->height];
 
-  double *srcimage = new double[srcimg->width * srcimg->height];
+  double* srcimage = new double[srcimg->width * srcimg->height];
   colorimage2grayimage(srcimg->image, gray, srcimg->width, srcimg->height);
   TypeConver(gray, srcimage, srcimg->width, srcimg->height);
   int windowsize = 13;
   double std = 5.0;
-  double *gaussianfilter = new double[windowsize * windowsize];
+  double* gaussianfilter = new double[windowsize * windowsize];
   // 2D conv
   GaussianFilter(gaussianfilter, (uint16_t)windowsize, std);
   clock_gettime(CLOCK_REALTIME, &t_start);
@@ -662,7 +708,7 @@ void fastguassinafilter() {
   GuassianFilter1D(gaussianfilter, (uint16_t)windowsize, std);
   clock_gettime(CLOCK_REALTIME, &t_start);
 
-  double *colconv = conv1D(srcimage, srcimg->width, srcimg->height,
+  double* colconv = conv1D(srcimage, srcimg->width, srcimg->height,
                            gaussianfilter, windowsize, conv1D_col, conv2D_gray);
   dst = conv1D(colconv, srcimg->width, srcimg->height, gaussianfilter,
                windowsize, conv1D_row, conv2D_gray);
@@ -670,7 +716,7 @@ void fastguassinafilter() {
   elapsedTime = (t_end.tv_sec - t_start.tv_sec) * 1000.0;
   elapsedTime += (t_end.tv_nsec - t_start.tv_nsec) / 1000000.0;
   printf("separable conv elapsedTime: %lf ms\n", elapsedTime);
-  SimpleImage *dstimg = new SimpleImage(srcimg->width, srcimg->height);
+  SimpleImage* dstimg = new SimpleImage(srcimg->width, srcimg->height);
   TypeConver(dst, gray, srcimg->width, srcimg->height);
   grayimage2colorimage(gray, dstimg->image, srcimg->width, srcimg->height);
   dstimg->Save("img/separableconv.bmp");
@@ -695,28 +741,29 @@ void fastguassinafilter() {
 void FFTsaliencymap() {
   struct timespec t_start, t_end;
   double elapsedTime;
-  SimpleImage *srcimg = new SimpleImage();
+  SimpleImage* srcimg = new SimpleImage();
 
-  bool res = srcimg->Load("img/flower.bmp");
+  bool res = srcimg->Load("img/beacon.bmp");
   if (!res) {
     cout << "load file fail" << endl;
   }
-  SimpleImage *dstimg = new SimpleImage(srcimg->width, srcimg->height);
-  uint8_t *grayimage = new uint8_t[srcimg->width * srcimg->height];
+  SimpleImage* dstimg = new SimpleImage(srcimg->width, srcimg->height);
+  uint8_t* grayimage = new uint8_t[srcimg->width * srcimg->height];
 
   colorimage2grayimage(srcimg->image, grayimage, srcimg->width, srcimg->height);
-  double *input_real = new double[srcimg->width * srcimg->height];
-  double *input_imag = new double[srcimg->width * srcimg->height];
-  double *output_real = new double[srcimg->width * srcimg->height];
-  double *output_imag = new double[srcimg->width * srcimg->height];
-  double *image_log = new double[srcimg->width * srcimg->height];
-  double *image_amp = new double[srcimg->width * srcimg->height];
-  double *image_phase = new double[srcimg->width * srcimg->height];
-  double *cosSpectrum = new double[srcimg->width * srcimg->height];
-  double *sinSpectrum = new double[srcimg->width * srcimg->height];
-  double *meanlogAmp = new double[srcimg->width * srcimg->height];
-  double *differSpectrum = new double[srcimg->width * srcimg->height];
-  double *expSpectrum = new double[srcimg->width * srcimg->height];
+  double* input_real = new double[srcimg->width * srcimg->height];
+  double* input_imag = new double[srcimg->width * srcimg->height];
+  double* output_real = new double[srcimg->width * srcimg->height];
+  double* output_imag = new double[srcimg->width * srcimg->height];
+  double* image_log = new double[srcimg->width * srcimg->height];
+  double* image_amp = new double[srcimg->width * srcimg->height];
+  double* image_phase = new double[srcimg->width * srcimg->height];
+  double* cosSpectrum = new double[srcimg->width * srcimg->height];
+  double* sinSpectrum = new double[srcimg->width * srcimg->height];
+  double* meanlogAmp = new double[srcimg->width * srcimg->height];
+  double* differSpectrum = new double[srcimg->width * srcimg->height];
+  double* expSpectrum = new double[srcimg->width * srcimg->height];
+  double* shifted = new double[srcimg->width * srcimg->height];
   int width = srcimg->width;
   int height = srcimg->height;
 
@@ -727,19 +774,25 @@ void FFTsaliencymap() {
         width, height);
   FFTamplitude(output_real, output_imag, image_amp, width, height);
   FFTlog(image_amp, image_log, width, height);
+  // FFTnormalize(image_log, image_log, width, height);
+  // FFT255(image_log, image_log, width, height);
+
   FFTphase(output_real, output_imag, image_phase, width, height);
   FFTcos(image_phase, cosSpectrum, width, height);
   FFTsin(image_phase, sinSpectrum, width, height);
-
+  FFTshift(image_log, shifted, width, height);
   int windowsize = 3;
-  double *meanfilter = new double[windowsize * windowsize];
+  double* meanfilter = new double[windowsize * windowsize];
   for (int m = 0; m < windowsize * windowsize; m++) {
     meanfilter[m] = 1.0 / 9.0;
   }
-  conv2D(image_log, meanlogAmp, srcimg->width, srcimg->height, meanfilter,
+  conv2D(shifted, meanlogAmp, srcimg->width, srcimg->height, meanfilter,
          (uint16_t)windowsize, conv2D_gray);
 
-  matrixminus(image_log, meanlogAmp, differSpectrum, width, height);
+  matrixminus(shifted, meanlogAmp, differSpectrum, width, height);
+
+  FFTshift(differSpectrum, shifted, width, height);
+  differSpectrum = shifted;
 
   FFTexp(differSpectrum, expSpectrum, width, height);
 
@@ -753,12 +806,13 @@ void FFTsaliencymap() {
 
   int Gwindowsize = 5;
   double std = 2.5;
-  double *gaussianfilter = new double[Gwindowsize * Gwindowsize];
+  double* gaussianfilter = new double[Gwindowsize * Gwindowsize];
   // 2D conv
   GaussianFilter(gaussianfilter, (uint16_t)Gwindowsize, std);
   conv2D(image_amp, meanlogAmp, srcimg->width, srcimg->height, gaussianfilter,
          (uint16_t)Gwindowsize, conv2D_gray);
   FFTnormalize(meanlogAmp, image_amp, width, height);
+  FFT255(image_amp, image_amp, width, height);
 
   clock_gettime(CLOCK_REALTIME, &t_end);
   elapsedTime = (t_end.tv_sec - t_start.tv_sec) * 1000.0;
@@ -788,16 +842,16 @@ void FFTsaliencymap() {
   delete[] expSpectrum;
 }
 void testDWT() {
-  SimpleImage *srcimg = new SimpleImage();
+  SimpleImage* srcimg = new SimpleImage();
 
   bool res = srcimg->Load("img/lena.bmp");
   if (!res) {
     cout << "load file fail" << endl;
   }
-  SimpleImage *dstimg = new SimpleImage(srcimg->width, srcimg->height);
-  uint8_t *grayimage = new uint8_t[srcimg->width * srcimg->height];
-  double *srcdouble = new double[srcimg->width * srcimg->height];
-  double *dstdouble = new double[srcimg->width * srcimg->height];
+  SimpleImage* dstimg = new SimpleImage(srcimg->width, srcimg->height);
+  uint8_t* grayimage = new uint8_t[srcimg->width * srcimg->height];
+  double* srcdouble = new double[srcimg->width * srcimg->height];
+  double* dstdouble = new double[srcimg->width * srcimg->height];
 
   colorimage2grayimage(srcimg->image, grayimage, srcimg->width, srcimg->height);
 
@@ -818,17 +872,17 @@ void testDWT() {
   delete[] dstdouble;
 }
 void testDCT() {
-  SimpleImage *srcimg = new SimpleImage();
+  SimpleImage* srcimg = new SimpleImage();
   struct timespec t_start, t_end;
   double elapsedTime;
   bool res = srcimg->Load("img/Alley_30_noisy.bmp");
   if (!res) {
     cout << "load file fail" << endl;
   }
-  SimpleImage *dstimg = new SimpleImage(srcimg->width, srcimg->height);
-  uint8_t *grayimage = new uint8_t[srcimg->width * srcimg->height];
-  double *srcdouble = new double[srcimg->width * srcimg->height * 3];
-  double *dstdouble = new double[srcimg->width * srcimg->height * 3];
+  SimpleImage* dstimg = new SimpleImage(srcimg->width, srcimg->height);
+  uint8_t* grayimage = new uint8_t[srcimg->width * srcimg->height];
+  double* srcdouble = new double[srcimg->width * srcimg->height * 3];
+  double* dstdouble = new double[srcimg->width * srcimg->height * 3];
 
   TypeConver(srcimg->image, srcdouble, (uint16_t)srcimg->width * 3,
              (uint16_t)srcimg->height);
@@ -857,7 +911,7 @@ void testadaboostfacedetection() {
   HaarObjectDetector* myADABOOST;
 
   myADABOOST = new HaarObjectDetector();
-  myADABOOST->LoadXML("data/haarcascade_frontalface_alt.xml");
+  myADABOOST->LoadXML("data/haarcascade_frontalface_alt2.xml");
 
   SimpleImage* srcimg = new SimpleImage();
 
@@ -1145,33 +1199,63 @@ void testadaboostHOG() {
   srcimg->Save("img/testadaboostHOG.bmp");
   cout << "fin!:" << Results.size() << endl;
 }
+
+void testWienerFilter() {
+  struct timespec t_start, t_end;
+  double elapsedTime;
+
+  SimpleImage* srcimg = new SimpleImage();
+
+  bool res = srcimg->Load("img/blurred_image1.bmp");
+  if (!res) {
+    cout << "load file fail" << endl;
+  }
+  SimpleImage* dstimg = new SimpleImage(srcimg->width, srcimg->height);
+
+  clock_gettime(CLOCK_REALTIME, &t_start);
+
+  DeBlurWithWienerFilter(srcimg->image, dstimg->image, srcimg->width,
+                         srcimg->height, 28, -45, 0.04);
+
+  clock_gettime(CLOCK_REALTIME, &t_end);
+  elapsedTime = (t_end.tv_sec - t_start.tv_sec) * 1000.0;
+  elapsedTime += (t_end.tv_nsec - t_start.tv_nsec) / 1000000.0;
+
+  printf("%s elapsedTime: %lf ms\n", __func__, elapsedTime);
+  dstimg->Save("img/deblurred_image_afterWienerFilter.bmp");
+  delete srcimg;
+  delete dstimg;
+}
 int main() {
   cout << "start" << endl;
-
-  // testadaboostHOG();
-  //  teststereoimageBM();
-  //  teststereoimageBMwithSGM();
-  //  testOpticalFlowHS();
-  //  testOpticalFlowLK();
-  // testCCL_dfs();
-  // testCCL_2pass();
-  // testCCL_rle();
-  //   testadaboostfacedetection();
-  //     fastguassinafilter();
-  //       FFTsaliencymap();
-  //      testFFT();
-  //      testDWT();
-  //      testDCT();
-  testmat();
-  //         testharriscornerdetection();
-  //       testsift();
-  //       testmomrypureclass();
+  testWienerFilter();
+  //   testadaboostHOG();
+  //    teststereoimageBM();
+  //    teststereoimageBMwithSGM();
+  //    testOpticalFlowHS();
+  //    testOpticalFlowLK();
+  //   testCCL_dfs();
+  //   testCCL_2pass();
+  //   testCCL_rle();
+  //     testadaboostfacedetection();
+  //       fastguassinafilter();
+  //         FFTsaliencymap();
+  //        testFFT();
+  //        testDWT();
+  //        testDCT();
+  // testmat();
+  //   testImageDFT();
+  //   testDrawLine();
+  //           testharriscornerdetection();
+  //         testsift();
+  //         testmomrypureclass();
 
   //  testhistogramequalization();
   //   testmorphology();
   //    genpaatern();
   //     testgaussianfilter();
-  //     testmediafilter();
+  // testmediafilter();
+  // testfastmediafilter();
   //    testDeNoisewithopenmp();               // 6498.930026 ms
   //    testDeNoisewithIntegralImageopenmp();  // 2790.592246 ms
   //    testNLmeanswiththread();               // 8965.213364 ms

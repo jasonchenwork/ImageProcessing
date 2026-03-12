@@ -58,7 +58,7 @@ class ImageDFT {
     delete[] image_double;
     image_double = nullptr;
   }
-#if 1
+
   template <typename T>
   ImageDFT(SimpleMat<T> image)
       : real(image.width, image.height),
@@ -80,10 +80,11 @@ class ImageDFT {
     // delete[] image_double;
     // image_double = nullptr;
   }
-#endif
+
   ~ImageDFT() {
     // Destructor implementation (if needed)
   }
+
   friend ImageDFT operator*(const ImageDFT& dft1, const ImageDFT& dft2) {
     assert(dft1.width == dft2.width && dft1.height == dft2.height);
     ImageDFT result(dft1.width, dft1.height);
@@ -144,6 +145,14 @@ class ImageDFT {
            height);
 
     return output_real;
+  }
+  ImageDFT conjugate() const {
+    ImageDFT res(width, height);
+    res.real = this->real;  // 實部不變
+    for (int i = 0; i < width * height; i++) {
+      res.imag.data[i] = -this->imag.data[i];  // 虛部取反
+    }
+    return res;
   }
 };
 

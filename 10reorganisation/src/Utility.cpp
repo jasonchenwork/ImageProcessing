@@ -1,4 +1,5 @@
 #include "../include/Utility.hpp"
+using namespace std;
 vector<vector<uint8_t>> COLORBAGS = {
     {0, 0, 255},     {0, 255, 0},    {255, 0, 0},   {255, 255, 255},
     {255, 255, 0},   {128, 0, 128},  {255, 165, 0}, {0, 255, 255},
@@ -880,15 +881,15 @@ float rfract(float x) { return 1.0f - fract(x); }
 
 void putPixel(double* dst, int x, int y, int w, int h, float brightness) {
   if (x < 0 || x >= w || y < 0 || y >= h) return;
-  // 這裡假設 dst 是單通道灰階，並根據亮度 (0.0~1.0) 混合顏色
-  // 實際應用中可根據 coloridx 調整 RGB
+  // 硂柑安砞 dst 琌虫硄笵η顶沮獹 (0.0~1.0) 睼肅︹
+  // 龟悔莱ノい沮 coloridx 秸俱 RGB
   dst[y * w + x] = (uint8_t)(brightness * 255);
 }
-void drawLine(double* dst, int x0, int y0, int x1, int y1, int w, int h  ) {
+void drawLine(double* dst, int x0, int y0, int x1, int y1, int w, int h) {
   // Xiaolin Wu's algorithm
   bool steep = abs(y1 - y0) > abs(x1 - x0);
 
-  // 如果斜率大於 1，則交換座標以簡化邏輯
+  // 狦弊瞯 1玥ユ传畒夹虏て呸胯
   if (steep) {
     std::swap(x0, y0);
     std::swap(x1, y1);
@@ -902,7 +903,7 @@ void drawLine(double* dst, int x0, int y0, int x1, int y1, int w, int h  ) {
   float dy = y1 - y0;
   float gradient = (dx == 0) ? 1.0f : dy / dx;
 
-  // 處理起點
+  // 矪瞶癬翴
   float xend = round(x0);
   float yend = y0 + gradient * (xend - x0);
   float xgap = rfract(x0 + 0.5f);
@@ -918,10 +919,10 @@ void drawLine(double* dst, int x0, int y0, int x1, int y1, int w, int h  ) {
   }
   float intery = yend + gradient;
 
-  // 處理終點 (與起點對稱，此處略縮寫)
-  // ... 終點邏輯 ...
+  // 矪瞶沧翴 (籔癬翴癸嘿矪菠罽糶)
+  // ... 沧翴呸胯 ...
 
-  // 主要迴圈
+  // 璶癹伴
   for (int x = xpxl1 + 1; x < x1; x++) {
     if (steep) {
       putPixel(dst, floor(intery), x, w, h, rfract(intery));
@@ -931,5 +932,11 @@ void drawLine(double* dst, int x0, int y0, int x1, int y1, int w, int h  ) {
       putPixel(dst, x, floor(intery) + 1, w, h, fract(intery));
     }
     intery += gradient;
+  }
+}
+void clampImage(double* dst, double* src, uint16_t w, uint16_t h, double minVal,
+                double maxVal) {
+  for (int i = 0; i < w * h; ++i) {
+    dst[i] = std::min(std::max(src[i], minVal), maxVal);
   }
 }
