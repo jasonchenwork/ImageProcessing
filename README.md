@@ -73,6 +73,8 @@ Morphology
 
 [HOGCascades](https://github.com/jasonchenwork/ImageProcessing/blob/main/md/HOGcascade.md)  
 
+[WienerFilter](https://github.com/jasonchenwork/ImageProcessing/blob/main/md/DeBlurWienerFilter.md)  
+
 # **Author Information**
 
 Name
