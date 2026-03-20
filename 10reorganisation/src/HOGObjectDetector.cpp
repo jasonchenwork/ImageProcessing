@@ -471,47 +471,31 @@ std::vector<ORectangle> HOGObjectDetector::ProcessMultiScaleImage(
 void HOGObjectDetector::LoadXML(string path) {
   XmlNode* xmlnode = readXml(path);
 
-  string word = "cascade";
-  XmlNode* cascadenode = findxmlnode(xmlnode, word);
-  cascadenode = cascadenode->child;
-  if (cascadenode == nullptr) {
-    cout << "cascadenode==nullptr" << endl;
-    return;
-  }
+  XmlNode* cascadenode = findfullxmlnode(xmlnode, "cascade");
 
-  word = "height";
-  XmlNode* heightNode = findxmlNxtnode(cascadenode, word);
+  XmlNode* heightNode = findfullxmlnode(cascadenode, "height");
   baseHeight = stod(heightNode->val);
   myHOGCascadeStage.Heigh = baseHeight;
-  // cout << "height: " << heightNode->val << endl;
 
-  word = "width";
-  XmlNode* widthNode = findxmlNxtnode(cascadenode, word);
+  XmlNode* widthNode = findfullxmlnode(cascadenode, "width");
   baseWidth = stod(widthNode->val);
   myHOGCascadeStage.Width = baseWidth;
-  // cout << "width: " << widthNode->val << endl;
 
-  word = "stages";
-  XmlNode* stagesnode = findxmlNxtnode(cascadenode, word);
-  stagesnode = stagesnode->child;
+  XmlNode* stagesnode = findfullxmlnode(cascadenode, "stages");
 
-  while (stagesnode) {
+  for (auto curstage : stagesnode->children) {
     HOGStage curHOGstage;
-    XmlNode* curstage = stagesnode->child;
 
-    word = "stageThreshold";
-    XmlNode* stageThreshold = findxmlNxtnode(curstage, word);
+    XmlNode* stageThreshold = findfullxmlnode(curstage, "stageThreshold");
     curHOGstage.Stage_Threshold = stod(stageThreshold->val);
 
-    word = "weakClassifiers";
-    XmlNode* weakClassifiers = findxmlNxtnode(curstage, word);
-    weakClassifiers = weakClassifiers->child;
-    while (weakClassifiers) {
+    XmlNode* weakClassifiers = findfullxmlnode(curstage, "weakClassifiers");
+
+    for (auto weakClassifier : weakClassifiers->children) {
       HOGStageTree curHOGStageTree;
       HOGNode curNode;
-      word = "internalNodes";
-      XmlNode* internalNodes = findxmlnode(weakClassifiers, word);
 
+      XmlNode* internalNodes = findfullxmlnode(weakClassifier, "internalNodes");
       vector<char> tmpbuf(internalNodes->val.begin(), internalNodes->val.end());
       tmpbuf.push_back('\0');
       char* reactsdata = tmpbuf.data();
@@ -520,12 +504,11 @@ void HOGObjectDetector::LoadXML(string path) {
       sscanf(reactsdata, "%d %d %d %lf", &leftindex, &rightindex, &featureid,
              &thr);
 
-      XmlNode* leafValues = internalNodes->next;
+      XmlNode* leafValues = findfullxmlnode(weakClassifier, "leafValues");
       // cout << "leafValues: " << leafValues->val << endl;
       vector<char> tmpbuf2(leafValues->val.begin(), leafValues->val.end());
       tmpbuf2.push_back('\0');
       char* reactsdata2 = tmpbuf2.data();
-
       double leftvalue, rightvalue;
       sscanf(reactsdata2, "%lf %lf", &leftvalue, &rightvalue);
 
@@ -536,37 +519,17 @@ void HOGObjectDetector::LoadXML(string path) {
       curNode.Left_value = leftvalue;
       curNode.Right_value = rightvalue;
 
-      // curHOGStageTree.Node.push_back(curNode);
       curHOGStageTree.Node.push_back(curNode);
       curHOGstage.Tree.push_back(curHOGStageTree);
-      weakClassifiers = weakClassifiers->next;
     }
-
     myHOGCascadeStage.Stage.push_back(curHOGstage);
-
-    stagesnode = stagesnode->next;
   }
-#if 0
-  for (int i = 0; i < myHOGCascadeStage.Stage.size(); i++) {
-    for (int j = 0; j < myHOGCascadeStage.Stage[i].Tree.size(); j++) {
-      cout << "stages i: " << i;
-      cout << " Tree j: " << j << endl;
-      for (int z = 0; z < myHOGCascadeStage.Stage[i].Tree[j].Node.size(); z++) {
-        cout << "i j z: " << i << " " << j << " " << z << " "
-             << myHOGCascadeStage.Stage[i].Tree[j].Node[z].Node_Threshold
-             << endl;
-      }
-    }
-  }
-#endif
-  word = "features";
-  XmlNode* featuresnode = findxmlNxtnode(cascadenode, word);
-  featuresnode = featuresnode->child;
 
-  while (featuresnode) {
+  XmlNode* featuresnode = findfullxmlnode(cascadenode, "features");
+
+  for (auto featurenode : featuresnode->children) {
     HOGRectangle Rect;
-    word = "rect";
-    XmlNode* tmp = findxmlnode(featuresnode, word);
+    XmlNode* tmp = findfullxmlnode(featurenode, "rect");
     vector<char> tmpbuf(tmp->val.begin(), tmp->val.end());
     tmpbuf.push_back('\0');
     char* reactsdata = tmpbuf.data();
@@ -578,7 +541,5 @@ void HOGObjectDetector::LoadXML(string path) {
     Rect.h = r_h;
     Rect.idx = r_idx;
     features.push_back(Rect);
-    featuresnode = featuresnode->next;
   }
-  // cout << "features.size() : " << features.size() << endl;
 }

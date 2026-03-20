@@ -4,13 +4,11 @@
 using namespace std;
 
 struct XmlNode {
-  string name;     //
-  string val;      //
-  XmlNode* next;   //
-  XmlNode* child;  //
+  string name;                //
+  string val;                 //
+  vector<XmlNode*> children;  //
 
-  XmlNode(string n = "", string v = "")
-      : name(n), val(v), next(nullptr), child(nullptr) {}
+  XmlNode(string name = "", string val = "") : name(name), val(val) {}
 };
 enum {
   TAG_HEAD = 0,
@@ -20,7 +18,8 @@ enum {
   TAG_UNKNOW = 4
 };
 XmlNode* readXml(string filename);
-XmlNode* findxmlnode(XmlNode* cur, string& s);
-XmlNode* findxmlNxtnode(XmlNode* cur, string& s);
+XmlNode* findxmlnode(XmlNode* cur, const string& s);     // find depth first
+XmlNode* findxmlNxtnode(XmlNode* cur, const string& s);  // find neighbor first
 void printXml(XmlNode* node, int depth);
+XmlNode* findfullxmlnode(XmlNode* cur, const string& s);
 #endif

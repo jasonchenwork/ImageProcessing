@@ -61,12 +61,14 @@ XmlNode* parseElement(const string& s, size_t& pos) {
   tagname = getTagLabel(s, pos, attribute);
 
   if (attribute == TAG_END) {
-    node->next = parseElement(s, pos);
     return node;
   } else {
     pos = backupsize;
-    node->child = parseElement(s, pos);
-    node->next = parseElement(s, pos);
+    XmlNode* child = parseElement(s, pos);
+    while (child) {
+      node->children.push_back(child);
+      child = parseElement(s, pos);
+    }
   }
   return node;
 }
@@ -79,20 +81,21 @@ void printXml(XmlNode* node, int depth) {
   }
 
   cout << string(depth * 2, ' ') << "<" << node->name << ">" << endl;
-  printXml(node->child, depth + 1);
-  if (node->child || !node->val.empty()) {
+  for (auto child : node->children) {
+    printXml(child, depth + 1);
+  }
+  if (!node->children.empty() || !node->val.empty()) {
     cout << string(depth * 2, ' ') << node->val << endl;
   }
   cout << string(depth * 2, ' ') << "</" << node->name << ">" << endl;
-
-  printXml(node->next, depth);
 }
 
 //  release
 void deleteXml(XmlNode* node) {
   if (!node) return;
-  deleteXml(node->child);
-  deleteXml(node->next);
+  for (auto child : node->children) {
+    deleteXml(child);
+  }
   delete node;
 }
 XmlNode* parseXml(const string& xmlText) {
@@ -116,19 +119,34 @@ XmlNode* readXml(string filename) {
   file.close();  //
   return root;
 }
-XmlNode* findxmlnode(XmlNode* cur, string& s) {
+XmlNode* findfullxmlnode(XmlNode* cur, const string& s) {
   if (cur == nullptr) return nullptr;
 
   if (cur->name == s) {
     return cur;
   }
-  return findxmlnode(cur->child, s);
+  for (auto child : cur->children) {
+    XmlNode* result = findfullxmlnode(child, s);
+    if (result) return result;
+  }
+  return nullptr;
 }
-XmlNode* findxmlNxtnode(XmlNode* cur, string& s) {
+XmlNode* findxmlnode(XmlNode* cur, const string& s) {
   if (cur == nullptr) return nullptr;
 
   if (cur->name == s) {
     return cur;
   }
-  return findxmlNxtnode(cur->next, s);
+  return cur->children.empty() ? nullptr
+                               : findxmlnode(cur->children.front(), s);
+}
+XmlNode* findxmlNxtnode(XmlNode* cur, const string& s) {
+  if (cur == nullptr) return nullptr;
+
+  for (auto child : cur->children) {
+    if (child->name == s) {
+      return child;
+    }
+  }
+  return nullptr;
 }

@@ -49,12 +49,13 @@ class SimpleImage {
   struct BMPFileHeader bmpf_h;
   uint32_t width;
   uint32_t height;
-  uint8_t *image;
+  uint8_t* image;
   SimpleImage();
   SimpleImage(uint32_t w, uint32_t h);
+  SimpleImage(const char* fname_s);
   ~SimpleImage();
 
-  bool Load(const char *fname_s);
-  bool Save(const char *fname_s);
+  bool Load(const char* fname_s);
+  bool Save(const char* fname_s);
 };
 #endif

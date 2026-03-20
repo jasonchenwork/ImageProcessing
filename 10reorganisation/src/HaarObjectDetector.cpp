@@ -589,46 +589,31 @@ std::vector<ORectangle> HaarObjectDetector::ProcessMultiScaleImage(
 void HaarObjectDetector::LoadXML(string path) {
   XmlNode* xmlnode = readXml(path);
 
-  string word = "size";
-  XmlNode* sizenode = findxmlnode(xmlnode, word);
+  XmlNode* sizenode = findxmlnode(xmlnode, "size");
   vector<char> buf(sizenode->val.begin(), sizenode->val.end());
   buf.push_back('\0');
   char* SizeData = buf.data();
   int size_w, size_h;
   sscanf(SizeData, "%d %d", &size_w, &size_h);
-
-  // word = "stages";
-  XmlNode* stagesnode = sizenode->next->child;
-
   myHaarCascadeStage.Heigh = size_h;
   myHaarCascadeStage.Width = size_w;
 
-  while (stagesnode) {  // stage /level
-    word = "trees";
-    XmlNode* curstage = findxmlnode(stagesnode, word);
-    XmlNode* curtrees = curstage->child;
+  XmlNode* stagesnode = findfullxmlnode(xmlnode, "stages");
+
+  for (auto curstagenode : stagesnode->children) {
+    XmlNode* curstage = findxmlnode(curstagenode, "trees");
     HaarStage haarstage;
 
-    while (curtrees) {  // tree level
-      XmlNode* curTree = curtrees->child;
-
+    for (auto curtree : curstage->children) {
       StageTree stagetree;
-      // root node
 
-      while (curTree) {
-        // node level
-        XmlNode* curNode = curTree->child;
-
-        XmlNode* curNodeFeature = curNode->child;
-        XmlNode* curNodeRects = curNodeFeature->child;
+      for (auto curnode : curtree->children) {
+        XmlNode* rects = findfullxmlnode(curnode, "rects");
         HaarNode node;
-        // get rects
 
-        while (curNodeRects) {
+        for (auto rect : rects->children) {
           HaarRectangle Rect;
-
-          vector<char> tmpbuf(curNodeRects->val.begin(),
-                              curNodeRects->val.end());
+          vector<char> tmpbuf(rect->val.begin(), rect->val.end());
           tmpbuf.push_back('\0');
           char* reactsdata = tmpbuf.data();
           int r_x, r_y, r_w, r_h, r_weight;
@@ -640,53 +625,46 @@ void HaarObjectDetector::LoadXML(string path) {
           Rect.h = r_h;
           Rect.weight = r_weight;
           node.Feature.Rectangle.push_back(Rect);
-
-          curNodeRects = curNodeRects->next;
         }
 
-        node.Feature.Tilted = false;
+        XmlNode* tiltednode = findfullxmlnode(curnode, "tilted");
 
-        // get threshold
-        curNode = curNode->next;
-        node.Node_Threshold = stod(curNode->val);
-        // get left_val
-        curNode = curNode->next;
-        if (curNode->name == "left_val") {
-          node.Left_value = stod(curNode->val);
+        if (tiltednode->val == "true") {
+          node.Feature.Tilted = true;
+        } else {
+          node.Feature.Tilted = false;
+        }
+
+        XmlNode* thresholdnode = findfullxmlnode(curnode, "threshold");
+        node.Node_Threshold = stod(thresholdnode->val);
+
+        XmlNode* curleft_node = findfullxmlnode(curnode, "left_val");
+        if (curleft_node) {
+          node.Left_value = stod(curleft_node->val);
           node.LeftNodeIndex = -1;
-        } else if (curNode->name == "left_node") {
+        } else {
           node.Left_value = 0;
           node.LeftNodeIndex = 1;
         }
 
-        // get right_val
-        curNode = curNode->next;
-        if (curNode->name == "right_val") {
-          node.Right_value = stod(curNode->val);
+        XmlNode* curright_node = findfullxmlnode(curnode, "right_val");
+        if (curright_node) {
+          node.Right_value = stod(curright_node->val);
           node.RightNodeIndex = -1;
-        } else if (curNode->name == "right_node") {
+        } else {
           node.Right_value = 0;
           node.RightNodeIndex = 1;
         }
-
-        curTree = curTree->next;
-
         stagetree.Node.push_back(node);
+      }
 
-      }  //  read node end #
-
-      curtrees = curtrees->next;
       haarstage.Tree.push_back(stagetree);
-
     }  // tree level
 
-    curstage = curstage->next;
+    curstage = findxmlNxtnode(curstagenode, "stage_threshold");
     haarstage.Stage_Threshold = stod(curstage->val);
 
-    // haarstage.count = 0;
     myHaarCascadeStage.Stage.push_back(haarstage);
-
-    stagesnode = stagesnode->next;
 
   }  // stage level
 
