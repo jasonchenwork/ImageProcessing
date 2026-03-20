@@ -1201,27 +1201,20 @@ void testadaboostHOG() {
 }
 
 void testWienerFilter() {
-  struct timespec t_start, t_end;
-  double elapsedTime;
+  TinyTimer timer;
 
-  SimpleImage* srcimg = new SimpleImage();
+  SimpleImage* srcimg = new SimpleImage("img/blurred_image1.bmp");
 
-  bool res = srcimg->Load("img/blurred_image1.bmp");
-  if (!res) {
-    cout << "load file fail" << endl;
-  }
   SimpleImage* dstimg = new SimpleImage(srcimg->width, srcimg->height);
 
-  clock_gettime(CLOCK_REALTIME, &t_start);
+  timer.start();
 
   DeBlurWithWienerFilter(srcimg->image, dstimg->image, srcimg->width,
                          srcimg->height, 28, -45, 0.04);
 
-  clock_gettime(CLOCK_REALTIME, &t_end);
-  elapsedTime = (t_end.tv_sec - t_start.tv_sec) * 1000.0;
-  elapsedTime += (t_end.tv_nsec - t_start.tv_nsec) / 1000000.0;
+  timer.stop();
+  printf("%s elapsedTime: %lf ms\n", __func__, timer.getElapsedTime());
 
-  printf("%s elapsedTime: %lf ms\n", __func__, elapsedTime);
   dstimg->Save("img/deblurred_image_afterWienerFilter.bmp");
   delete srcimg;
   delete dstimg;

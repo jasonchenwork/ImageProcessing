@@ -148,9 +148,9 @@ class ImageDFT {
   }
   ImageDFT conjugate() const {
     ImageDFT res(width, height);
-    res.real = this->real;  // 實部不變
+    res.real = this->real;  // 瀵﹂儴涓嶈畩
     for (int i = 0; i < width * height; i++) {
-      res.imag.data[i] = -this->imag.data[i];  // 虛部取反
+      res.imag.data[i] = -this->imag.data[i];  // 铏涢儴鍙栧弽
     }
     return res;
   }

@@ -4,6 +4,7 @@
 
 #include <iostream>
 using namespace std;
+
 template <typename T>
 class SimpleMat {
  public:
@@ -18,7 +19,7 @@ class SimpleMat {
     height = 0;
     data = nullptr;
   }
-  // 2. ¿½Ø½¨˜‹×Ó (Deep Copy)
+  // 2. æ‹·è²å»ºæ§‹å­ (Deep Copy)
   SimpleMat(const SimpleMat<T>& other)
       : width(other.width), height(other.height) {
     data = new T[width * height];
@@ -35,7 +36,7 @@ class SimpleMat {
     data = new T[w * h];
     memcpy(data, indata, width * height * sizeof(T));
   };
-  // 3. ÒÆ„Ó½¨˜‹×Ó (Move Constructor) - Ğ§ÄÜƒ»¯êPæI
+  // 3. ç§»å‹•å»ºæ§‹å­ (Move Constructor) - æ•ˆèƒ½å„ªåŒ–é—œéµ
   SimpleMat(SimpleMat<T>&& other) noexcept
       : width(other.width), height(other.height), data(other.data) {
     other.data = nullptr;
@@ -50,7 +51,7 @@ class SimpleMat {
   }
   // operator
 
-  // ¾Øê‡ß\Ëã
+  // çŸ©é™£é‹ç®—
   SimpleMat<T>& operator+=(const SimpleMat<T>& other) {
     assert(width == other.width && height == other.height);
     for (uint32_t i = 0; i < width * height; ++i) data[i] += other.data[i];
@@ -113,9 +114,9 @@ class SimpleMat {
     lhs /= rhs;
     return lhs;
   }
-  // ¼ƒÁ¿ß\Ëã
+  // ç´”é‡é‹ç®—
 
-  //  1. ÏÈŒ×÷³É†Tº¯”µ°æ±¾µÄ operator-= (»ùµAß‰İ‹)
+  //  1. å…ˆå¯¦ä½œæˆå“¡å‡½æ•¸ç‰ˆæœ¬çš„ operator-= (åŸºç¤é‚è¼¯)
   SimpleMat<T>& operator+=(T scalar) {
     uint32_t size = width * height;
     for (uint32_t i = 0; i < size; ++i) {
@@ -163,8 +164,8 @@ class SimpleMat {
     return lhs;
   }
 
-  // 5. ÙxÖµß\Ëã×Ó (Copy & Move Assignment)
-  SimpleMat<T>& operator=(SimpleMat<T> other) {  // Ê¹ÓÃ Copy-and-Swap ¼¼ÇÉ
+  // 5. è³¦å€¼é‹ç®—å­ (Copy & Move Assignment)
+  SimpleMat<T>& operator=(SimpleMat<T> other) {  // ä½¿ç”¨ Copy-and-Swap æŠ€å·§
     swap(*this, other);
     return *this;
   }
@@ -175,11 +176,11 @@ class SimpleMat {
     swap(first.data, second.data);
   }
 
-  // 2. ÀûÓÃ += íŒ×÷ + (¼ƒÁ¿¼Ó·¨)
-  // ß@Ñe‚÷Èë lhs (left hand side) •r²»¼Ó
-  // &£¬ÊÇéÁËÀûÓÃ¡¸ÒÆ„Ó½¨˜‹×Ó¡¹×Ô„ÓÑ}ÑuÒ»·İĞÂµÄ
+  // 2. åˆ©ç”¨ += ä¾†å¯¦ä½œ + (ç´”é‡åŠ æ³•)
+  // é€™è£¡å‚³å…¥ lhs (left hand side) æ™‚ä¸åŠ 
+  // &ï¼Œæ˜¯ç‚ºäº†åˆ©ç”¨ã€Œç§»å‹•å»ºæ§‹å­ã€è‡ªå‹•è¤‡è£½ä¸€ä»½æ–°çš„
 
-  // ÔªËØ‚€„e³Ë·¨ functions
+  // å…ƒç´ å€‹åˆ¥ä¹˜æ³• functions
   SimpleMat<T> mul(const SimpleMat<T>& mat1) {
     uint32_t m = mat1.width;
     uint32_t n = mat1.height;

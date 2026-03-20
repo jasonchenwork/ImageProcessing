@@ -377,7 +377,7 @@ double HaarObjectDetector::FeatureGetSum(IntegralImage2* im, int x, int y,
 bool HaarObjectDetector::HaarClassifierCompute2(IntegralImage2* im,
                                                 ORectangle rectangle,
                                                 double scale) {
-  (void)scale;  // ®ø°£Äµ§i
+  (void)scale;  // æ¶ˆé™¤è­¦å‘Š
   int x = rectangle.x;
   int y = rectangle.y;
   int w = rectangle.w;

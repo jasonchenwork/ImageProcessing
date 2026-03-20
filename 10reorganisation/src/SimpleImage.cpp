@@ -3,6 +3,7 @@
 SimpleImage::SimpleImage() {
 
 };
+SimpleImage::SimpleImage(const char* fname_s) { Load(fname_s); };
 SimpleImage::~SimpleImage() {
   delete[] image;
   image = nullptr;
@@ -39,7 +40,10 @@ bool SimpleImage::Load(const char* fname_s) {
 
   fread(&bmpf_h, sizeof(struct BMPFileHeader), 1, fp_s);
 
-  if (bmpf_h.F_Info.bit_per_pixel != 24) return false;  // only support 24 bit
+  if (bmpf_h.F_Info.bit_per_pixel != 24) {
+    printf("Image Load error: Unsupported bit depth\n");
+    return false;  // only support 24 bit
+  }
 
   width = bmpf_h.F_Info.width;
   height = bmpf_h.F_Info.height;

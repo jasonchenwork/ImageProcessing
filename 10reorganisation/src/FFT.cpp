@@ -73,7 +73,7 @@ void DFT2D(double* data_real, double* data_imag, double* output_real,
           double angle = 2.0 * PI *
                          ((double)i * (double)x / (double)width +
                           (double)j * (double)y / (double)height);
-          // DFT ÕıÏò£ºcos(a) - i*sin(a)
+          // DFT æ­£å‘ï¼šcos(a) - i*sin(a)
           output_real[width * j + i] += data_real[width * y + x] * cos(angle);
           output_imag[width * j + i] -= data_real[width * y + x] * sin(angle);
         }
@@ -104,7 +104,7 @@ void IDFT2D(double* data_real, double* data_imag, double* output_real,
   }
 }
 #else
-// 1D DFT ºËĞÄß‰İ‹
+// 1D DFT æ ¸å¿ƒé‚è¼¯
 void DFT1D(double* in_real, double* in_imag, double* out_real, double* out_imag,
            int N, bool inverse) {
   double angle_sign = inverse ? 1.0 : -1.0;
@@ -117,7 +117,7 @@ void DFT1D(double* in_real, double* in_imag, double* out_real, double* out_imag,
       double cos_a = cos(angle);
       double sin_a = angle_sign * sin(angle);
 
-      // Ñ}”µ³Ë·¨: (in_r + i*in_i) * (cos_a + i*sin_a)
+      // è¤‡æ•¸ä¹˜æ³•: (in_r + i*in_i) * (cos_a + i*sin_a)
       sum_r += in_real[n] * cos_a - in_imag[n] * sin_a;
       sum_i += in_real[n] * sin_a + in_imag[n] * cos_a;
     }
@@ -127,18 +127,18 @@ void DFT1D(double* in_real, double* in_imag, double* out_real, double* out_imag,
 }
 void DFT2D_Separable(double* data_real, double* data_imag, double* out_real,
                      double* out_imag, int width, int height, bool inverse) {
-  // •º´æ¾Øê‡£¬ÓÃí´æ·Å¡¸ĞĞ×ƒ“Q¡¹ááµÄ½Y¹û
+  // æš«å­˜çŸ©é™£ï¼Œç”¨ä¾†å­˜æ”¾ã€Œè¡Œè®Šæ›ã€å¾Œçš„çµæœ
   std::vector<double> temp_real(width * height, 0.0);
   std::vector<double> temp_imag(width * height, 0.0);
 
-  // Step 1: Œ¦Ã¿Ò»ÁĞ (Row) ×ö 1D DFT
+  // Step 1: å°æ¯ä¸€åˆ— (Row) åš 1D DFT
   for (int y = 0; y < height; y++) {
     DFT1D(&data_real[y * width], &data_imag[y * width], &temp_real[y * width],
           &temp_imag[y * width], width, inverse);
   }
 
-  // Step 2: Œ¦Ã¿Ò»ĞĞ (Column) ×ö 1D DFT
-  // ×¢Òâ£ºĞĞ²»ßBÀm£¬ĞèÒªÏÈÌáÈ¡µ½ÅR•rê‡ÁĞ
+  // Step 2: å°æ¯ä¸€è¡Œ (Column) åš 1D DFT
+  // æ³¨æ„ï¼šè¡Œä¸é€£çºŒï¼Œéœ€è¦å…ˆæå–åˆ°è‡¨æ™‚é™£åˆ—
   for (int x = 0; x < width; x++) {
     std::vector<double> col_in_r(height), col_in_i(height);
     std::vector<double> col_out_r(height), col_out_i(height);
@@ -340,7 +340,9 @@ void FFTshift(double* in, double* out, int width, int height) {
   int i, j;
   int halfW = width / 2;
   int halfH = height / 2;
-  double* result = new double[width * height];
+  bool isSameMemory = (in == out);
+  // double* result = new double[width * height];
+
   for (i = 0; i < (halfW); i++) {
     for (j = 0; j < (halfH); j++) {
       int topLeft = j * width + i;
@@ -349,18 +351,27 @@ void FFTshift(double* in, double* out, int width, int height) {
       int bottomRight = (j + halfH) * width + (i + halfW);
 
       // Swap Top-Left with Bottom-Right
-      result[bottomRight] = in[topLeft];
-      result[topLeft] = in[bottomRight];
+      // result[bottomRight] = in[topLeft];
+      // result[topLeft] = in[bottomRight];
 
       // Swap Top-Right with Bottom-Left
-      result[bottomLeft] = in[topRight];
-      result[topRight] = in[bottomLeft];
+      // result[bottomLeft] = in[topRight];
+      // result[topRight] = in[bottomLeft];
+      if (isSameMemory) {
+        std::swap(out[topLeft], out[bottomRight]);  // 1 â†” 3 è±¡é™
+        std::swap(out[topRight], out[bottomLeft]);  // 2 â†” 4 è±¡é™
+      } else {
+        out[bottomRight] = in[topLeft];
+        out[topLeft] = in[bottomRight];
+        out[bottomLeft] = in[topRight];
+        out[topRight] = in[bottomLeft];
+      }
     }
   }
-  for (i = 0; i < width * height; i++) {
-    out[i] = result[i];
-  }
-  delete[] result;
+  // for (i = 0; i < width * height; i++) {
+  // out[i] = result[i];
+  //}
+  // delete[] result;
 }
 void FFTShiftMagnitude(double* data_real, double* data_imag, double* FFTShifted,
                        int width, int height) {
