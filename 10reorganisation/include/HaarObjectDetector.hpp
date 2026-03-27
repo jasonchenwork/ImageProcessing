@@ -1,29 +1,8 @@
 #ifndef HAAROBJECTDETECTOR_HPP
 #define HAAROBJECTDETECTOR_HPP
-#include <bits/stdc++.h>
 
-#include "../include/IntegralImage2.hpp"
-#include "../include/Utility.hpp"
+#include "ObjectDetector.hpp"
 using namespace std;
-
-#ifndef dmin
-#define dmin(x, y) ((x) > (y) ? (x) : (y))
-#endif
-
-#ifndef dmxn
-#define dmxn(x, y) ((x) < (y) ? (x) : (y))
-#endif
-
-#ifndef dsqrt
-#define dsqrt(x) ((x) * (x))
-#endif
-
-typedef struct {
-  int x;
-  int y;
-  int w;
-  int h;
-} ORectangle;
 
 //
 // Haar DataStruct
@@ -73,44 +52,28 @@ typedef struct {
   vector<HaarStage> Stage;
 } HaarCascadeStage;
 
-class HaarObjectDetector {
+class HaarObjectDetector : public ObjectDetector {
  private:
-  void update(int width, int height);
-  bool HaarClassifierCompute(IntegralImage2* im, ORectangle window,
-                             double scale);
-  bool HaarClassifierCompute2(IntegralImage2* im, ORectangle window,
-                              double scale);
+  // Haar 專有的私有方法
+  void update(int width, int height) override;
+  bool ClassifierCompute(IntegralImage2* im, ORectangle window,
+                         double scale) override;
+  bool ClassifierCompute2(IntegralImage2* im, ORectangle window, double scale);
   double FeatureGetSum(IntegralImage2* im, int x, int y, HaarFeature HF);
   double FeatureGetSum2(IntegralImage2* im, int x, int y, HaarFeature HF);
   void updateFeature(double scale);
-  vector<double> steps;
 
  public:
-  // costructor
+  HaarCascadeStage myHaarCascadeStage;
   HaarObjectDetector(HaarCascadeStage myHaarCascadeStage);
   HaarObjectDetector();
-  ~HaarObjectDetector();
-
-  // members
-  HaarCascadeStage myHaarCascadeStage;
-  vector<ORectangle> lastObject;
-  vector<ORectangle> detectedObjects;
-
-  double factor;
-
-  int baseWidth;
-  int baseHeight;
-
-  int lastWidth;
-  int lastHeight;
-
-  // Classifier
-
-  // methods
-  void LoadXML(string path);
+  ~HaarObjectDetector() override;  // 記得 override 解構子
+  // 實作基類的虛擬函式
+  void LoadXML(string path) override;
+  vector<ORectangle> ProcessMultiScaleImage(unsigned char** Src, int width,
+                                            int height) override;
   vector<ORectangle> ProcessMultiScaleWindow(unsigned char** Src, int width,
                                              int height);
-  vector<ORectangle> ProcessMultiScaleImage(unsigned char** Src, int width,
-                                            int height);
 };
+
 #endif

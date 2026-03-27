@@ -2,6 +2,7 @@
 #include "../include/HaarObjectDetector.hpp"
 
 #include "../include/Tinyxml.hpp"
+#include "../include/Utility.hpp"
 HaarObjectDetector::HaarObjectDetector(HaarCascadeStage Cascade) {
   factor = 1.1;
 
@@ -374,9 +375,9 @@ double HaarObjectDetector::FeatureGetSum(IntegralImage2* im, int x, int y,
   }
   return sum;
 };
-bool HaarObjectDetector::HaarClassifierCompute2(IntegralImage2* im,
-                                                ORectangle rectangle,
-                                                double scale) {
+bool HaarObjectDetector::ClassifierCompute2(IntegralImage2* im,
+                                            ORectangle rectangle,
+                                            double scale) {
   (void)scale;  // 消除警告
   int x = rectangle.x;
   int y = rectangle.y;
@@ -431,9 +432,8 @@ bool HaarObjectDetector::HaarClassifierCompute2(IntegralImage2* im,
   // myHaarCascadeStage.Stage[myHaarCascadeStage.Stage.size() - 1].count++;
   return true;  // The image has been detected.
 }
-bool HaarObjectDetector::HaarClassifierCompute(IntegralImage2* im,
-                                               ORectangle rectangle,
-                                               double scale) {
+bool HaarObjectDetector::ClassifierCompute(IntegralImage2* im,
+                                           ORectangle rectangle, double scale) {
   int x = rectangle.x;
   int y = rectangle.y;
   int w = rectangle.w;
@@ -521,7 +521,7 @@ std::vector<ORectangle> HaarObjectDetector::ProcessMultiScaleWindow(
       window.y = y;
       for (int x = 0; x < xEnd; x += xStep) {
         window.x = x;
-        if (HaarClassifierCompute(integralImage, window, scaling)) {
+        if (ClassifierCompute(integralImage, window, scaling)) {
           detectedObjects.push_back(window);
         }
       }
@@ -571,7 +571,7 @@ std::vector<ORectangle> HaarObjectDetector::ProcessMultiScaleImage(
       window.y = y;
       for (int x = 0; x < xEnd; x += xStep) {
         window.x = x;
-        if (HaarClassifierCompute2(integralImage, window, scale)) {
+        if (ClassifierCompute2(integralImage, window, scale)) {
           ORectangle object;
           object.x = x * scale;
           object.y = y * scale;

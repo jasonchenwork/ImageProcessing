@@ -17,6 +17,7 @@ enum {
   TAG_ANNOTATION = 3,
   TAG_UNKNOW = 4
 };
+void deleteXml(XmlNode* node);  // áŒ·ÅÓ›‘›ów
 XmlNode* readXml(string filename);
 XmlNode* findxmlnode(XmlNode* cur, const string& s);     // find depth first
 XmlNode* findxmlNxtnode(XmlNode* cur, const string& s);  // find neighbor first

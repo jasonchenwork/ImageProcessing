@@ -2,9 +2,8 @@
 #define HOGROBJECTDETECTOR_HPP
 #include <bits/stdc++.h>
 
-#include "../include/HaarObjectDetector.hpp"
-#include "../include/IntegralImage2.hpp"
-#include "../include/Utility.hpp"
+#include "../include/ObjectDetector.hpp"
+
 using namespace std;
 /*
 ref:
@@ -63,55 +62,34 @@ typedef struct {
   vector<HOGStage> Stage;
 } HOGCascadeStage;
 
-class HOGObjectDetector {
+class HOGObjectDetector : public ObjectDetector {
  private:
-  vector<double> steps;
-  void update(int width, int height);
-  // void update(int width, int height);
-  // bool HaarClassifierCompute(IntegralImage2* im, ORectangle window,double
-  // scale); bool HaarClassifierCompute2(IntegralImage2* im, ORectangle
-  // window,double scale);
-  // double FeatureGetSum(IntegralImage2* im, int x, int y, HaarFeature
-  // HF,double scale); double FeatureGetSum2(IntegralImage2* im, int x, int y,
-  // HaarFeature HF,double scale); void updateFeature(double scale);
+  void update(int width, int height) override;
+  bool ClassifierCompute(IntegralImage2* im, ORectangle window,
+                         double scale) override;
+  double FeatureGetSum(IntegralImage2* im, int x, int y, HOGRectangle HOGRect,
+                       double scale);
 
  public:
   // costructor
   HOGObjectDetector(HOGCascadeStage myHOGCascadeStage);
   HOGObjectDetector();
-  ~HOGObjectDetector();
+  ~HOGObjectDetector() override;
 
   // members
 
-  bool HOGClassifierCompute(IntegralImage2* im, ORectangle rectangle,
-                            double scale);
   HOGCascadeStage myHOGCascadeStage;
   vector<HOGRectangle> features;
-  vector<ORectangle> lastObject;
-  vector<ORectangle> detectedObjects;
-
-  double factor;
-
-  int baseWidth;
-  int baseHeight;
-
-  int lastWidth;
-  int lastHeight;
 
   // Classifier
 
   // methods
-  void LoadXML(string path);
-  double FeatureGetSum(IntegralImage2* im, int x, int y, HOGRectangle HOGRect,
-                       double scale);
-  std::vector<ORectangle> ProcessMultiScaleImage(unsigned char** Src, int width,
-                                                 int height);
-  std::vector<ORectangle> ProcessMultiScaleWindow(unsigned char** Src,
-                                                  int width, int height);
-  // vector<ORectangle> ProcessMultiScaleWindow(unsigned char** Src, int
-  // width,int height);
-  // vector<ORectangle> ProcessMultiScaleImage(unsigned char** Src, int
-  // width,int height);
-};
+  void LoadXML(string path) override;
 
+  std::vector<ORectangle> ProcessMultiScaleImage(unsigned char** Src, int width,
+                                                 int height) override;
+  std::vector<ORectangle> ProcessMultiScaleWindow(unsigned char** Src,
+                                                  int width,
+                                                  int height) override;
+};
 #endif

@@ -1,8 +1,8 @@
 #include "../include/HOGObjectDetector.hpp"
 
-#include "../include/HaarObjectDetector.hpp"
 #include "../include/IntegralImage2.hpp"
 #include "../include/Tinyxml.hpp"
+#include "../include/Utility.hpp"
 static const double THRESHOLD_EPS = 1e-5;
 HOGObjectDetector::HOGObjectDetector(HOGCascadeStage Cascade) {
   factor = 1.05;
@@ -55,9 +55,8 @@ double HOGObjectDetector::FeatureGetSum(IntegralImage2* im, int x, int y,
 #endif
   return sum / (inv_area + 0.001);
 };
-bool HOGObjectDetector::HOGClassifierCompute(IntegralImage2* im,
-                                             ORectangle rectangle,
-                                             double scale) {
+bool HOGObjectDetector::ClassifierCompute(IntegralImage2* im,
+                                          ORectangle rectangle, double scale) {
   int x = rectangle.x;
   int y = rectangle.y;
   // int w = rectangle.w;
@@ -228,7 +227,7 @@ std::vector<ORectangle> HOGObjectDetector::ProcessMultiScaleWindow(
       window.y = y;
       for (int x = 0; x < xEnd; x += xStep) {
         window.x = x;
-        if (HOGClassifierCompute(integralImage, window, scaling)) {
+        if (ClassifierCompute(integralImage, window, scaling)) {
           detectedObjects.push_back(window);
         }
       }
@@ -408,7 +407,7 @@ std::vector<ORectangle> HOGObjectDetector::ProcessMultiScaleImage(
       window.y = y;
       for (int x = 0; x < xEnd; x += xStep) {
         window.x = x;
-        if (HOGClassifierCompute(integralImage, window, 1)) {
+        if (ClassifierCompute(integralImage, window, 1)) {
           ORectangle object;
           object.x = x * scale;
           object.y = y * scale;
